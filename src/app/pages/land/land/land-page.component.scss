@@ -1,0 +1,15 @@
+::ng-deep .w3a-modal {
+    z-index: 4 !important;
+  }
+
+  @media ( max-width: 1450px ){
+
+    .hide-img{
+      display: none !important;
+    }
+
+    .more-width{
+      flex: 0 0 100% !important;
+      max-width: 100% !important;
+    }
+  }

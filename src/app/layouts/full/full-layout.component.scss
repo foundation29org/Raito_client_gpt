@@ -1,0 +1,20 @@
+.showmenu{
+    margin-left: 275px;
+  }
+
+  /*.main-panel {
+    margin-top: 0px !important;
+  }*/
+  
+  .main-content{
+    padding-bottom: 65px !important;
+    padding-left: 0px !important;
+    //margin-left: 0px !important;
+  }
+  
+  @media ( max-width: 991px ){
+    .showmenu{
+      margin-left: 0px;
+    }
+  }
+  

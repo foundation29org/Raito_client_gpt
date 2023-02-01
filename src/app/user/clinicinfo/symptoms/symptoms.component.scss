@@ -1,0 +1,18 @@
+.inputSearch2{
+    width: 85%;
+    margin-left: 0rem !important;
+  }
+
+  ::ng-deep ngb-typeahead-window.dropdown-menu {
+    max-height: 300px;
+    overflow-y: auto;
+    width:87%;
+   }
+
+   ::ng-deep ngb-typeahead-window.dropdown-menu {
+    font-size: 0.8rem !important;
+   }
+
+   ::ng-deep .dropdown-item {
+    white-space: normal !important;
+  }

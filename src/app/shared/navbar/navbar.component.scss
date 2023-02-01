@@ -1,0 +1,148 @@
+.logo-img{
+    width: 35px;
+  }
+  .navbar {
+    //top: 91% !important;
+    top: -webkit-calc(100% - 47px) !important;
+    top: calc(100% - 47px) !important;
+    background-color: #343a40;
+    margin-left: 0px !important;
+    width: 100% !important;
+    position: fixed !important;
+    //border-top-left-radius: 1.5rem;
+    //border-top-right-radius: 1.5rem;
+  }
+  
+  .navbar .navbar-nav {
+    display: flex;
+  }
+  
+  .navbar-nav {
+    flex-direction: row;
+  }
+  
+  .nav-item {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .navbar-container{
+    width: 100%;
+  }
+  
+  .dropdown-toggle::after {
+    display:none;
+  }
+  
+  .navbar-expand-lg .navbar-nav {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .dropdown-menu {
+    padding: 0rem 0 !important;
+  }
+
+  .navbar .navbar-nav .dropdown-menu {
+    height: fit-content !important;
+  }
+  
+  .dropdown-divider{
+    margin: 0rem 0 !important; 
+  }
+  
+  .dropdown-item {
+    line-height: 1rem;
+    padding: 0.75rem 1.5rem !important;
+  }
+  
+  .navbar-light .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+  
+  .close-task{
+    position: absolute;
+    top: 0px;
+    right: 4px;
+  }
+  
+  /*::ng-deep .swal2-modal .swal2-cancel{
+    background-color: #6c757d !important;
+  }*/
+  
+  ::ng-deep .swal2-modal .swal2-confirm{
+    background-color: #343a40 !important;
+  }
+  
+  ::ng-deep .mat-checkbox-label{
+    font-size: 1rem !important;
+    text-transform: none !important;
+    //letter-spacing: 0.3px !important;
+    display: block;
+    font-family: inherit;
+    white-space: pre-wrap;
+    font-weight: 300 !important;
+    //color: inherit !important;
+  }
+  
+  /*::ng-deep .mat-checkbox-layout{
+    margin-bottom: 0rem !important;
+  }*/
+
+   form label{
+    font-size: 1rem !important;
+    text-transform: none !important;
+    letter-spacing: 0.3px !important;
+    //color: inherit !important;
+  }
+  
+   ::ng-deep .mat-radio-label-content{
+    font-weight: normal !important;
+  }
+  
+   ::ng-deep .example-radio-group > .mat-radio-button{
+    font-family: inherit;
+  }
+  
+   ::ng-deep .mat-radio-label {
+      white-space: pre-wrap !important;
+  }
+  
+  .menuClinic-sm{
+    padding: 1em;
+    margin-left: 275px;
+  }
+  
+  .btn-header:hover {
+    border-bottom-width: 2px !important;
+    border-color: #f9423a !important;
+    border-bottom: 2px solid #f9423a !important;
+  }
+  
+  @media ( max-width: 991px ){
+  .navbar-container {
+      width: 100% !important;
+    }
+  
+    .navbar-header {
+        width: 100% !important;
+      }
+  
+      .menuClinic-sm{
+        margin-left: 0px;
+      }
+  }
+  @media ( max-width: 600px ){
+  .font-alert {
+      font-size: 0.7rem;
+    }
+  }
+  
+  @media (max-width: 481px) {
+  
+  
+    .navbar-header-logos{
+      max-width: 50px;
+    }
+  }
+  

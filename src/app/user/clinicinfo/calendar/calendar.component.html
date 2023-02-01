@@ -1,0 +1,443 @@
+<div class="h-100">
+	<div class="card card-block mx-auto"  [ngClass]="(step!='1')?'small-width':'max-width'">
+		<div class="card-body">
+			<div class="row">
+				<div class="col-12 col-sm-12 align-items-center">
+					<div *ngIf="step=='0'">
+						<div class="row ">
+							<div class="col-md-12">
+								<button *ngIf="events.length>0" class="ml-1 float-right btn btn-primary btn-sm" (click)="openStats()">
+									<i class="icon-folder-alt font-medium-3"></i>
+								</button>
+								<div class="row">
+									<h2 class="content-header mt-0 mb-2">{{'homeraito.p5' | translate }}</h2>
+									
+								</div>
+							</div>
+							
+						</div>
+							
+						
+
+						<div class="row">
+							<div class="col-md-12">
+								<form action="#" class="form form-horizontal" [formGroup]="seizuresForm">
+									<div class="form-body">
+										<div class="">
+											<div class="">
+												<div class="form-group">
+													<label>{{'seizures.Seizure type' | translate }}</label> 
+														<em class="ft-info" style="cursor: pointer;position: absolute;margin-top: 0.275rem !important;margin-left: 0.25rem !important;" (click)="goto('2');" title="More info"></em>
+													
+													{{type}}
+													<select name="event-estructure-type" class="form-control"
+														formControlName="type"
+														[ngClass]="{ 'is-invalid': submitted && f.type.errors }"
+														(keyup)="refresh.next()">
+														<option [ngValue]="null" disabled selected>--{{'seizures.Select
+															the type of seizure' | translate }}--</option>
+														<option value="Unknown">{{'seizures.Unknown' | translate }}
+														</option>
+														<option value="Simple Focal">{{'seizures.Simple Focal' |
+															translate }}</option>
+														<option value="Complex Focal">{{'seizures.Complex Focal' |
+															translate }}</option>
+														<option value="Secondarily Generalized">{{'seizures.Secondarily
+															Generalized' | translate }}</option>
+														<option value="Tonic">{{'seizures.Tonic' | translate }}</option>
+														<option value="Clonic">{{'seizures.Clonic' | translate }}
+														</option>
+														<option value="Tonic–clonic">{{'seizures.Tonic–clonic' |
+															translate }}</option>
+														<option value="Myoclonic">{{'seizures.Myoclonic' | translate }}
+														</option>
+														<option value="Myoclonic Cluster">{{'seizures.Myoclonic Cluster'
+															| translate }}</option>
+														<option value="Atonic">{{'seizures.Atonic' | translate }}
+														</option>
+														<option value="Absence">{{'seizures.Absence' | translate }}
+														</option>
+														<option value="Atypical Absence">{{'seizures.Atypical Absence' |
+															translate }}</option>
+														<option value="Infantile Spasms">{{'seizures.Infantile Spasms' |
+															translate }}</option>
+														<option value="Status">{{'seizures.Status' | translate }}
+														</option>
+														<option value="Other">{{'seizures.Other' | translate }}</option>
+													</select>
+													<small class="form-text text-muted danger"
+														*ngIf="submitted && f.type.errors">{{'generics.required' |
+														translate }}</small>
+												</div>
+											</div>
+											<div class="">
+												<div class="form-group">
+													<label>{{'seizures.Duration' | translate }}</label>
+													<input type="number" min="0" class="col-5 form-control" id="numericos2"
+														formControlName="duracion"
+														[ngClass]="{ 'is-invalid': submitted && f.duracion.errors }"
+														name="numericos2" digits>
+													<small class="form-text text-muted danger"
+														*ngIf="submitted && f.duracion.errors">{{'generics.Only integers
+														are allowed' | translate }}</small>
+												</div>
+											</div>
+											<div class="">
+												<div class="form-group">
+													<label class="mb-0">{{'seizures.Starts At' | translate }}</label>
+													<div class="">
+														<mat-form-field class="mr-sm-24" fxFlex  >
+															<input matInput class="grey" readonly [matDatepicker]="picker"
+																		   autocomplete="off"
+																		   name="start" formControlName="start">
+															<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+															<mat-datepicker  [startAt]="start" #picker></mat-datepicker>
+														</mat-form-field>
+														<!--<input type="date" formControlName="start"
+															[ngClass]="{ 'is-invalid': submitted && f.start.errors }"
+															value="(start!=null) ? (start | date: 'dd MMM y': '' : translate.currentLang) : getLiteral('personalinfo.Birth Date')">-->
+														<small class="form-text text-muted danger" style="margin-top: -1em;"
+															*ngIf="submitted && f.start.errors">{{'generics.required' |
+															translate }}</small>
+													</div>
+													<!--
+														<div class="">
+														<input class="form-control d-none" id="start_" name="start"
+															matInput
+															placeholder="{{'personalinfo.Birth Date' | translate }}"
+															readonly [matDatepicker]="pickerOnset"
+															(click)="pickerOnset.open()"
+															[(ngModel)]="modalData?.event.start">
+														<input readonly class="form-control d-inline"
+															(click)="pickerOnset.open()"
+															style="background-color: #fff !important;"
+															[placeholder]="(modalData?.event.start!=null) ? (modalData?.event.start | date: 'dd MMM y': '' : translate.currentLang) : getLiteral('personalinfo.Birth Date')">
+
+														<mat-datepicker-toggle matSuffix [for]="pickerOnset"
+															class="d-none">
+														</mat-datepicker-toggle>
+														<mat-datepicker startView="multi-year"
+															(daySelected)="closeDatePickerStart($event, pickerOnset)"
+															touchUi="true" #pickerOnset></mat-datepicker>
+													</div>
+													-->
+												</div>
+											</div>
+											<div class="form-group ">
+												<label>{{'seizures.State' | translate }}</label>
+												<div class="d-block">
+													<div class="form-check form-check-inline">
+														<input class="form-check-input" type="radio"
+															formControlName="state" value="asleep">
+														<span class="form-check-label"
+															style="text-transform: inherit;">{{'seizures.Patient was
+															asleep' | translate }}</span>
+													</div>
+													<div class="form-check form-check-inline">
+														<input class="form-check-input" type="radio"
+															formControlName="state" value="awake">
+														<span class="form-check-label"
+															style="text-transform: inherit;">{{'seizures.Patient was
+															awake' | translate }}</span>
+													</div>
+												</div>
+											</div>
+
+
+											<div class="">
+												<div class="form-group">
+													<label>{{'generics.notes' | translate }}</label>
+													<textarea maxlength="150" name="notes" formControlName="notes"
+														placeholder="{{'seizures.Write down any details' | translate }}"
+														class="autoajustable form-control"></textarea>
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</form>
+							</div>
+							<div class="col-md-12 center-elements">
+								<button type="button" class="btn btn-dark" (click)="saveData();">{{'generics.SaveAndClose' |
+									translate }}</button>
+							</div>
+						</div>
+						<div class="mt-4 pb-0 card-footer col-md-12">
+							<div class="center-elements mt-2">
+								<span>
+									<label class="btn btn-sm btn-dark mb-0" *ngIf="!importing">
+										<input *ngIf="!isMobile" id="file" type="file" style="display:none;" accept=".json"
+											(change)="onImport($event)" />
+										<input *ngIf="isMobile" id="file" type="file" style="display:none;"
+										(change)="onImport($event)" />
+									{{'seizures.Import from seizure tracker' | translate }}
+									</label>
+									<label *ngIf="importing" class="text-center">
+										<i class="fa fa-spinner fa-spin fa-fw"></i>
+										{{'generics.Please wait' | translate }}
+									</label>
+									<a *ngIf="!importing" (click)="showHelpSeizureTrackerPopup(contentInfoSeizureTracker);"
+										class="d-block primary" title="{{'seizures.I need help' | translate }}">
+										{{'seizures.I need help' | translate }}
+									</a>
+								</span>
+							</div>
+						</div>
+					</div>
+					<div *ngIf="step=='1'">
+						<p><button class="btn btn-primary" (click)="goto('0');">{{'generics.Back' | translate
+								}}</button></p>
+						<div class="table-responsive">
+							<table class="table mb-0 table-wrapper-scroll-y my-custom-scrollbar bg-white"
+								aria-labelledby="HPO">
+								<thead>
+									<tr>
+										<th>{{'seizures.Seizure type' | translate }}</th>
+										<th>{{'seizures.Duration' | translate }}</th>
+										<th>{{'generics.Date' | translate }}</th>
+										<th>{{'seizures.State' | translate }}</th>
+										<th>{{'generics.Options' | translate }}</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let event of events ; let i = index">
+										<td>
+											<select [(ngModel)]="event.type" disabled>
+												<option value="Unknown">{{'seizures.Unknown' | translate }}</option>
+												<option value="Simple Focal">{{'seizures.Simple Focal' | translate }}
+												</option>
+												<option value="Complex Focal">{{'seizures.Complex Focal' | translate }}
+												</option>
+												<option value="Secondarily Generalized">{{'seizures.Secondarily
+													Generalized' | translate }}</option>
+												<option value="Tonic">{{'seizures.Tonic' | translate }}</option>
+												<option value="Clonic">{{'seizures.Clonic' | translate }}</option>
+												<option value="Tonic–clonic">{{'seizures.Tonic–clonic' | translate }}
+												</option>
+												<option value="Myoclonic">{{'seizures.Myoclonic' | translate }}</option>
+												<option value="Myoclonic Cluster">{{'seizures.Myoclonic Cluster' |
+													translate }}</option>
+												<option value="Atonic">{{'seizures.Atonic' | translate }}</option>
+												<option value="Absence">{{'seizures.Absence' | translate }}</option>
+												<option value="Atypical Absence">{{'seizures.Atypical Absence' |
+													translate }}</option>
+												<option value="Infantile Spasms">{{'seizures.Infantile Spasms' |
+													translate }}</option>
+												<option value="Status">{{'seizures.Status' | translate }}</option>
+												<option value="Other">{{'seizures.Other' | translate }}</option>
+											</select>
+										</td>
+										<td>
+											{{event.duracion}}
+										</td>
+										<td>
+											{{event.start |date}}
+										</td>
+										<td>
+											<span *ngIf="event.state=='asleep'">{{'seizures.Patient was
+												asleep' | translate }}</span>
+											<span *ngIf="event.state=='awake'">{{'seizures.Patient was awake' | translate }}</span>
+										</td>
+										<td>
+											<a class="danger" (click)="deleteSeizure(event);"
+												href="javascript:void(0)"><i class="ft-trash"></i></a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div *ngIf="step=='2'">
+						<p><button class="btn btn-primary" (click)="goto('0');">{{'generics.Back' | translate
+								}}</button></p>
+
+						<div>
+							<ngb-accordion [closeOthers]="true">
+								<ngb-panel id="init">
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Simple Focal' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOPARCIALSIMPLE' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Complex Focal' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOPARCIALCOMPLEJA' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Secondarily Generalized' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOGENERALIZADA' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Tonic' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOTONICA' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Clonic' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOCLONICA' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Tonic–clonic' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOTONICOCLONICAS' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Myoclonic' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOMIOCLONIAS' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Myoclonic Cluster' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOCLUSTERMIOCLONICA' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Atonic' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOATONICAS' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Absence' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOAUSENCIAS' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Atypical Absence' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOAUSENCIAATIPICA' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Infantile Spasms' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOESPASMOS' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Status' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFOESTATUS' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+								<ngb-panel>
+									<ng-template ngbPanelTitle>
+										<h5>{{'seizures.Other' | translate }}</h5>
+									</ng-template>
+									<ng-template ngbPanelContent>
+										<div class="card-block">
+											<div class="col-md-12">
+												{{'seizures.INFODESCONOCIDA' | translate }}
+											</div>
+										</div>
+									</ng-template>
+								</ngb-panel>
+							</ngb-accordion>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<ng-template #contentInfoSeizureTracker let-c="close" let-d="dismiss" appendTo="body">
+	<div class="modal-header" id="idHeader">
+		{{'seizures.How do I export the data' | translate }}
+		<button type="button" class="close" aria-label="Close" (click)="closeModal();">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body content-wrapper p-2" id="idBody">
+		<img class="logo-img w-100" src='assets/img/elements/tracker.jpg' />
+	</div>
+</ng-template>

@@ -1,0 +1,28 @@
+.mat-form-field {
+  width: 100%;
+}
+
+.small-width {
+  max-width: 30rem !important;
+}
+
+.max-width {
+  max-width: 900px !important;
+}
+
+::ng-deep .cdk-overlay-container {
+  z-index: 9999 !important;
+}
+
+::ng-deep .cal-event-action{
+  color: #fff !important;
+}
+
+::ng-deep ngb-accordion [role="tabpanel"] {
+  padding: 0em !important;
+}
+
+::ng-deep .collapse > .card-body{
+  padding: 0em !important;
+}
+

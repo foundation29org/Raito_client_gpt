@@ -1,0 +1,29 @@
+<!-- Navbar (Header) Starts -->
+<nav class="navbar navbar-expand-lg navbar-light header-navbar navbar-sticky" style="margin-left: 0px;width: 100% !important;">
+    <div class="container-fluid">
+      <div>
+          <span class="navbar-header-logos">
+            <img *ngIf="isHomePage" class="logo-img" src='assets/img/logo.png' (click)="lauchEvent('Logo');"/>
+            <img *ngIf="!isHomePage" class="logo-img" src='assets/img/logo.png' routerLink="/." (click)="lauchEvent('Logo');" style="cursor: pointer;"/>
+            <span class="font-large-2 text-bold-600" style="position: absolute;top: 14%;">Raito</span>
+          </span>
+      </div>
+        <div class="navbar-container pl-0">
+            <div  id="navbarSupportedContent">
+                <ul class="navbar-nav m-r-0">
+                  <li class="nav-item mr-2 d-inline" ngbDropdown display="dynamic" placement="bottom-right">
+                    <a class="position-relative colorlink" id="dropdownLang" ngbDropdownToggle>
+                        <u>{{currentLang}}</u>
+                    </a>
+                    <div ngbDropdownMenu aria-labelledby="dropdownLang" class="dropdownLang">
+                        <a *ngFor="let lang of langs" class="dropdown-item py-1 lang" href="javascript:;" (click)="ChangeLanguage(lang.code)">
+                            <span>{{lang.name}}</span>
+                        </a>
+                    </div>
+                </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- Navbar (Header) Ends -->

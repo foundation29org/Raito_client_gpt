@@ -1,0 +1,313 @@
+<!--User Profile Starts-->
+<section id="basic-form-layouts">
+	<div class="row">
+      <div class="col-sm-12">
+          <div class="content-header">{{'clinicalinfo.Medication' | translate }}</div>
+      </div>
+  </div>
+	<div class="row">
+	<div class="col-md-6">
+	  <div class="form-group">
+	    <label for="lang">{{'groups.Groups' | translate }}</label>
+	    <select id="lang" name="lang" class="form-control"  [(ngModel)]="groupSelected" #groupselected (ngModelChange)="onChangeGroup(groupSelected)">
+	      <option *ngFor="let group of groups" [ngValue]="group"> {{group.name}}</option>
+	    </select>
+	  </div>
+	</div>
+	</div>
+	<div class="center-elements" *ngIf="loading">
+		<div><p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p></div>
+	</div>
+	<div class="row" *ngIf="!loading && groupSelected._id">
+
+		<div class="col-md-12">
+			<div class="center-elements" *ngIf="!sending">
+				<button type="button" class="btn btn-raised btn-raised btn-primary" (click)="onSubmit()"><i class="fa fa-check-square-o"></i> {{'generics.Save' | translate }} all the changes</button>
+			</div>
+		</div>
+		<h4 class="form-section">DRUGS</h4>
+		<div class="col-md-12">
+			<div class="card">
+				<div class="card-header">
+					{{'generics.fieldsRequired' | translate }}
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="px-3">
+								<div *ngIf="medications.drugs.length > 0 " class="table-responsive">
+									<table class="table text-center">
+										<thead>
+											<tr>
+												<th>{{'generics.Name' | translate }}</th>
+												<th>{{'generics.Delete' | translate }}</th>
+												<th>{{'generics.Edit' | translate }}</th>
+												<th>{{'generics.Status' | translate }}</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr *ngFor="let drug of medications.drugs ; let i = index">
+												<td>{{drug.name}}</td>
+												<td>
+													<a class="danger" data-original-title="" title="" (click)="confirmDeleteDrug(i)">
+														<i class="ft-x"></i>
+													</a>
+												</td>
+												<td>
+													<a class="primary" data-original-title="" title="" (click)="editDrug(i)">
+														<i class="ft-edit"></i>
+													</a>
+												</td>
+												<td>
+													<span *ngIf="drug.new" class="badge badge-pill badge-danger mr-1 mt-1">{{'generics.Not saved' | translate }}</span>
+													<span *ngIf="!drug.new" class="badge badge-pill badge-success mr-1 mt-1">{{'generics.Saved' | translate }}</span>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<div class="center-elements" *ngIf="!sending">
+										<button type="button" class="btn btn-raised btn-raised btn-warning" (click)="deleteAllDrugs()">Eliminar todos los fármacos</button>
+									</div>
+								</div>
+								<div *ngIf="medications.drugs.length == 0 ">
+									No drugs, please add new.
+								</div>
+								<!--<div class="center-elements" *ngIf="!sending">
+									<button type="button" class="btn btn-raised btn-raised btn-primary" (click)="onSubmit()"><i class="fa fa-check-square-o"></i> {{'generics.Save' | translate }}</button>
+								</div>-->
+								<div class="col-md-12 center-elements" *ngIf="sending">
+									<div><p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p></div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="px-3">
+								<form class="form" (ngSubmit)="onSubmit()" #f="ngForm" *ngIf="medications">
+									<div class="form-body">
+										<h4 class="form-section"><i class="ft-user danger"></i> <span *ngIf="!editing">New drug</span> <span *ngIf="editing">Update drug</span></h4>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label for="drug">* {{'personalinfo.First Name' | translate }}</label>
+													<input type="text" id="drug" class="form-control"  name="drug" [(ngModel)]="drugName" required drug #drug="ngModel">
+													<small class="form-text text-muted danger" *ngIf="!drug.valid && (drug.dirty || drug.touched)">{{'generics.required' | translate }}</small>
+												</div>
+												<div *ngFor="let translation of translations; let j = index" class="form-group">
+													<label>* {{translation.code}}</label>
+													<input id="translation.name" type="text" name="translation.name{{j}}" class="form-control" [(ngModel)]="translation.name" required>
+												</div>
+												<div class="form-group">
+													<label>Side Effects</label> {{drugsSideEffects|json}}
+		                      <mat-select class="form-control" id="drugsSideEffects" name="drugsSideEffects" [formControl]="drugsSideEffectsform" [(ngModel)]="drugsSideEffects" multiple>
+		                        <mat-option *ngFor="let eachsideEffect of medications.sideEffects ; let i = index" [value]="eachsideEffect.name">{{eachsideEffect.name}}</mat-option>
+		                      </mat-select>
+												</div>
+												<div class="form-group" *ngIf="!sending">
+														<div *ngIf="f.valid;then formValid else formError"></div>
+														<ng-template #formValid>
+															<button *ngIf="!editing" class="btn btn-raised btn-raised btn-primary" type="button" (click)="addDrug()"><i class="fa fa-check-square-o"></i> Add drug</button>
+															<button *ngIf="editing" class="btn btn-raised btn-raised btn-primary" type="button" (click)="updateDrug()"><i class="fa fa-check-square-o"></i> Update drug</button>
+														</ng-template>
+														<ng-template #formError>
+															<button class="btn btn-raised btn-raised btn-primary" type="button" (click)="submitInvalidForm()"><i class="fa fa-check-square-o"></i> Add drug</button>
+														</ng-template>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-12 center-elements" *ngIf="sending">
+										<div><p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p></div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<h4 class="form-section">Side Effects</h4>
+		<div class="col-md-12">
+			<div class="card">
+				<div class="card-header">
+					{{'generics.fieldsRequired' | translate }}
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="px-3">
+								<div *ngIf="medications.sideEffects.length > 0 " class="table-responsive">
+									<table class="table text-center">
+										<thead>
+											<tr>
+												<th>{{'generics.Name' | translate }}</th>
+												<th>{{'generics.Delete' | translate }}</th>
+												<th>{{'generics.Edit' | translate }}</th>
+												<th>{{'generics.Status' | translate }}</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr *ngFor="let sideEffect of medications.sideEffects ; let i = index">
+												<td>{{sideEffect.name}}</td>
+												<td>
+													<a class="danger" data-original-title="" title="" (click)="confirmDeleteSideEffect(i)">
+														<i class="ft-x"></i>
+													</a>
+												</td>
+												<td>
+													<a class="primary" data-original-title="" title="" (click)="editSideEffect(i)">
+														<i class="ft-edit"></i>
+													</a>
+												</td>
+												<td>
+													<span *ngIf="sideEffect.new" class="badge badge-pill badge-danger mr-1 mt-1">{{'generics.Not saved' | translate }}</span>
+													<span *ngIf="!sideEffect.new" class="badge badge-pill badge-success mr-1 mt-1">{{'generics.Saved' | translate }}</span>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<div class="center-elements" *ngIf="!sending">
+										<button type="button" class="btn btn-raised btn-raised btn-warning" (click)="deleteAllSideEffects()">Eliminar todos los sideEffect</button>
+									</div>
+								</div>
+								<div *ngIf="medications.sideEffects.length == 0 ">
+									No sideEffects, please add new.
+								</div>
+								<div class="col-md-12 center-elements" *ngIf="sending">
+									<div><p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p></div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="px-3">
+								<form class="form" (ngSubmit)="onSubmit()" #fsideEffect="ngForm" *ngIf="medications">
+									<div class="form-body">
+										<h4 class="form-section"><i class="ft-user danger"></i> <span *ngIf="!editingSe">New sideEffect</span> <span *ngIf="editingSe">Update sideEffect</span></h4>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label for="sideEffect">* {{'personalinfo.First Name' | translate }}</label>
+													<input type="text" id="sideEffect" class="form-control"  name="sideEffect" [(ngModel)]="sideEffectName" required sideEffect #sideEffect="ngModel">
+													<small class="form-text text-muted danger" *ngIf="!sideEffect.valid && (sideEffect.dirty || sideEffect.touched)">{{'generics.required' | translate }}</small>
+												</div>
+												<div *ngFor="let translation of translationssideEffect; let j = index" class="form-group">
+													<label>* {{translation.code}}</label>
+													<input id="translation.name" type="text" name="translation.name{{j}}" class="form-control" [(ngModel)]="translation.name" required>
+												</div>
+												<div class="form-group" *ngIf="!sending">
+														<div *ngIf="fsideEffect.valid;then formValid else formError"></div>
+														<ng-template #formValid>
+															<button *ngIf="!editingSe" class="btn btn-raised btn-raised btn-primary" type="button" (click)="addSideEffect()"><i class="fa fa-check-square-o"></i> Add sideEffect</button>
+															<button *ngIf="editingSe" class="btn btn-raised btn-raised btn-primary" type="button" (click)="updateSideEffect()"><i class="fa fa-check-square-o"></i> Update sideEffect</button>
+														</ng-template>
+														<ng-template #formError>
+															<button class="btn btn-raised btn-raised btn-primary" type="button" (click)="submitInvalidFormSideEffects()"><i class="fa fa-check-square-o"></i> Add sideEffect</button>
+														</ng-template>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-12 center-elements" *ngIf="sending">
+										<div><p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p></div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<h4 class="form-section">Adverse Effects</h4>
+		<div class="col-md-12">
+			<div class="card">
+				<div class="card-header">
+					{{'generics.fieldsRequired' | translate }}
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="px-3">
+								<div *ngIf="medications.adverseEffects.length > 0 " class="table-responsive">
+									<table class="table text-center">
+										<thead>
+											<tr>
+												<th>{{'generics.Name' | translate }}</th>
+												<th>{{'generics.Delete' | translate }}</th>
+												<th>{{'generics.Edit' | translate }}</th>
+												<th>{{'generics.Status' | translate }}</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr *ngFor="let adverseEffect of medications.adverseEffects ; let i = index">
+												<td>{{adverseEffect.name}}</td>
+												<td>
+													<a class="danger" data-original-title="" title="" (click)="confirmDeleteAdverseEffect(i)">
+														<i class="ft-x"></i>
+													</a>
+												</td>
+												<td>
+													<a class="primary" data-original-title="" title="" (click)="editAdverseEffect(i)">
+														<i class="ft-edit"></i>
+													</a>
+												</td>
+												<td>
+													<span *ngIf="adverseEffect.new" class="badge badge-pill badge-danger mr-1 mt-1">{{'generics.Not saved' | translate }}</span>
+													<span *ngIf="!adverseEffect.new" class="badge badge-pill badge-success mr-1 mt-1">{{'generics.Saved' | translate }}</span>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<div class="center-elements" *ngIf="!sending">
+										<button type="button" class="btn btn-raised btn-raised btn-warning" (click)="deleteAllAdverseEffects()">Eliminar todos los efectos adversos</button>
+									</div>
+								</div>
+								<div *ngIf="medications.adverseEffects.length == 0 ">
+									No adverseEffects, please add new.
+								</div>
+								<div class="col-md-12 center-elements" *ngIf="sending">
+									<div><p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p></div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="px-3">
+								<form class="form" (ngSubmit)="onSubmit()" #fadverseEffect="ngForm" *ngIf="medications">
+									<div class="form-body">
+										<h4 class="form-section"><i class="ft-user danger"></i> <span *ngIf="!editingAe">New adverseEffect</span> <span *ngIf="editingAe">Update adverseEffect</span></h4>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label for="adverseEffect">* {{'personalinfo.First Name' | translate }}</label>
+													<input type="text" id="adverseEffect" class="form-control"  name="adverseEffect" [(ngModel)]="adverseEffectName" required adverseEffect #adverseEffect="ngModel">
+													<small class="form-text text-muted danger" *ngIf="!adverseEffect.valid && (adverseEffect.dirty || adverseEffect.touched)">{{'generics.required' | translate }}</small>
+												</div>
+												<div *ngFor="let translation of translationsadverseEffect; let j = index" class="form-group">
+													<label>* {{translation.code}}</label>
+													<input id="translation.name" type="text" name="translation.name{{j}}" class="form-control" [(ngModel)]="translation.name" required>
+												</div>
+												<div class="form-group" *ngIf="!sending">
+														<div *ngIf="fadverseEffect.valid;then formValid else formError"></div>
+														<ng-template #formValid>
+															<button *ngIf="!editingAe" class="btn btn-raised btn-raised btn-primary" type="button" (click)="addAdverseEffect()"><i class="fa fa-check-square-o"></i> Add adverseEffect</button>
+															<button *ngIf="editingAe" class="btn btn-raised btn-raised btn-primary" type="button" (click)="updateAdverseEffect()"><i class="fa fa-check-square-o"></i> Update adverseEffect</button>
+														</ng-template>
+														<ng-template #formError>
+															<button class="btn btn-raised btn-raised btn-primary" type="button" (click)="submitInvalidFormAdverseEffects()"><i class="fa fa-check-square-o"></i> Add adverseEffect</button>
+														</ng-template>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-12 center-elements" *ngIf="sending">
+										<div><p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p></div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+  </div>
+</section>

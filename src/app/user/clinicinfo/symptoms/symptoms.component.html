@@ -1,0 +1,226 @@
+<div class="h-100">
+    <div class="card card-block mx-auto" style="max-width: 30rem !important;">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-sm-12 align-items-center">
+                    <div>
+                        <h2 class="content-header mt-0 mb-2">{{'menu.Phenotype' | translate }}
+                        </h2>
+                        <span class="text-muted d-block mt-1" style="font-weight: normal;line-height: normal;">{{'symptomssection.subtitleheader' | translate }}</span>
+                        <div class="pl-0 pr-0">
+                            <ng-template #rt let-r="result" let-t="term">
+                              <strong title="{{r.name}}">{{ r.name}}</strong>
+                              <span *ngIf="r.desc!=null" class="d-block" title="{{r.desc}}">{{ (r.desc.length>140)? (r.desc |
+                                slice:0:140)+'...':(r.desc) }}</span>
+                            </ng-template>
+                            <div class="mt-2" style="padding-bottom: 1rem !important;">
+                              <span class="d-inline mr-2"><i class="fas fa-search"></i></span>
+                              <input #input type="text"
+                                #inputManualSymptoms class="form-control ml-1 inputSearch2 d-inline data-hj-allow" [(ngModel)]="modelTemp"
+                                [ngbTypeahead]="searchSymptoms" [resultTemplate]="rt" [inputFormatter]="formatter1" (paste)="searchSymptoms"
+                                placeholder="{{'symptomssection.manualinput' | translate }}"
+                                (selectItem)="selected($event)" (focusout)="focusOutFunctionSymptom()"/>
+                                <em *ngIf="callListOfSymptoms" class="fa fa-spinner fa-spin fa-2x fa-fw secondary spinner-absolute"></em>
+                                <span *ngIf="nothingFoundSymptoms">
+                                  <span *ngIf="(modelTemp).trim().length>3">
+                                    <span class="d-block">{{'dashboardpatient.Nothing found. Try again.' | translate }}</span>
+                                  </span>
+                                </span>
+                                <span class="d-block text-muted" style="margin-left: 1.7rem !important;">{{'symptomssection.samplemanualinput' | translate }}</span>
+                            </div>
+                          </div>
+                          <div *ngIf="phenotype.data.length>0">
+                            <div class="row ">
+                              <div class="col-md-12">
+                                <span class="mr-2 mb-1 float-right icons-opt-symptoms">
+                                  <em class="mt-1 fas fa-copy grey mr-2" title="{{'land.Copy symptoms' | translate }}"
+                                  (click)="copySymptoms()" style="cursor: pointer;"></em>
+                                </span>
+                              </div>
+                            </div>
+                            
+                              <div class="">
+                                <div *ngFor="let hpo of phenotype.data ; let i = index" class="border-top">
+                                  <div class="mt-2 mb-2">
+                                    <span class="float-right ml-1">
+                                      <button (click)="showMoreInfoSymptomPopup(i, contentInfoSymptomNcr);"
+                                        class="btn-outline-secondary btn btn-sm mr-1 mb-0 btn-fab round"
+                                        title="{{'generics.More information' | translate }} ({{hpo.id}})">
+                                        <em class="fa fa-info w-13"></em>
+                                      </button>
+                                      <button (click)="deleteSymptom(hpo, i)"
+                                        class="btn btn-sm mr-1 mb-0 btn-fab round btn-outline-danger"
+                                        href="javascript:void(0)"
+                                        title="{{'generics.Delete' | translate }}">
+                                        <em class="fa fa-trash w-13"></em>
+                                      </button>
+                                    </span>
+                                    <span>
+                                      <span class="ml-1 custom-bold pointer" (click)="showMoreInfoSymptomPopup(i, contentInfoSymptomNcr);">{{hpo.name}}</span>
+                                      
+                                        <div class="ml-1" style="line-height: 0.5em !important;">
+                                          <input class="form-control d-none" id="onset_{{i}}" name="onset{{i}}" matInput
+                                              placeholder="{{'personalinfo.Birth Date' | translate }}" readonly
+                                              [matDatepicker]="pickerOnset" [max]="today" (click)="pickerOnset.open()"
+                                              [(ngModel)]="hpo.onset">
+                                          <input readonly class="form-control d-none" (click)="pickerOnset.open()">
+                                          <span class="text-muted">
+                                            <span *ngIf="!hpo.onset">
+                                              {{'phenotype.Onset' | translate }}
+                                            </span>
+                                            <span *ngIf="hpo.onset">
+                                              {{hpo.onset | date: 'y': '' : translate.currentLang}}
+                                            </span>
+                                            
+                                            <mat-datepicker-toggle matSuffix [for]="pickerOnset" class="d-inline" style="line-height: 0.5em !important;">
+                                            </mat-datepicker-toggle>
+                                            <mat-datepicker startView="multi-year"
+                                                (yearSelected)="closeDatePicker($event, i, pickerOnset)" touchUi="true"
+                                                #pickerOnset></mat-datepicker>
+                                          </span>
+                                          
+                                      </div>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                          </div>
+                          <!--<div *ngIf="phenotype.data.length==0">
+                            <p>{{'charts.Noseizures' | translate }}</p>
+                          </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #contentInfoSymptomNcr let-c="close" let-d="dismiss" appendTo="body">
+    <div class="modal-header" id="idHeader">
+      <div class="content-header text-left">
+        <h4>{{phenotype.data[selectedInfoSymptomIndex].name }} - {{phenotype.data[selectedInfoSymptomIndex].id }}</h4>
+      </div>
+      <button type="button" class="close" aria-label="Close" (click)="closeModal();">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body content-wrapper p-2" id="idBody">
+      <div class="row col-md-12" class="p-2">
+        <span
+          *ngIf="phenotype.data[selectedInfoSymptomIndex].def!=null || phenotype.data[selectedInfoSymptomIndex].comment!=''">
+          <h5><strong>{{'generics.Description' | translate }}</strong></h5>
+          <span
+            *ngIf="phenotype.data[selectedInfoSymptomIndex].def!=null">{{phenotype.data[selectedInfoSymptomIndex].def}}
+          </span>
+          <span
+            *ngIf="phenotype.data[selectedInfoSymptomIndex].comment!=''">{{phenotype.data[selectedInfoSymptomIndex].comment}}</span>
+        </span>
+        <span
+          *ngIf="phenotype.data[selectedInfoSymptomIndex].def==null && phenotype.data[selectedInfoSymptomIndex].comment==''">
+          <h5><strong>{{'generics.Description' | translate }}</strong></h5>
+          <span> {{'symptomssection.No description' | translate }} </span>
+        </span>
+      </div>
+  
+      <div *ngIf="phenotype.data[selectedInfoSymptomIndex].synonyms!=undefined" class="p-2">
+        <h5><strong>{{'generics.Synonyms' | translate }}</strong></h5>
+        <span *ngIf="phenotype.data[selectedInfoSymptomIndex].synonyms.length>0">
+          <p *ngFor="let synonym of phenotype.data[selectedInfoSymptomIndex].synonyms ; let j = index"
+            [ngClass]="(j==phenotype.data[selectedInfoSymptomIndex].synonyms.length-1)?'mb-0':''">
+            <span>{{j+1}}. </span> <span *ngIf="synonym.label">{{synonym.label}}</span> <span
+              *ngIf="!synonym.label">{{synonym}}</span>
+          </p>
+        </span>
+        <span *ngIf="phenotype.data[selectedInfoSymptomIndex].synonyms.length==0">
+          {{'symptomssection.No synonyms' | translate }}
+        </span>
+      </div>
+      <div class="p-2">
+        <h5><strong>{{'land.Where did we get this symptom from' | translate }}</strong></h5>
+        <span *ngIf="phenotype.data[selectedInfoSymptomIndex].inputType=='manual'">
+          {{'land.The symptom was added manually' | translate }}
+        </span>
+        <span *ngIf="phenotype.data[selectedInfoSymptomIndex].inputType=='ncr'">
+          <span *ngFor="let text of phenotype.data[selectedInfoSymptomIndex].text ; let j = index">
+            <span *ngIf="(text.source && j== 0) && langToExtract==lang" class="mb-0">"{{text.source}}"</span>
+            <span *ngIf="!text.source && j== 0 || langToExtract!=lang" class="mb-0">"{{text.text |
+              slice:(text.positions[0]-40):(text.positions[0]-1)}} <b>{{text.text |
+                slice:(text.positions[0]):(text.positions[1])}}</b> {{text.text |
+              slice:(text.positions[1]+1):(text.positions[1]+40)}}"</span>
+          </span>
+          <div class="mt-2">
+            <button *ngIf="!ncrResultView" type="button" class="btn btn-primary round mb-0"
+              (click)="showCompleteNcrResultView(phenotype.data[selectedInfoSymptomIndex], 'ncr')">{{'patdiagdashboard.Show
+              full text' | translate }}</button>
+            <button *ngIf="ncrResultView" type="button" class="btn btn-primary round mb-0"
+              (click)="showCompleteNcrResultView(null, 'ncr')">{{'patdiagdashboard.Hide full text' | translate }}</button>
+          </div>
+          <div *ngIf="ncrResultView">
+            <span class="animate-bottom" *ngIf="showButtonScroll" id="buttomScroll">
+              <button type="button" class="btn btn-primary round mb-0" (click)="goToTop()">Go top</button>
+            </span>
+            <div class="mt-2 text-center">
+              <a id="initpos"></a>
+              <div style="text-align: justify;" class="textExtractedNcr" [innerHTML]=resultTextNcrCopy></div>
+            </div>
+          </div>
+        </span>
+        <span *ngIf="phenotype.data[selectedInfoSymptomIndex].inputType=='ncrOld'">
+          <div class="mt-2">
+            <button *ngIf="!ncrResultView" type="button" class="btn btn-primary round mb-0"
+              (click)="showCompleteNcrOldResultView(phenotype.data[selectedInfoSymptomIndex])">{{'patdiagdashboard.Show
+              full text' | translate }}</button>
+            <button *ngIf="ncrResultView" type="button" class="btn btn-primary round mb-0"
+              (click)="showCompleteNcrOldResultView(null)">{{'patdiagdashboard.Hide full text' | translate }}</button>
+          </div>
+          <div *ngIf="ncrResultView">
+            <span class="animate-bottom" *ngIf="showButtonScroll" id="buttomScroll">
+              <button type="button" class="btn btn-primary round mb-0" (click)="goToTop()">Go top</button>
+            </span>
+            <div class="mt-2 text-center">
+              <a id="initpos"></a>
+              <div style="text-align: justify;" class="textExtractedNcr" [innerHTML]=resultTextNcrCopy></div>
+            </div>
+          </div>
+        </span>
+        <span *ngIf="phenotype.data[selectedInfoSymptomIndex].inputType=='textAnalytics'">
+          <span *ngFor="let text of phenotype.data[selectedInfoSymptomIndex].text ; let j = index">
+            <span *ngIf="(text.source && j== 0) && text.language!=lang" class="mb-0">"{{text.source | 
+              slice:(text.positions[0]-40):(text.positions[0]-1)}} {{text.source |
+                slice:(text.positions[0]):(text.positions[1])}} {{text.source |
+              slice:(text.positions[1]+1):(text.positions[1]+40)}}"
+  
+            </span>
+            <span *ngIf="!text.source && j== 0 || text.language==lang" class="mb-0">"{{text.text |
+              slice:(text.positions[0]-40):(text.positions[0]-1)}} <b>{{text.text |
+                slice:(text.positions[0]):(text.positions[1])}}</b> {{text.text |
+              slice:(text.positions[1]+1):(text.positions[1]+40)}}"
+            </span>
+          </span>
+          <div class="mt-2">
+            <button *ngIf="!ncrResultView" type="button" class="btn btn-primary round mb-0"
+              (click)="showCompleteNcrResultView(phenotype.data[selectedInfoSymptomIndex], 'textAnalytics')">{{'patdiagdashboard.Show
+              full text' | translate }}</button>
+            <button *ngIf="ncrResultView" type="button" class="btn btn-primary round mb-0"
+              (click)="showCompleteNcrResultView(null, 'textAnalytics')">{{'patdiagdashboard.Hide full text' | translate }}</button>
+          </div>
+          <div *ngIf="ncrResultView">
+            <span class="animate-bottom" *ngIf="showButtonScroll" id="buttomScroll">
+              <button type="button" class="btn btn-primary round mb-0" (click)="goToTop()">Go top</button>
+            </span>
+            <div class="mt-2 text-center">
+              <a id="initpos"></a>
+              <div style="text-align: justify;" class="textExtractedNcr" [innerHTML]=resultTextNcrCopy></div>
+            </div>
+          </div>
+        </span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span>{{'land.See more information about the symptom' | translate }} <a
+          href="https://hpo.jax.org/app/browse/term/{{phenotype.data[selectedInfoSymptomIndex].id}}" target="_blank"
+          title=" {{phenotype.data[selectedInfoSymptomIndex].name}} ({{phenotype.data[selectedInfoSymptomIndex].id}}):">{{'land.here'
+          | translate }}
+          <i class="ft-external-link"></i></a></span>
+    </div>
+  </ng-template>

@@ -1,0 +1,15 @@
+
+    export const environment = {
+    production: false,
+    api: undefined,  //Server URL: 'http://<direction>:<port>'
+    blobAccessToken:{sasToken: null,blobAccountUrl: 'https://blobraitogpt.blob.core.windows.net/'},
+    ncrService:undefined, // NCR service URL
+    f29bio:undefined, // f29Bio sevice URL 
+    f29api: undefined, // f29api service URL
+    hotjarSiteId:undefined, // Horjar ID
+    urlDxv2:undefined, // url dx29 v2 
+    tokenVeriff:undefined, // veriff.com token
+    privateVeriff:undefined, // veriff.com Private key
+    web3authClient: undefined, // web3authClientProvider
+    urlOpenRaito:undefined // url openraito 
+    };

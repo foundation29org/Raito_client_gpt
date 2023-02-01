@@ -1,0 +1,143 @@
+<div class="h-100">
+	<div class="card card-block mx-auto"  [ngClass]="(step!='1')?'small-width':'max-width'">
+		<div class="card-body">
+			<div class="row">
+				<div class="col-12 col-sm-12 align-items-center">
+					<div *ngIf="step=='0'">
+						<div class="row ">
+							<div class="col-md-12">
+								<button *ngIf="events.length>0" class="ml-1 float-right btn btn-primary btn-sm" (click)="openStats()">
+									<i class="icon-folder-alt font-medium-3"></i>
+								</button>
+								<div class="row">
+									<h2 class="content-header mt-0 mb-2">Nuevo evento</h2>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<form action="#" class="form form-horizontal" [formGroup]="seizuresForm">
+									<div class="form-body">
+										<div class="">
+											<div class="">
+												<div class="form-group">
+													<label>Tipo</label>													
+													{{type}}
+													<select name="event-estructure-type" class="form-control"
+														formControlName="type"
+														[ngClass]="{ 'is-invalid': submitted && f.type.errors }"
+														(keyup)="refresh.next()">
+														<option [ngValue]="null" disabled selected>--Select one--</option>
+														<option value="allergy">Allergy</option>
+														<option value="disease">Disease</option>
+														<option value="drug">Drug</option>
+														<option value="symptom">Symptom</option>
+														<option value="other">Other</option>
+													</select>
+													<small class="form-text text-muted danger"
+														*ngIf="submitted && f.type.errors">{{'generics.required' |
+														translate }}</small>
+												</div>
+											</div>
+											<div class="">
+												<div class="form-group">
+													<label>Nombre</label>
+													<input type="text" class="col-5 form-control" id="numericos2"
+														formControlName="name"
+														[ngClass]="{ 'is-invalid': submitted && f.name.errors }"
+														name="numericos2">
+                                                    <small class="form-text text-muted danger"
+                                                    *ngIf="submitted && f.name.errors">{{'generics.required' |
+                                                    translate }}</small>
+												</div>
+											</div>
+											<div class="">
+												<div class="form-group">
+													<label class="mb-0">Date</label>
+													<div class="">
+														<mat-form-field class="mr-sm-24" fxFlex  >
+															<input matInput class="grey" readonly [matDatepicker]="picker"
+																		   autocomplete="off"
+																		   name="date" formControlName="date">
+															<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+															<mat-datepicker  [startAt]="date" #picker></mat-datepicker>
+														</mat-form-field>
+													</div>
+												</div>
+											</div>
+											<div class="">
+												<div class="form-group">
+													<label>{{'generics.notes' | translate }}</label>
+													<textarea maxlength="150" name="notes" formControlName="notes"
+														placeholder="{{'seizures.Write down any details' | translate }}"
+														class="autoajustable form-control"></textarea>
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</form>
+							</div>
+							<div class="col-md-12 center-elements">
+								<button type="button" class="btn btn-dark" (click)="saveData();">{{'generics.SaveAndClose' |
+									translate }}</button>
+							</div>
+						</div>
+					</div>
+					<div *ngIf="step=='1'">
+                        <h2 class="d-inline content-header mt-0 mb-2">{{'menu.Events' | translate }}</h2>
+						<p class="float-right"> <button class="btn btn-primary" (click)="goto('0');">New</button></p>
+						<div class="table-responsive" *ngIf="loadedEvents && events.length>0">
+							<table class="table mb-0 table-wrapper-scroll-y my-custom-scrollbar bg-white"
+								aria-labelledby="HPO">
+								<thead>
+									<tr>
+										<th>Tipo</th>
+										<th>Nombre</th>
+										<th>{{'generics.Date' | translate }}</th>
+										<th>Notas</th>
+										<th>{{'generics.Options' | translate }}</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let event of events ; let i = index">
+										<td>
+											<select [(ngModel)]="event.type" disabled>
+												<option value="allergy">Allergy</option>
+                                                <option value="disease">Disease</option>
+                                                <option value="drug">Drug</option>
+                                                <option value="symptom">Symptom</option>
+                                                <option value="other">other</option>
+											</select>
+										</td>
+										<td>
+											{{event.name}}
+										</td>
+										<td>
+											{{event.date |date}}
+										</td>
+										<td>
+											<span>{{event.notes}}</span>
+										</td>
+										<td>
+											<a class="danger" (click)="deleteSeizure(event);"
+												href="javascript:void(0)"><i class="ft-trash"></i></a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+                        <div *ngIf="loadedEvents && events.length==0">
+                            <p>{{'generics.NoData' | translate }}</p>
+                        </div>
+                        <div class="" *ngIf="!loadedEvents">
+                            <div class="center-elements">
+                                <div><p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p></div>
+                            </div>
+                        </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

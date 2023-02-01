@@ -1,0 +1,164 @@
+<!--Calendar Starts-->
+<section id="calendar">
+	<div class="row">
+		<div class="col-sm-12">
+			<button class="mt-3 btn btn-raised btn-primary float-right" (click)="addEvent(null)">
+				{{'appointments.Add appointment' | translate }}
+			</button>
+			<div class="content-header">{{'menu.Calendar' | translate }}</div>
+			<p class="content-sub-header">{{'appointments.subtitle' | translate }}</p>
+				
+		</div>
+	</div>
+	<div class="card">
+		<div class="card-body">
+			<div class="card-block">
+				<div class="d-flex flex-wrap justify-content-md-between mb-3 no-gutters">
+					<div class="col">
+						<div class="btn-group d-none d-sm-block">
+							<a class="btn btn-raised btn-primary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate">
+								{{'generics.Previous' | translate }}
+							</a>
+							<a class="btn btn-raised btn-danger" mwlCalendarToday [(viewDate)]="viewDate">
+								{{'appointments.Today' | translate }}
+							</a>
+							<a class="btn btn-raised btn-primary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate">
+								{{'generics.Next' | translate }}
+							</a>
+						</div>
+
+						<div class="btn-group d-block d-sm-none mb-2">
+							<a class="btn btn-raised btn-primary ft-chevron-left" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate">
+								<i class="icon icon-arrows-left"></i>
+							</a>
+							<a class="btn btn-raised btn-danger ft-bookmark" mwlCalendarToday [(viewDate)]="viewDate">
+								<i class="icon icon-arrows-sign-down"></i>
+							</a>
+							<a class="btn btn-raised btn-primary ft-chevron-right" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate">
+								<i class="icon icon-arrows-right"></i>
+							</a>
+						</div>
+						<div class="col text-center align-self-center">
+							<h6 class="text-uppercase mb-0">{{ viewDate | calendarDate:(view + 'ViewTitle'):locale }}</h6>
+						</div>
+					</div>
+					
+					<!--<div class="col text-right">
+						<div class="btn-group d-none d-sm-none d-md-none d-lg-block">
+							<a class="btn btn-raised btn-primary" (click)="view = 'month'" [class.active]="view === 'month'">
+								{{'appointments.Month' | translate }}
+							</a>
+							<a class="btn btn-raised btn-primary" (click)="view = 'week'" [class.active]="view === 'week'">
+								{{'appointments.Week' | translate }}
+							</a>
+							<a class="btn btn-raised btn-primary" (click)="view = 'day'" [class.active]="view === 'day'">
+								{{'appointments.Day' | translate }}
+							</a>
+						</div>
+
+						<div class="btn-group d-block d-sm-block d-md-block d-lg-none">
+							<a class="btn btn-raised btn-primary btn-icon-icon" (click)="view = 'month'" [class.active]="view === 'month'">
+								<i class="fa fa-th"></i>
+							</a>
+							<a class="btn btn-raised btn-primary btn-icon-icon" (click)="view = 'week'" [class.active]="view === 'week'">
+								<i class="fa fa-columns"></i>
+							</a>
+							<a class="btn btn-raised btn-primary btn-icon-icon" (click)="view = 'day'" [class.active]="view === 'day'">
+								<i class="fa fa-th-list"></i>
+							</a>
+						</div>
+
+					</div>-->
+				</div>
+				<div [ngSwitch]="view">
+					<mwl-calendar-month-view *ngSwitchCase="'month'" [locale]="locale" [viewDate]="viewDate" [events]="events" [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen"
+					 (dayClicked)="dayClicked($event.day)" (eventClicked)="handleEvent('Clicked', $event.event)" >
+					</mwl-calendar-month-view>
+					<!--<mwl-calendar-week-view *ngSwitchCase="'week'" [viewDate]="viewDate" [events]="events" [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)">
+					</mwl-calendar-week-view>
+					<mwl-calendar-day-view *ngSwitchCase="'day'" [viewDate]="viewDate" [events]="events" [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)">
+					</mwl-calendar-day-view>-->
+				</div>
+			</div>
+		</div>
+	</div>
+	<ng-template #modalContent let-close="close">
+		<div class="modal-header">
+			<h5 class="modal-title">
+				<span *ngIf="modalData.action=='Add new event'"> {{'appointments.Add new event' | translate }}</span>
+				<span *ngIf="modalData.action!='Add new event'"> {{'appointments.Edit this event' | translate }}</span>
+			</h5>
+			<button type="button" class="close" (click)="closeModal()">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			
+			<form action="#" class="form form-horizontal">
+				<div class="form-body">
+					<div class="row">
+						<div class="col-md-12 col-12">
+							<div class="form-group">
+								<label>{{'appointments.Event Title' | translate }}:</label>
+								<input type="text" name="event-title" class="form-control" [(ngModel)]="modalData.event.title" (keyup)="refresh.next()">
+							</div>
+						</div>
+						<!--<div class="col-md-2 col-12">
+							<div class="form-group">
+								<label>Color:</label>
+								<input type="color" name="primary-color" class="form-control" [(ngModel)]="modalData.event.color.primary" (change)="refresh.next()">
+							</div>
+						</div>-->
+					</div>
+					<div class="row">
+						<div class="col-md-12 col-12">
+							<div class="form-group">
+								<label class="mb-0 mt-2 d-block">{{'seizures.Starts At' | translate }}:</label>
+								<!--<mwl-demo-utils-date-time-picker class="row" name="starts-at" [(ngModel)]="modalData.event.start" (ngModelChange)="refresh.next();updateEnd(modalData)" placeholder="Not set">
+								</mwl-demo-utils-date-time-picker>-->
+								<span *ngIf="modalData.event.start">{{modalData.event.start|date:timeformat}}</span>
+								<input class="form-control w-75 d-none" name="start" matInput
+																	[matDatepicker]="picker" [(ngModel)]="modalData.event.start" required
+																	dateTime #dateTime="ngModel" (dateChange)="refresh.next();updateEnd(modalData)">
+																<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+																<mat-datepicker touchUi="true" #picker></mat-datepicker>
+																<small class="form-text text-muted danger"
+																	*ngIf="!dateTime.valid && (dateTime.dirty || dateTime.touched)">{{'generics.required'
+																	| translate }}</small>
+							</div>
+						</div>
+						<!--<div class="col-md-6 col-12">
+							<div class="form-group">
+								<label>Ends At:</label>
+								<mwl-demo-utils-date-time-picker name="ends-at" [(ngModel)]="modalData.event.end" (ngModelChange)="refresh.next()" placeholder="Not set">
+								</mwl-demo-utils-date-time-picker>
+							</div>
+						</div>-->
+					</div>
+					<div class="row">
+						<div class="col-md-12 col-12">
+							<div class="form-group">
+								<label>{{'generics.notes' | translate }}:</label>
+								<textarea maxlength="150" name="notes" class="autoajustable form-control" [(ngModel)]="modalData.event.notes"  name="notes"></textarea>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<div class="col-md-12 center-elements" *ngIf="modalData.action=='Add new event'">
+				<button type="button" class="btn btn-primary mr-1" (click)="clearData(modalData.event);">{{'appointments.Clean form' |
+					translate }}</button>
+				<button type="button" class="btn btn-dark ml-1" (click)="close();saveData(modalData.event);">{{'generics.SaveAndClose' |
+					translate }}</button>
+			</div>
+			<div class="col-md-12 center-elements" *ngIf="modalData.action!='Add new event'">
+				<button type="button" class="btn btn-primary mr-1" (click)="confirmDeleteSeizure(modalData.event);">{{'generics.Delete' |
+					translate }}</button>
+				<button type="button" class="btn btn-dark ml-1" (click)="close();saveData(modalData.event);">{{'generics.SaveAndClose' |
+					translate }}</button>
+			</div>
+		</div>
+	</ng-template>

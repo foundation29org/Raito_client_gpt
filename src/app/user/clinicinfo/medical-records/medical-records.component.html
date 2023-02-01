@@ -1,0 +1,611 @@
+<div class="h-100">
+    <div class="card card-block mx-auto" style="max-width: 30rem !important;">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-sm-12 align-items-center">
+                    <div *ngIf="step=='0'">
+                        <h2 class="content-header mt-0 mb-2">{{'menu.My documents' | translate }}</h2>
+                        <div>
+                            <span class="float-right">
+                                <a *ngIf="!importing" (click)="createDocument(contentDocument, 'general');"
+                                    class="text-bold-500 float-right btn btn-primary btn-sm font-small-3 danger"
+                                    title="">
+                                    +
+                                </a>
+                            </span>
+                            <div class="">
+                                <p class="text-bold-500 mt-0 mb-0">{{'menu.Clinical information' | translate }}</p>
+                                <p class="text-muted">{{'documents.medicalRecordsSubtitle' | translate }}</p>
+                            </div>
+                            <div class="center-elements">
+                                <!--<span class="mr-1"><button class="ml-2 btn btn-primary customHeight" (click)="newDoc();">
+                                    {{'reports.Create-paste a report' | translate }}</button></span>-->
+
+                            </div>
+                            <!--<span *ngIf="preparingFile">
+                                <small class="d-block">{{'generics.Preparing to upload' | translate }}</small>
+                                <i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i>
+                            </span>-->
+                            <span *ngIf="uploadingGenotype" class="center-elements"><i
+                                    class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></span>
+                            <div *ngIf="loadedGeno" class="mt-2 mb-2" id="Widget-line-chart">
+                                <!--<span *ngIf="otherGeneFiles.length==0" class="">
+                                    <p class="mt-0">{{'generics.No files have been uploaded' | translate }}</p>
+                                </span>-->
+                                <span *ngIf="otherGeneFiles.length>0">
+                                    <div class="">
+                                        <div class="">
+                                            <div class="mb-4 w-100">
+                                                <!--{{'dashboardpatient.Files uploaded' | translate }}-->
+                                                <p *ngFor="let onefile of otherGeneFiles; let i = index"
+                                                    class="border-top pt-2">
+                                                    <span class="d-inline-block text-muted"
+                                                        style="word-wrap: anywhere;width: 90%;">
+                                                        <span *ngIf="!onefile.hasResults">
+                                                            {{onefile.simplename}}
+                                                            <span class="d-block">
+                                                                {{'reports.Reading' | translate }}
+                                                            </span>
+                                                            <i class="fa fa-spinner fa-spin fa-fw"></i>
+                                                            <!--<a class="primary"
+                                                            (click)="extractData(onefile.name, onefile.contentSettings.contentType, contentviewDoc, onefile.simplename);">{{onefile.simplename}}</a>-->
+                                                        </span>
+                                                        <a *ngIf="onefile.hasResults" class="primary"
+                                                            (click)="openResults(onefile.name, contentviewDoc, onefile.simplename);">{{onefile.simplename}}</a>
+                                                        <span class="d-block">
+                                                            {{onefile.lastModified | date: 'dd MMM y': '' :
+                                                            translate.currentLang}}
+                                                        </span>
+
+                                                    </span>
+                                                    <span class="nav-item pt-1" ngbDropdown display="dynamic"
+                                                        placement="bottom-right"
+                                                        style="position: absolute; right: 0px;">
+                                                        <a class="position-relative colorlink"
+                                                            style="padding: 0rem 1rem;" id="dropdownSympt{{i}}"
+                                                            ngbDropdownToggle
+                                                            title="{{'generics.Options' | translate }}">
+                                                            <i class="fas fa-ellipsis-v fa-1_5x dark"></i>
+                                                        </a>
+                                                        <div ngbDropdownMenu aria-labelledby="dropdownSympt{{i}}"
+                                                            class="dropdown">
+                                                            <a class="dropdown-item py-1" *ngIf="onefile.hasResults" href="javascript:;"
+                                                            (click)="openResults(onefile.name, contentviewDoc, onefile.simplename);">
+                                                                <i class="ft-eye fa-xs"></i><span
+                                                                    class="ml-2">{{'generics.View' | translate
+                                                                    }}</span>
+                                                            </a>
+                                                            <a class="dropdown-item py-1" href="javascript:;"
+                                                                (click)="editDocument(onefile,updateDocument);">
+                                                                <i class="ft-edit fa-xs"></i><span
+                                                                    class="ml-2">{{'generics.Edit' | translate
+                                                                    }}</span>
+                                                            </a>
+                                                            <a class="dropdown-item py-1" href="javascript:;"
+                                                                (click)="shareFile(onefile,i);">
+                                                                <i class="ft-share-2 fa-xs"></i><span
+                                                                    class="ml-2">{{'generics.Share' | translate
+                                                                    }}</span>
+                                                            </a>
+                                                            <a *ngIf="!isMobile" class="dropdown-item py-1"
+                                                                href="{{accessToken.blobAccountUrl}}{{accessToken.containerName}}/{{onefile.name}}{{accessToken.sasToken}}"
+                                                                target="_blank" download>
+                                                                <i class="ft-download fa-xs"></i><span
+                                                                    class="ml-2">{{'generics.Download' | translate
+                                                                    }}</span>
+                                                            </a>
+                                                            <a *ngIf="isMobile" class="dropdown-item py-1"
+                                                                (click)="downloadFile(accessToken.containerName,onefile.name)">
+                                                                <i class="ft-download fa-xs"></i><span
+                                                                    class="ml-2">{{'generics.Download' | translate
+                                                                    }}</span>
+                                                            </a>
+                                                            <a class="dropdown-item py-1 danger" href="javascript:;"
+                                                                (click)="deleteFile(onefile,i,'general');">
+                                                                <i class="ft-trash fa-xs"></i><span
+                                                                    class="ml-2">{{'generics.Delete' | translate
+                                                                    }}</span>
+                                                            </a>
+                                                        </div>
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </span>
+                            </div>
+                            <div *ngIf="!loadedGeno" class="center-elements">
+                                <i class="fa fa-spinner fa-spin fa-fw"></i> {{'reports.Loading' | translate }}...
+                            </div>
+                        </div>
+                        <div>
+                            <span class="float-right">
+                                <a *ngIf="!importing" (click)="createDocument(contentDocument, 'emergency');"
+                                    class="text-bold-500 float-right btn btn-primary btn-sm font-small-3 danger"
+                                    title="">
+                                    +
+                                </a>
+                            </span>
+                            <div class="">
+                                <p class="text-bold-500 mt-0 mb-0">{{'documents.emergencyTitle' | translate }}</p>
+                                <p class="text-muted">{{'documents.emergencySubtitle' | translate }}</p>
+                            </div>
+                            <div class="center-elements">
+
+                            </div>
+                            <span *ngIf="preparingFileEmergency">
+                                <small class="d-block">{{'generics.Preparing to upload' | translate }}</small>
+                                <i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i>
+                            </span>
+                            <span *ngIf="uploadingEmergency" class="center-elements"><i
+                                    class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></span>
+                            <div *ngIf="loadedGeno" class="mt-2 mb-2" id="Widget-line-chart">
+                                <!--<span *ngIf="emergencyFiles.length==0" class="">
+                                    <p class="mt-0">{{'generics.No files have been uploaded' | translate }}</p>
+                                </span>-->
+                                <span *ngIf="emergencyFiles.length>0">
+                                    <div class="">
+                                        <div class="">
+                                            <div class="mb-4 w-100">
+                                                <!--{{'dashboardpatient.Files uploaded' | translate }}-->
+                                                <p *ngFor="let onefile of emergencyFiles; let i = index"
+                                                    class="border-top pt-2">
+                                                    <span class="d-inline-block text-muted"
+                                                        style="word-wrap: anywhere;width: 90%;">
+                                                        <span *ngIf="!onefile.hasResults">
+                                                            {{onefile.simplename}}
+                                                            <span class="d-block">
+                                                                {{'reports.Reading' | translate }}
+                                                            </span>
+                                                            <i class="fa fa-spinner fa-spin fa-fw"></i>
+                                                            <!--<a class="primary"
+                                                            (click)="extractData(onefile.name, onefile.contentSettings.contentType, contentviewDoc, onefile.simplename);">{{onefile.simplename}}</a>-->
+                                                        </span>
+                                                        <a *ngIf="onefile.hasResults" class="primary"
+                                                            (click)="openResults(onefile.name, contentviewDoc, onefile.simplename);">{{onefile.simplename}}</a>
+                                                        <span class="d-block">
+                                                            {{onefile.lastModified | date: 'dd MMM y': '' :
+                                                            translate.currentLang}}
+                                                        </span>
+                                                    </span>
+                                                    <span class="nav-item pt-1" ngbDropdown display="dynamic"
+                                                        placement="bottom-right"
+                                                        style="position: absolute; right: 0px;">
+                                                        <a class="position-relative colorlink"
+                                                            style="padding: 0rem 1rem;" id="dropdownSympt{{i}}"
+                                                            ngbDropdownToggle
+                                                            title="{{'generics.Options' | translate }}">
+                                                            <i class="fas fa-ellipsis-v fa-1_5x dark"></i>
+                                                        </a>
+                                                        <div ngbDropdownMenu aria-labelledby="dropdownSympt{{i}}"
+                                                            class="dropdown">
+                                                            <a class="dropdown-item py-1" *ngIf="onefile.hasResults" href="javascript:;"
+                                                            (click)="openResults(onefile.name, contentviewDoc, onefile.simplename);">
+                                                                <i class="ft-eye fa-xs"></i><span
+                                                                    class="ml-2">{{'generics.View' | translate
+                                                                    }}</span>
+                                                            </a>
+                                                            <a class="dropdown-item py-1" href="javascript:;"
+                                                                (click)="editDocument(onefile,updateDocument);">
+                                                                <i class="ft-edit fa-xs"></i><span
+                                                                    class="ml-2">{{'generics.Edit' | translate
+                                                                    }}</span>
+                                                            </a>
+                                                            <a class="dropdown-item py-1" href="javascript:;"
+                                                                (click)="shareFile(onefile,i);">
+                                                                <i class="ft-share-2 fa-xs"></i><span
+                                                                    class="ml-2">{{'generics.Share' | translate
+                                                                    }}</span>
+                                                            </a>
+                                                            <a *ngIf="!isMobile" class="dropdown-item py-1"
+                                                                href="{{accessToken.blobAccountUrl}}{{accessToken.containerName}}/{{onefile.name}}{{accessToken.sasToken}}"
+                                                                target="_blank" download>
+                                                                <i class="ft-download fa-xs"></i><span
+                                                                    class="ml-2">{{'generics.Download' | translate
+                                                                    }}</span>
+                                                            </a>
+                                                            <a *ngIf="isMobile" class="dropdown-item py-1"
+                                                                (click)="downloadFile(accessToken.containerName,onefile.name)">
+                                                                <i class="ft-download fa-xs"></i><span
+                                                                    class="ml-2">{{'generics.Download' | translate
+                                                                    }}</span>
+                                                            </a>
+                                                            <a class="dropdown-item py-1 danger" href="javascript:;"
+                                                                (click)="deleteFile(onefile,i, 'emergency');">
+                                                                <i class="ft-trash fa-xs"></i><span
+                                                                    class="ml-2">{{'generics.Delete' | translate
+                                                                    }}</span>
+                                                            </a>
+                                                        </div>
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </span>
+                            </div>
+                            <div *ngIf="!loadedGeno" class="center-elements">
+                                <i class="fa fa-spinner fa-spin fa-fw"></i> {{'reports.Loading' | translate }}...
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="step=='1'">
+                        <p><button class="ml-2 btn btn-primary" (click)="back('0');">{{'generics.Back' | translate
+                                }}</button></p>
+                        <div *ngIf="temporalSymptoms.length>0">
+                            <thead class="pr-1 pl-1">
+                                <tr>
+                                    <th id="headerTable" style="border-top-style: none;padding-bottom: 4px;">
+                                        <span class="icons-title-symptoms ml-1"
+                                            style="font-weight: normal;">{{'land.SelectSymptoms' | translate
+                                            }}</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <div class="table-responsive">
+                                <table class="table mb-0 table-wrapper-scroll-y my-custom-scrollbar bg-white"
+                                    aria-labelledby="HPO">
+                                    <tbody>
+                                        <tr *ngFor="let hpo of temporalSymptoms ; let i = index">
+                                            <td>
+                                                <span>
+                                                    <span class="float-right ml-1">
+                                                        <button
+                                                            (click)="showMoreInfoSymptomPopup(i, contentInfoSymptomNcr);"
+                                                            class="btn-outline-secondary btn btn-sm mr-1 mb-0 btn-fab round"
+                                                            title="{{'generics.More information' | translate }} ({{hpo.id}})">
+                                                            <em class="fa fa-info w-13"></em>
+                                                        </button>
+                                                    </span>
+                                                    <span>
+                                                        <button (click)="changeStateSymptom(i)"
+                                                            class="btn btn-sm mr-1 mb-0 btn-fab round white"
+                                                            [ngClass]="(hpo.checked==true)?'btn-primary':'btn-secondary'"
+                                                            href="javascript:void(0)"
+                                                            title="{{'phenotype.Click to check it' | translate }}">
+                                                            <em class="fa fa-check w-13"></em>
+                                                        </button>
+                                                        <span class="ml-1 custom-bold pointer"
+                                                            (click)="showMoreInfoSymptomPopup(i, contentInfoSymptomNcr);">{{hpo.name}}</span>
+                                                    </span>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="center-elements mt-2">
+                                <p><button class="ml-2 btn btn-primary" (click)="saveSymptomsToDb();">{{'generics.Save'
+                                        | translate }}</button></p>
+                            </div>
+                        </div>
+                        <div *ngIf="temporalSymptoms.length==0" class="white-space">
+                            <tbody></tbody>
+                        </div>
+                    </div>
+                    <div *ngIf="step=='2'">
+                        <p><button class="ml-2 btn btn-primary" (click)="back('0');">{{'generics.Back' | translate
+                                }}</button></p>
+                        <div class="p-2">
+                            <textarea #inputTextArea class="form-control data-hj-allow" style="height:320px;"
+                                [(ngModel)]="medicalText" name="medicalText"
+                                placeholder="{{'land.placeholder' | translate }}"></textarea>
+                        </div>
+                        <div class="text-center mt-2">
+                            <button type="button" [disabled]="callingTextAnalytics" class="btn btn-lg btn-primary round"
+                                [attr.title]="(medicalText.length<5) ? getLiteral('land.placeholderError') : getLiteral('land.Extract')"
+                                (click)="startExtractor();">
+                                <span *ngIf="!callingTextAnalytics">{{'land.Look for symptoms' | translate }}</span>
+                                <span *ngIf="callingTextAnalytics"><i class="fa fa-spinner fa-spin fa-fw"></i>
+                                    Analizando texto</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div *ngIf="step=='share'">
+                        <button class="btn btn-dark btn-sm mb-2" (click)="step='0';">{{'generics.Back' | translate
+                            }}</button>
+                        <p class="danger">{{'generics.Under construction' | translate }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #contentInfoSymptomNcr let-c="close" let-d="dismiss" appendTo="body">
+    <div class="modal-header" id="idHeader">
+        <div class="content-header text-left">
+            <h4>{{temporalSymptoms[selectedInfoSymptomIndex].name }} - {{temporalSymptoms[selectedInfoSymptomIndex].id
+                }}</h4>
+        </div>
+        <button type="button" class="close" aria-label="Close" (click)="closeModal();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body content-wrapper p-2" id="idBody">
+        <div class="row col-md-12" class="p-2">
+            <span
+                *ngIf="temporalSymptoms[selectedInfoSymptomIndex].def!=null || temporalSymptoms[selectedInfoSymptomIndex].comment!=''">
+                <h5><strong>{{'generics.Description' | translate }}</strong></h5>
+                <span
+                    *ngIf="temporalSymptoms[selectedInfoSymptomIndex].def!=null">{{temporalSymptoms[selectedInfoSymptomIndex].def}}
+                </span>
+                <span
+                    *ngIf="temporalSymptoms[selectedInfoSymptomIndex].comment!=''">{{temporalSymptoms[selectedInfoSymptomIndex].comment}}</span>
+            </span>
+            <span
+                *ngIf="temporalSymptoms[selectedInfoSymptomIndex].def==null && temporalSymptoms[selectedInfoSymptomIndex].comment==''">
+                <h5><strong>{{'generics.Description' | translate }}</strong></h5>
+                <span> {{'symptomssection.No description' | translate }} </span>
+            </span>
+        </div>
+
+        <div *ngIf="temporalSymptoms[selectedInfoSymptomIndex].synonyms!=undefined" class="p-2">
+            <h5><strong>{{'generics.Synonyms' | translate }}</strong></h5>
+            <span *ngIf="temporalSymptoms[selectedInfoSymptomIndex].synonyms.length>0">
+                <p *ngFor="let synonym of temporalSymptoms[selectedInfoSymptomIndex].synonyms ; let j = index"
+                    [ngClass]="(j==temporalSymptoms[selectedInfoSymptomIndex].synonyms.length-1)?'mb-0':''">
+                    <span>{{j+1}}. </span> <span *ngIf="synonym.label">{{synonym.label}}</span> <span
+                        *ngIf="!synonym.label">{{synonym}}</span>
+                </p>
+            </span>
+            <span *ngIf="temporalSymptoms[selectedInfoSymptomIndex].synonyms.length==0">
+                {{'symptomssection.No synonyms' | translate }}
+            </span>
+        </div>
+        <div class="p-2">
+            <h5><strong>{{'land.Where did we get this symptom from' | translate }}</strong></h5>
+            <span *ngIf="temporalSymptoms[selectedInfoSymptomIndex].inputType=='manual'">
+                {{'land.The symptom was added manually' | translate }}
+            </span>
+            <span *ngIf="temporalSymptoms[selectedInfoSymptomIndex].inputType=='textAnalytics'">
+                <span *ngFor="let text of temporalSymptoms[selectedInfoSymptomIndex].text ; let j = index">
+                    <span *ngIf="(text.source && j== 0) && text.language!=lang" class="mb-0">"{{text.source |
+                        slice:(text.positions[0]-40):(text.positions[0]-1)}} {{text.source |
+                        slice:(text.positions[0]):(text.positions[1])}} {{text.source |
+                        slice:(text.positions[1]+1):(text.positions[1]+40)}}"
+
+                    </span>
+                    <span *ngIf="!text.source && j== 0 || text.language==lang" class="mb-0">"{{text.text |
+                        slice:(text.positions[0]-40):(text.positions[0]-1)}} <b>{{text.text |
+                            slice:(text.positions[0]):(text.positions[1])}}</b> {{text.text |
+                        slice:(text.positions[1]+1):(text.positions[1]+40)}}"
+                    </span>
+                </span>
+                <div class="mt-2">
+                    <button *ngIf="!ncrResultView" type="button" class="btn btn-dark round mb-0"
+                        (click)="showCompleteNcrResultView(temporalSymptoms[selectedInfoSymptomIndex], 'textAnalytics')">{{'patdiagdashboard.Show
+                        full text' | translate }}</button>
+                    <button *ngIf="ncrResultView" type="button" class="btn btn-dark round mb-0"
+                        (click)="showCompleteNcrResultView(null, 'textAnalytics')">{{'patdiagdashboard.Hide full text' |
+                        translate }}</button>
+                </div>
+                <div *ngIf="ncrResultView">
+                    <span class="animate-bottom" *ngIf="showButtonScroll" id="buttomScroll">
+                        <button type="button" class="btn btn-dark round mb-0" (click)="goToTop()">Go top</button>
+                    </span>
+                    <div class="mt-2 text-center">
+                        <a id="initpos"></a>
+                        <div style="text-align: justify;" class="textExtractedNcr" [innerHTML]=resultTextNcrCopy></div>
+                    </div>
+                </div>
+            </span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <span>{{'land.See more information about the symptom' | translate }} <a
+                href="https://hpo.jax.org/app/browse/term/{{temporalSymptoms[selectedInfoSymptomIndex].id}}"
+                target="_blank"
+                title=" {{temporalSymptoms[selectedInfoSymptomIndex].name}} ({{temporalSymptoms[selectedInfoSymptomIndex].id}}):">{{'land.here'
+                | translate }}
+                <i class="ft-external-link"></i></a></span>
+    </div>
+</ng-template>
+
+<ng-template #contentviewDoc id="contentviewDoc" let-c="close" let-d="dismiss" appendTo="body">
+    <div class="modal-header" id="idHeader">
+        <div class="content-header text-left">
+            <h4>{{nameTitle}}</h4>
+        </div>
+        <button type="button" class="close" aria-label="Close" (click)="closeModal();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body content-wrapper p-2" id="idBody">
+        <div class="p-2">
+            <div>
+                <span class="animate-bottom" *ngIf="showButtonScroll" id="buttomScroll">
+                    <button type="button" class="btn btn-dark round mb-0" (click)="goToTop()">Go top</button>
+                </span>
+                <div class="mt-2 text-center">
+                    <a id="initpos"></a>
+                    <div *ngIf="resultTextNcrCopy.length >=5" style="text-align: justify;" class="textExtractedNcr"
+                        [innerHTML]=resultTextNcrCopy></div>
+                    <div *ngIf="resultTextNcrCopy.length < 5">
+                        {{'land.placeholderError' | translate }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #contentDocument let-c="close" let-d="dismiss" appendTo="body">
+    <div class="modal-header" id="idHeader">
+        {{'documents.New document' | translate }}
+        <button type="button" class="close" aria-label="Close" (click)="closeModal();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body content-wrapper p-2" id="idBody">
+        <form action="#" class="form form-horizontal" [formGroup]="documentForm" *ngIf="!showTextAreaFlag">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label>{{'documents.Title' | translate }}</label>
+                                <input type="text" class="form-control" id="title2" formControlName="name"
+                                    [ngClass]="{ 'is-invalid': submitted && f.name.errors }" name="title2">
+                                <small class="form-text text-muted danger"
+                                    *ngIf="submitted && f.name.errors">{{'generics.required' | translate }}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12">
+                            <div class="form-group">
+                                <label>{{'generics.Description' | translate }}</label>
+                                <textarea maxlength="150" name="description" formControlName="description"
+                                    placeholder="{{'seizures.Write down any details' | translate }}"
+                                    class="autoajustable form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="form-group">
+                                <label>{{'generics.Date' | translate }}</label>
+                                <div class="">
+                                    <input type="date" formControlName="dateDoc"
+                                        [ngClass]="{ 'is-invalid': submitted && f.dateDoc.errors }"
+                                        value="(dateDoc!=null) ? (dateDoc | date: 'dd MMM y': '' : translate.currentLang) : getLiteral('personalinfo.Birth Date')">
+                                    <small class="form-text text-muted danger"
+                                        *ngIf="submitted && f.dateDoc.errors">{{'generics.required' |
+                                        translate }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12 mt-2">
+                            <label>{{'documents.File' | translate }}</label>
+                            <div class="form-group">
+                                <input *ngIf="!isMobile" type="file" #fileDropRef id="fileDropRef" multiple
+                                    style="display: none;" (change)="onFileChangeStep1($event);"
+                                    accept=".pdf, .docx, .jpg, .png, .gif, .tiff, .tif, .bmp, .dib, .bpg, .psd, .jpeg, .jpe, .jfif" />
+                                <input *ngIf="isMobile" type="file" #fileDropRef id="fileDropRef" multiple
+                                    style="display: none;" (change)="onFileChangeStep1($event);" />
+                                <label *ngIf="!dataFile.name" class="text-bold-500 btn btn-primary btn-sm font-small-3 danger mb-0"
+                                    style="text-transform: none;letter-spacing: 0px;cursor: pointer;"
+                                    for="fileDropRef">{{'documents.Select document' | translate }}</label>
+                                <span *ngIf="preparingFile">
+                                    <small class="d-block">{{'generics.Preparing to upload' | translate }}</small>
+                                    <i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i>
+                                </span>
+                                <label *ngIf="!dataFile.name" class="ml-1 text-bold-500">
+                                    <span class="mr-1">Or</span>
+                                    <button type="button" class="text-bold-500 btn btn-primary btn-sm font-small-3 danger mb-0"
+                                        (click)="showTextArea();">
+                                        {{'documents.Write/paste something' | translate }}
+                                    </button>
+                                </label>
+                                <span class="d-block">{{dataFile.name}} <span *ngIf="dataFile.name"
+                                        (click)="unlinkFile()" class="pointer"><em
+                                            class="fa fa-trash danger"></em></span></span>
+                                <small class="form-text text-muted danger"
+                                    *ngIf="submitted && !dataFile.url">{{'generics.required' |
+                                    translate }}</small>
+
+
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12">
+                            <div class="form-group">
+                                <label>{{'generics.notes' | translate }}</label>
+                                <textarea maxlength="150" name="notes" formControlName="notes"
+                                    placeholder="{{'seizures.Write down any details' | translate }}"
+                                    class="autoajustable form-control"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12 center-elements">
+                        <button type="button" class="btn btn-dark" [disabled]="preparingFile"
+                            (click)="saveData();">{{'generics.SaveAndClose' |
+                            translate }}</button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+        <div class="col-md-12" *ngIf="showTextAreaFlag">
+            <textarea #inputTextArea id="textarea1" type="text" style="width: 100%;"
+                class="autoajustable searchTerm data-hj-allow" [(ngModel)]="medicalText" name="medicalText"
+                placeholder="{{'phenotype.HPO phenotype extractor placeholder' | translate }}" (ngModelChange)="resizeTextArea()"></textarea>
+            <div class="mt-2">
+                <button type="button" class="btn btn-secondary btn-sm font-small-3 mb-0 mr-1" (click)="hideTextArea();">
+                    {{'generics.Cancel' | translate }}
+                </button>
+                <button type="button" class="btn btn-primary btn-sm font-small-3 mb-0 ml-1" (click)="createFileTxt();" [disabled]="medicalText==''">
+                    {{'generics.Save' | translate }}
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</ng-template>
+
+<ng-template #updateDocument let-c="close" let-d="dismiss" appendTo="body">
+    <div class="modal-header" id="idHeader">
+        {{'documents.Update document' | translate }}
+        <button type="button" class="close" aria-label="Close" (click)="closeModal();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body content-wrapper p-2" id="idBody">
+        <form action="#" class="form form-horizontal" [formGroup]="documentForm">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label>{{'documents.Title' | translate }}</label>
+                                <input type="text" class="form-control" id="title2" formControlName="name"
+                                    [ngClass]="{ 'is-invalid': submitted && f.name.errors }" name="title2">
+                                <small class="form-text text-muted danger"
+                                    *ngIf="submitted && f.name.errors">{{'generics.required' | translate }}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12">
+                            <div class="form-group">
+                                <label>{{'generics.Description' | translate }}</label>
+                                <textarea maxlength="150" name="description" formControlName="description"
+                                    placeholder="{{'seizures.Write down any details' | translate }}"
+                                    class="autoajustable form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="form-group">
+                                <label>{{'generics.Date' | translate }}</label>
+                                <div class="">
+                                    <input type="date" formControlName="dateDoc"
+                                        [ngClass]="{ 'is-invalid': submitted && f.dateDoc.errors }"
+                                        value="(dateDoc!=null) ? (dateDoc | date: 'dd MMM y': '' : translate.currentLang) : getLiteral('personalinfo.Birth Date')">
+                                    <small class="form-text text-muted danger"
+                                        *ngIf="submitted && f.dateDoc.errors">{{'generics.required' |
+                                        translate }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12">
+                            <div class="form-group">
+                                {{'documents.File' | translate }}: {{simplename}}
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-12">
+                            <div class="form-group">
+                                <label>{{'generics.notes' | translate }}</label>
+                                <textarea maxlength="150" name="notes" formControlName="notes"
+                                    placeholder="{{'seizures.Write down any details' | translate }}"
+                                    class="autoajustable form-control"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12 center-elements">
+                        <button type="button" class="btn btn-dark" [disabled]="preparingFile"
+                            (click)="updateData();">{{'generics.SaveAndClose' |
+                            translate }}</button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</ng-template>

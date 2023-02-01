@@ -1,0 +1,933 @@
+
+<div class="h-100">
+    <div class="card card-block mx-auto width30rem">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-sm-12">
+                    <div>
+                        <h2 class="content-header mt-0">{{'mydata.title' | translate }}</h2>
+                        <p>{{'mydata.desc' | translate }}</p>
+                        <!--One open panel at a time Starts-->
+                    <ngb-accordion #accordion [closeOthers]="true" activeIds="1">
+                        <ngb-panel id="static-1">
+                            <ng-template ngbPanelTitle>
+                                <h5 class="mb-0"><i class="fa fa-cloud-upload mr-2 float-left margin-icon"></i> <span> {{'mydata.q1' | translate }}</span> <span class="float-right">
+                                        <span
+                                            [ngClass]="{'ft-chevron-up': isOpen(1), 'ft-chevron-down': !isOpen(1)}"></span>
+                                    </span></h5>
+                            </ng-template>
+                            <ng-template ngbPanelContent>
+                                <div class="mb-3 row">
+                                    <p class="text-muted col-md-12">{{'mydata.a1' | translate }}</p>
+
+                                    <div class="col-md-12 col-lg-6 mt-3">
+                                        <div class="">
+                                            <p class="text-bold-500 mt-0 mb-0" [innerHTML]="'mydata.a1.1.1' | translate"></p>
+                                            <p class="text-muted" [innerHTML]="'mydata.a1.1.2' | translate"></p>
+                                        </div>
+                                        <div class="">
+                                            <button class="btn btn-dark btn-100 mb-0" type="button" [disabled]="loadingf29" (click)="saveContainer('F29')">Foundation29 server 
+                                                <span *ngIf="f29.message=='Available' && !loadingf29"> ({{'generics.Update' | translate }})</span>
+                                                <span *ngIf="loadingf29" class="d-block"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></span>
+                                            </button>
+                                            <span *ngIf="f29.message=='Available'" class="d-block">{{'mydata.Last backup' | translate }}: {{f29.date | date}} <em *ngIf="!loadingGetF29" class="primary fa fa-download pointer" (click)="getF29()"></em><em *ngIf="loadingGetF29" class="fa fa-spinner fa-spin fa-fw pink"></em></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-6 mt-3">
+                                        <div class="">
+                                            <p class="text-bold-500 mt-0 mb-0" [innerHTML]="'mydata.a1.2.1' | translate"></p>
+                                            <p class="text-muted" [innerHTML]="'mydata.a1.2.2' | translate"></p>
+                                        </div>
+                                        <div class="">
+                                            <button class="btn btn-dark btn-100 mb-0" type="button" [disabled]="loading" (click)="saveContainer('IPFS')">{{'mydata.Decentralized' | translate }} 
+                                                <span *ngIf="ipfs.message=='Available' && !loading"> ({{'generics.Update' | translate }})</span>
+                                                <span *ngIf="loading" class="d-block"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></span>
+                                            </button>
+                                            <span *ngIf="ipfs.message=='Available'" class="d-block">{{'mydata.Last backup' | translate }}: {{ipfs.date | date}} <em *ngIf="!loadingGetIPFS" class="primary fa fa-download pointer" (click)="getIPFS()"></em><em *ngIf="loadingGetIPFS" class="fa fa-spinner fa-spin fa-fw pink"></em></span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="d-none"><span id="content"></span></div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                
+                            </ng-template>
+                        </ngb-panel>
+                        <ngb-panel id="static-2">
+                          <ng-template ngbPanelTitle>
+                              <h5 class="mb-0"><i class="fas fa-share mr-2 float-left margin-icon"></i> <span> {{'generics.Share' | translate }}</span> <span class="float-right">
+                                      <span
+                                          [ngClass]="{'ft-chevron-up': isOpen(3), 'ft-chevron-down': !isOpen(3)}"></span>
+                                  </span></h5>
+                          </ng-template>
+                          <ng-template ngbPanelContent>
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-4 mt-3">
+                                        <div class="">
+                                            <p class="text-bold-500 mt-0 mb-0">{{'mydata.share3title' | translate }}</p>
+                                            <p class="text-muted" [innerHTML]="'mydata.sharecontent3' | translate"></p>
+                                        </div>
+                                        <div class="" [ngClass]="{'mb-2': innerWidth<992}">
+                                            <button class="btn btn-dark btn-100" type="button" href="#myModal"
+                                            (click)="share(shareCustom, 'Custom')">{{'open.Private sharing' | translate }}</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-4 mt-3">
+                                      <div class="">
+                                          <p class="text-bold-500 mt-0 mb-0">{{'mydata.q2' | translate }}</p>
+                                          <p *ngIf="hasGroup && (consentgroup=='false' || (consentgroup=='Pending' && !startingProcessOrg)) && group.allowShare" class="text-muted">{{'homeraito.p1' | translate }}
+                                              <!--<em class="ft-info font-medium-1" style="cursor: pointer;" (click)="showPopup(infoSharePanel)"></em>-->
+                                          </p>
+                                      </div>
+                                      <div class="">
+                                          <div class="" *ngIf="!hasGroup || !group.allowShare">
+                                              <p class="mb-0">{{'mydata.You do not belong to any patient group' | translate }}</p>
+                                              <p>{{'mydata.Here is a message on why this is important' | translate }}</p>
+                                              <button class="btn btn-dark btn-100" type="button" routerLink="/patient-info">{{'mydata.Add patient group' | translate }}</button>
+                                          </div>
+                                          <div class="" *ngIf="hasGroup && group.allowShare" [ngClass]="{'mb-2': innerWidth<992}">
+                                              <p class="text-left mb-0"><strong>{{'groups.Group' | translate }}:</strong> {{group.name}}</p>
+                                              <span *ngIf="!startingProcessOrg" class="">
+                                                  <p class="text-left text-muted mb-0 mt-2" *ngIf="consentgroup=='true'">{{'mydata.a2.5' | translate }}</p>
+                                                  <!--<p class="text-muted mb-0" *ngIf="consentgroup=='false'">{{'mydata.a2.7' | translate }}</p>-->
+                                                  <button *ngIf="consentgroup=='false'" class="btn btn-dark btn-100 mt-2" type="button"
+                                                      (click)="changeConsentGroup('true')">{{'mydata.I give my consent' | translate }}</button>
+                                                  <button *ngIf="consentgroup=='true'" class="btn btn-primary" type="button"
+                                                  (click)="changeConsentGroup('false')">{{'mydata.Reject consent' | translate }}</button>
+                                              </span>
+                                              <div class="mt-2" *ngIf="consentgroup=='Pending'">
+                                                  <div *ngIf="qrImageOrg!='' && displayOrg!='Expired'">
+                                                      <p class="text-muted text-left">{{'mydata.vcintro1' | translate }}</p>
+                                                      <p class="text-muted text-left" [innerHTML]="'mydata.vcintro2' | translate"></p>
+                                                      <span *ngIf="showLinkMA" class="d-block font-small-3" [innerHTML]="'open.instructionMA' | translate"></span>
+                                                      <img [src]="qrImageOrg" style="max-width: 200px;">
+                                                      <span class="d-block">PIN: {{pinOrg}}</span>
+                                                      <p>{{displayOrg}}</p>
+                                                      
+                                                  </div>
+                                                  <div *ngIf="displayOrg=='Expired'">
+                                                      <p class="danger">{{'mydata.The QR code has expired' | translate }}</p>
+                                                  </div>
+                                                  <div *ngIf="qrImageOrg=='' && inProcessOrg">
+                                                      <p class="centerSpinner" *ngIf="!loadedShareData"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+                                                      <!--<span class="">{{'open.Accept or reject from mobile' | translate }}</span>-->
+                                                  </div>
+                                                  <div *ngIf="qrImageOrg=='' && !inProcessOrg">
+                                                      <button class="btn btn-dark btn-100" (click)="changeConsentGroup('true')">{{'mydata.I give my consent' | translate }}</button>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                                    <div class="d-none"><span id="content"></span></div>
+                                    <div class="col-md-12 col-lg-4 mt-3 mb-3">
+                                        <div class="">
+                                            <p class="text-bold-500 mt-0 mb-0">{{'mydata.sharetitle2' | translate }}</p>
+                                            <p class="text-muted">{{'mydata.sharecontent2' | translate }}</p>
+                                        </div>
+                                        <span class="" [ngClass]="{'mb-2': innerWidth<992}">
+                                            <!--<button class="btn btn-dark" type="button"
+                                            (click)="exportData()">{{'generics.ExportData' | translate }}</button>
+                                            <div class="d-none"><span id="content"></span></div>-->
+                                            <button class="btn btn-dark btn-100" type="button"
+                                            (click)="share(shareTo, 'General')">{{'profile.Settings' | translate }}</button>
+                                        </span>
+                                    </div>
+                                </div>
+                                      
+
+                          </ng-template>
+                      </ngb-panel>
+                        <ngb-panel id="static-4">
+                            <ng-template ngbPanelTitle>
+                                <h5 class="mb-0"><i class="fas fa-download mr-2 float-left margin-icon"></i> <span> {{'mydata.fhirtitle' | translate }}</span> <span class="float-right">
+                                        <span
+                                            [ngClass]="{'ft-chevron-up': isOpen(4), 'ft-chevron-down': !isOpen(4)}"></span>
+                                    </span></h5>
+                            </ng-template>
+                            <ng-template ngbPanelContent>
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-md-12 col-lg-6">
+                                        <p class="text-muted">{{'mydata.sharecontent1' | translate }}</p>
+                                        <span class="">
+                                            <button [disabled]="loading" class="btn btn-dark btn-100" type="button"
+                                            (click)="exportPDF(pdfPanel)">{{'mydata.fhirtitle' | translate }} PDF</button>
+                                        </span>
+                                        <div class="d-none"><span id="content"></span></div>
+                                        <div *ngIf="loading" class="center-elements">
+                                            <i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 col-lg-6" [ngClass]="{'mt-2': innerWidth<992}">
+                                        <p class="text-muted">{{'mydata.fhirdesc' | translate }}</p>
+                                        <div class="row"> 
+                                            <div class="col-md-12 col-lg-6 mb-2">
+                                                <button class="btn btn-dark btn-100" type="button" [disabled]="loadingFhir" (click)="extractFhir()">
+                                                    <span *ngIf="!loadingFhir" class="">
+                                                        {{'mydata.fhirtitle' | translate }} FHIR
+                                                    </span>
+                                                    <span *ngIf="loadingFhir" class="">
+                                                        {{'generics.Please wait' | translate }} <i class="fa fa-spinner fa-spin fa-fw pink"></i>
+                                                    </span>
+                                                </button>
+                                                <div class="d-none"><span id="contentfhir"></span></div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+
+                                    
+                                </div>
+  
+                            </ng-template>
+                        </ngb-panel>
+                        <ngb-panel id="static-5">
+                            <ng-template ngbPanelTitle>
+                                <h5 class="mb-0"><i class="fas fa-upload mr-2 float-left margin-icon"></i> <span> {{'mydata.importfhir' | translate }}</span> <span class="float-right">
+                                        <span
+                                            [ngClass]="{'ft-chevron-up': isOpen(4), 'ft-chevron-down': !isOpen(4)}"></span>
+                                    </span></h5>
+                            </ng-template>
+                            <ng-template ngbPanelContent>
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-md-12 col-lg-6" [ngClass]="{'mt-2': innerWidth<992}">
+                                        <div class="row">
+                                            <div class="col-md-12 col-lg-6">
+                                                <label class="btn btn-dark btn-100">
+                                                    <input *ngIf="!isMobile" [disabled]="importing" id="file" type="file" style="display:none;" accept=".json"
+                                                        (change)="onImport($event)" />
+                                                    <input *ngIf="isMobile" [disabled]="importing" id="file" type="file" style="display:none;"
+                                                    (change)="onImport($event)" />
+                                                    <span *ngIf="!importing" class="">
+                                                        {{'mydata.importfhir' | translate }} FHIR
+                                                    </span>
+                                                    <span *ngIf="importing" class="">
+                                                        <i class="fa fa-spinner fa-spin fa-fw pink"></i>
+                                                        {{'generics.Please wait' | translate }}
+                                                    </span>
+                                                </label>
+                                                
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+
+                                    
+                                </div>
+  
+                            </ng-template>
+                        </ngb-panel>
+                        <ngb-panel id="static-6">
+                            <ng-template ngbPanelTitle>
+                                <h5 class="mb-0"><i class="fa fa-trash mr-2 float-left margin-icon"></i> <span> {{'generics.Delete' | translate }}</span> <span class="float-right">
+                                        <span
+                                            [ngClass]="{'ft-chevron-up': isOpen(5), 'ft-chevron-down': !isOpen(5)}"></span>
+                                    </span></h5>
+                            </ng-template>
+                            <ng-template ngbPanelContent>
+                                <div class="center-elements mb-3 mt-3">
+                                    <button class="btn btn-primary" type="button"
+                                        (click)="confirmDelete()">{{'generics.Delete data' | translate }}</button>
+                                </div>
+                            </ng-template>
+                        </ngb-panel>
+                    </ngb-accordion>
+                    <!--One open panel at a time Ends-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <a class="primary font-small-1 mt-2" style="position: relative;top: 8px;"
+                (click)="showHelpFHIRPopup(contentInfoFHIR);">{{'mydata.All data saved with FHIR standard' | translate }}</a> <img (click)="showHelpFHIRPopup(contentInfoFHIR);"
+                class="logo-img mt-1 pointer ml-2" style="height: 40px;" src='assets/img/elements/hl7_fhir.png' />
+        </div>
+    </div>
+</div>
+
+
+
+<ng-template #contentInfoFHIR let-c="close" let-d="dismiss" appendTo="body">
+    <div class="modal-header" id="idHeader">
+        <h4 class="modal-title"><span class="" style="position: relative;top: 8px;">{{'mydata.What is FHIR' | translate }}</span> <img
+                class="logo-img ml-2" style="height: 40px;" src='assets/img/elements/hl7_fhir.png' /></h4>
+        <button type="button" class="close" aria-label="Close" (click)="closeModal();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body content-wrapper p-2" id="idBody">
+        <p>{{'mydata.FHIR1' | translate }}</p>
+        <div>
+            <iframe style="width: 99%;min-height: 200px;" class="embed-responsive-item" src="https://www.youtube-nocookie.com/embed/JrXgNVb4bME" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #shareTo let-c="close" let-d="dismiss" appendTo="body">
+    <div class="modal-header pb-0" id="idHeader">
+        <h4>{{'profile.Settings' | translate }}
+    <span class="font-small-2 d-block mt-1"></span>
+  </h4>
+
+        <button type="button" class="close" aria-label="Close" (click)="c('Close click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+<div *ngIf="!loadedShareData" class="center-elements mt-3 mb-3">
+  <i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i>
+</div>
+  <form #f="ngForm">
+    <div *ngIf="loadedShareData">
+      <div class="mt-2">
+        <div class="form-group col-md-12">
+                <p class="mb-1">{{'open.InfoPermissions' | translate }}</p>
+                <section class="example-section">
+                    <span class="d-block"><mat-checkbox name="newPermission.data.patientInfo" [(ngModel)]="newPermission.data.patientInfo">{{'open.perm1title' | translate }}</mat-checkbox></span>
+                    <span class="d-block"><mat-checkbox name="newPermission.data.medicalInfo" [(ngModel)]="newPermission.data.medicalInfo">{{'open.perm2desc' | translate }}</mat-checkbox></span>
+                    <!--<span class="d-block"><mat-checkbox name="newPermission.data.devicesInfo" [(ngModel)]="newPermission.data.devicesInfo">{{'open.perm3desc' | translate }}</mat-checkbox></span>
+                    <span class="d-block"><mat-checkbox name="newPermission.data.genomicsInfo" [(ngModel)]="newPermission.data.genomicsInfo">{{'open.perm4desc' | translate }}</mat-checkbox></span>-->
+                </section>
+                <label for="notes" class="mt-2">{{'generics.notes' | translate }}</label>
+                <textarea name="notes" id="textarea1" class="autoajustable form-control" [(ngModel)]="newPermission.notes"></textarea>
+        </div>
+    </div>
+    <div class="col-md-12">
+      <div class="center-elements" *ngIf="!sending">
+        <div *ngIf="f.valid;then formValid else formError"></div>
+        <ng-template #formValid>
+          <button class="btn btn-dark" (click)="sendShare()"><span>{{'generics.Save' | translate }}</span></button>
+        </ng-template>
+        <ng-template #formError>
+          <button class="btn btn-dark" type="button" disabled="true" (click)="submitInvalidForm()"> <span>{{'generics.Save' | translate }}</span></button>
+        </ng-template>
+      </div>
+      <div class="center-elements" *ngIf="sending">
+        <p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+      </div>
+    </div>
+    </div>
+  </form>
+  <div class="modal-body">
+    <!--<p class="mb-0"><strong>{{'open.The accesses to your data will be shown here' | translate }}:</strong></p>
+    <span *ngIf="newPermission.operations.length>0">{{newPermission.operations|json}}</span>
+    <span *ngIf="newPermission.operations.length==0">{{'open.Nobody has accessed your data' | translate }}</span>-->
+  </div>
+  
+</ng-template>
+<ng-template #shareCustom let-c="close" let-d="dismiss" appendTo="body">
+    <div class="modal-header pb-0" id="idHeader">
+        <h4>{{'dashboardpatient.Share' | translate }}
+    <span class="font-small-2 d-block mt-1" *ngIf="loadedShareData && showNewCustom">{{newPermission.date | date}} </span>
+  </h4>
+
+        <button type="button" class="close" aria-label="Close" (click)="closeModalShare();" *ngIf="!showNewCustom">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+<div *ngIf="!loadedShareData" class="center-elements mt-3 mb-3">
+  <i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i>
+</div>
+  <form #f="ngForm">
+    <div *ngIf="loadedShareData && showNewCustom">
+      <div class="mt-2">
+        <div class="form-group col-md-12">
+                <p class="mb-1">{{'open.Permissions' | translate }}</p>
+                <section class="example-section">
+                    <span class="d-block"><mat-checkbox name="newPermission.data.patientInfo" [(ngModel)]="newPermission.data.patientInfo">{{'open.perm1title' | translate }}</mat-checkbox></span>
+                    <span class="d-block"><mat-checkbox name="newPermission.data.medicalInfo" [(ngModel)]="newPermission.data.medicalInfo">{{'open.perm2desc' | translate }}</mat-checkbox></span>
+                    <!--<span class="d-block"><mat-checkbox name="newPermission.data.devicesInfo" [(ngModel)]="newPermission.data.devicesInfo">{{'open.perm3desc' | translate }}</mat-checkbox></span>
+                    <span class="d-block"><mat-checkbox name="newPermission.data.genomicsInfo" [(ngModel)]="newPermission.data.genomicsInfo">{{'open.perm4desc' | translate }}</mat-checkbox></span>-->
+                </section>
+                <label for="notes" class="mt-2">{{'generics.notes' | translate }}</label>
+                <textarea name="notes" id="textarea1" class="autoajustable form-control" [(ngModel)]="newPermission.notes"></textarea>
+                <section class="example-section" *ngIf="mode=='Individual'">
+                  <label for="status" class="mt-2">{{'generics.Status' | translate }}</label>
+                  <select id="status" class="d-block" name="status{{i}}" [(ngModel)]="newPermission.status">
+                    <option value="Pending">{{'generics.Pending' | translate }}</option>
+                    <option value="Accepted">{{'generics.Accepted' | translate }}</option>
+                    <option value="Rejected">{{'generics.Rejected' | translate }}</option>
+                  </select>
+                </section>
+                
+        </div>
+    </div>
+    <div class="col-md-12">
+      <div class="center-elements" *ngIf="!sending">
+        <button class="btn btn-secondary mr-1" (click)="cancelCustom()"><span>{{'generics.Cancel' | translate }}</span></button>
+        <div *ngIf="f.valid;then formValid else formError"></div>
+        <ng-template #formValid>
+          <button class="btn btn-dark ml-1" (click)="sendShare()"><span *ngIf="newPermission._id==null">{{'open.Create link' | translate }}</span><span *ngIf="newPermission._id!=null">{{'generics.Update' | translate }}</span></button>
+        </ng-template>
+        <ng-template #formError>
+          <button class="btn btn-dark ml-1" type="button" disabled="true" (click)="submitInvalidForm()"> <span *ngIf="newPermission._id==null">{{'open.Create link' | translate }}</span><span *ngIf="newPermission._id!=null">{{'generics.Update' | translate }}</span></button>
+        </ng-template>
+        
+      </div>
+      <div class="center-elements" *ngIf="sending">
+        <p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+      </div>
+    </div>
+    </div>
+  </form>
+
+ 
+  <div class="col-md-12 pt-2 mt-2">
+    <div *ngIf="!showNewCustom">
+      <h5><strong>{{'open.Customized sharing' | translate }}</strong>
+        <button *ngIf="listCustomShare.length>0" class="mt-2 btn btn-dark btn-sm d-block" type="button" (click)="addCustom()">{{'open.Create link' | translate }}</button>
+      </h5>
+    </div>
+    <div *ngIf="listCustomShare.length==0 && !showNewCustom && !sending && !loading">
+      <span class="d-block">{{'open.nosharing' | translate }}</span>
+      <button *ngIf="listCustomShare.length==0" class="mt-1 btn btn-dark btn-sm mb-2" type="button" (click)="addCustom()">{{'open.Create link' | translate }}</button>
+    </div>
+    <div *ngIf="listCustomShare.length>0 && !showNewCustom && !sending && !loading" class="row row-flex">
+        <div *ngFor="let oneCustomShare of listCustomShare ; let i = index"  class="col-md-6 col-xl-4" >
+            <div class="card dash2-user gradient-green content" id="panelCustomShare">
+                <div class="card-content" style="min-height: 200px;">
+                    <div class="card-body row">
+                    <div class="" [ngClass]="(widthPanelCustomShare<433)?'col-12':'col-7'">
+                        <h5 class="mb-0 white">{{'open.Access to' | translate }}:</h5>
+                        <span *ngIf="oneCustomShare.data.patientInfo" class="grey">{{'open.perm1title' | translate }}</span>
+                        <span *ngIf="oneCustomShare.data.medicalInfo" class="grey d-block">{{'open.perm2title' | translate }}</span>
+                        <div *ngIf="oneCustomShare.notes!=''" class="mt-2">
+                            <h5 class="mb-0 white">{{'generics.notes' | translate }}</h5>
+                            <span class="grey">{{oneCustomShare.notes}}</span>
+                        </div>
+                        <h5 class="mb-0 white mt-2">{{'generics.Date' | translate }}</h5>
+                        <span class="grey">{{oneCustomShare.date | date}}</span>
+                    </div>
+                    <div class=""  [ngClass]="(widthPanelCustomShare<433)?'col-md-12 mt-2':'col-5 imgqr'">
+                        <qrcode  [ngClass]="(widthPanelCustomShare<433)?'':'sample'" id="qrcodeimg" [qrdata]="urlOpenRaito + oneCustomShare.token" elementType="url" [width]="120" [errorCorrectionLevel]="'M'"></qrcode>
+                    </div>
+                    <div class="row bottonsactions"  >
+                        <div class="float-right" [ngClass]="(widthPanelCustomShare<300)?'bottonsactionsSm mt-2':'bottonsactionsDefault'">
+                            <span class="mr-2">
+                                <button class="btn btn-dark btn-sm" data-original-title="" title="{{'generics.ShareData' | translate }}" (click)="showQR(oneCustomShare.token, qrPanel)">
+                                    <i class="fas fa-share"></i>
+                                </button>
+                                </span>
+                                <span class="mr-2">
+                                <a class="btn btn-info btn-sm" data-original-title="" title="{{'generics.Edit' | translate }}" (click)="editcustom(i)">
+                                    <i class="ft-edit"></i>
+                                </a>
+                                </span>
+                                <span class="">
+                                <a class="btn btn-primary btn-sm" data-original-title="" title="{{'generics.Delete' | translate }}" (click)="confirmRevoke(i)">
+                                    <i class="ft-trash"></i>
+                                </a>
+                                </span>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      <p class="centerSpinner" *ngIf="!loadedShareData"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+    </div>
+  </div>
+  <div class="col-md-12 pt-2 mt-4" *ngIf="individualShare.length>0 && !showNewCustom && !sending && !loading">
+    <div>
+      <h5><strong>{{'open.Access requests' | translate }}</strong></h5>
+    </div>
+    <div class="row row-flex">
+        <div *ngFor="let oneCustomShare of individualShare ; let i = index" class="col-md-6 col-xl-4" >
+            <div class="card dash2-user gradient-green content">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <em class="fa-solid fa-user-doctor mb-2 fa-4x"></em>
+                            <h4 class="mb-0 mt-2 white">
+                                {{oneCustomShare.userInfo.userName}}  {{oneCustomShare.userInfo.lastName}} 
+                            </h4>
+                            <p class="white">{{oneCustomShare.userInfo.email}} </p>
+                        </div>
+                        <div>
+                        <h5 class="mb-0 white">{{'open.Access to' | translate }}:</h5>
+                        <span *ngIf="oneCustomShare.data.patientInfo" class="grey">{{'open.perm1title' | translate }}</span>
+                        <span *ngIf="oneCustomShare.data.medicalInfo" class="grey d-block">{{'open.perm2title' | translate }}</span>
+                        <div *ngIf="oneCustomShare.notes!=''" class="mt-2">
+                            <h5 class="mb-0 white">{{'generics.notes' | translate }}</h5>
+                            <span class="grey">{{oneCustomShare.notes}}</span>
+                        </div>
+                        <div class="mt-2">
+                            <h5 class="mb-0 white">{{'generics.Status' | translate }}</h5>
+                            <span *ngIf="oneCustomShare.status =='Pending'" class="grey">
+                                {{'generics.Pending' | translate }}
+                            </span>
+                            <span *ngIf="oneCustomShare.status =='Accepted'" class="grey">
+                                {{'generics.Accepted' | translate }}
+                            </span>
+                            <span *ngIf="oneCustomShare.status =='Rejected'" class="grey">
+                                {{'generics.Rejected' | translate }}
+                            </span>
+                            <div *ngIf="oneCustomShare.status != 'Accepted' && (!oneCustomShare.infoQr && qrImage=='') && !startingProcess">
+                                <button class="btn btn-dark btn-sm mb-2" (click)="fieldStatusChanged(oneCustomShare, i);">{{'open.Accept access' | translate }}</button>
+                            </div>
+                            <div *ngIf="oneCustomShare.status == 'Accepted'">
+                                <button class="btn btn-primary btn-sm mb-2" (click)="reject(oneCustomShare, i);">{{'generics.Reject' | translate }}</button>
+                            </div>
+                            <div *ngIf="inProcess && oneCustomShare.status =='Pending'" class="mt-2 mb-2">
+                                <div *ngIf="qrImage!='' && display!='Expired'">
+                                    <p class="text-left">{{'mydata.vcintro1' | translate }}</p>
+                                    <p class="text-left" [innerHTML]="'mydata.vcintro2' | translate"></p>
+                                    <span *ngIf="showLinkMA" class="d-block font-small-3 mb-1" [innerHTML]="'open.instructionMA' | translate"></span>
+                                    <img [src]="qrImage" style="max-width: 200px;">
+                                    <span class="white d-block">PIN: {{pin}}</span>
+                                    <p>{{display}}</p>
+                                </div>
+                                <div *ngIf="display=='Expired'">
+                                    <p class="danger">{{'mydata.The QR code has expired' | translate }}</p>
+                                </div>
+                                <div *ngIf="qrImage=='' && inProcess">
+                                    <span class="white">{{'open.Accept or reject from mobile' | translate }}</span>
+                                </div>
+
+                            </div>
+                            
+                            <div *ngIf="oneCustomShare.infoQr && qrImage=='' && !startingProcess">
+                                <!--<button class="btn btn-dark btn-sm" (click)="showPanelIssuer(oneCustomShare.infoQr);">{{'open.Accept access' | translate }}</button>-->
+                                <button class="btn btn-dark btn-sm mb-2" (click)="fieldStatusChanged(oneCustomShare, i);">{{'open.Accept access' | translate }}</button>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 white">{{'generics.Date' | translate }}</h5>
+                            <span class="grey">{{oneCustomShare.date | date}}</span>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="centerSpinner" *ngIf="!loadedShareData"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+    </div>
+    
+  </div>
+</ng-template>
+
+<ng-template #pdfPanel let-c="close" let-d="dismiss" appendTo="body">
+  <div class="modal-header" id="idHeader">
+      <button type="button" class="close" aria-label="Close" (click)="closeModalProfile();">
+          <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+<div class="modal-body card mb-0" >
+  <div class="row mb-2">
+    <div class="col-sm-12 content-header center-elements">
+      <label class="d-block">
+        {{'pdf.selectperiod' | translate }}
+        </label>
+        <span class="optionsCharts">
+            <span><button class="mb-0 btn btn-sm btn-white round mr-1" [disabled]="rangeDate=='month'"
+                    (click)="loadDataRangeDate('month');">{{'charts.Last month' |
+                    translate }}</button></span>
+            <span><button class="mb-0 btn btn-sm btn-white round mr-1" [disabled]="rangeDate=='quarter'"
+                    (click)="loadDataRangeDate('quarter');">{{'charts.Last quarter' |
+                    translate }}</button></span>
+            <span><button class="mb-0 btn btn-sm btn-white round mr-1" [disabled]="rangeDate=='year'"
+                    (click)="loadDataRangeDate('year');">{{'charts.Last year' |
+                    translate }}</button></span>
+        </span>
+        <span class="d-block mt-2">
+            <span class="mr-2">{{'charts.GroupBy' | translate }}:</span>
+            <span><button class="mb-0 btn btn-sm btn-white round mr-1" [disabled]="groupBy=='Weeks'"
+                    (click)="changeGroupBy('Weeks');">{{'charts.Weeks' | translate }}</button></span>
+            <span><button class="mb-0 btn btn-sm btn-white round mr-1" [disabled]="groupBy=='Months'"
+                    (click)="changeGroupBy('Months');">{{'charts.Months' | translate }}</button></span>
+        </span>
+
+        <div class="mt-2" *ngIf="generatingPDF">
+          <qrcode id="qrcodeimg" [qrdata]="generateUrlQr" elementType="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+        </div>
+    </div>
+</div>
+  <div class="row" *ngIf="generatingPDF">
+    <div class="col-lg-12 ">
+        <div *ngIf="!loadedInfoPatient">
+            <i class="fa fa-spinner fa-spin fa-fw"></i>
+        </div>
+        <div id="canvas-charts">
+            <div class="row" *ngIf="events.length > 0 && loadedEvents">
+                <div class="col-sm-12">
+                    <div class="card mb-2 mt-2">
+                        <div class="mb-2">
+                            <div class="card-block" [ngClass]="(generatingPDF)?'m-3':'m-0'">
+                                <div class="row p-2" *ngIf="!generatingPDF">
+                                    <div class="col-12">
+                                        <h4 class="text-bold-500 mb-0">{{'menu.Seizures' | translate }}</h4>
+                                        <span class="text-muted">{{'pdf.grap1' | translate }}</span>
+                                    </div>
+                                </div>
+                                <div id="line-chart1">
+                                  <div class="height-100">
+                                    <ngx-charts-bar-vertical-2d [scheme]="lineChartOneColorScheme"
+                                        [results]="lineChartSeizures" [gradient]="barChartGradient"
+                                        [xAxis]="false" [yAxis]="true" [yAxisTickFormatting]='axisFormat'
+                                        [legend]="barChartShowLegend" [showXAxisLabel]="false"
+                                        [showYAxisLabel]="false" [xAxisLabel]="barChartXAxisLabel"
+                                        [yAxisLabel]="barChartYAxisLabel" [yAxisTicks]="yAxisTicksSeizures">
+                                        <ng-template #tooltipTemplate let-model="model">
+                                            <span>{{ model.name }}: {{ model.value }}</span>
+                                            <span class="d-block"
+                                                *ngFor="let type of model.types ; let i = index">
+                                                {{type.type}}: {{type.count}}
+                                            </span>
+                                        </ng-template>
+                                        <ng-template #seriesTooltipTemplate let-model="model">
+                                            <div *ngFor="let mod of model; let i = index">
+                                                <span class="d-block">{{ mod.name}}: {{ mod.value
+                                                    }}</span>
+                                                <span class="d-block"
+                                                    *ngFor="let type of mod.types ; let j = index">
+                                                    {{type.type}}: {{type.count}}
+                                                </span>
+                                            </div>
+                                        </ng-template>
+                                    </ngx-charts-bar-vertical-2d>
+                                    
+                                </div>
+                                <div *ngIf="rangeDate=='month'" class="center-elements col-12">
+                                    <span class="float-left font-small-3">{{xAxisTicks[0] | date: 'dd MMM': '' : translate.currentLang}}</span>
+                                    <span class="d-none d-sm-inline font-small-3">{{xAxisTicks[1] | date: 'dd MMM': '' : translate.currentLang}}</span>
+                                    <span class="float-right font-small-3">{{xAxisTicks[2] | date: 'dd MMM': '' : translate.currentLang}}</span>
+                                </div>
+                                <div *ngIf="rangeDate!='month'" class="center-elements col-12">
+                                    <span class="float-left font-small-3">{{xAxisTicks[0] | date: 'MMM y': '' : translate.currentLang}}</span>
+                                    <span class="d-none d-sm-inline font-small-3">{{xAxisTicks[1] | date: 'MMM y': '' : translate.currentLang}}</span>
+                                    <span class="float-right font-small-3">{{xAxisTicks[2] | date: 'MMM y': '' : translate.currentLang}}</span>
+                                </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="events.length == 0 && loadedEvents">
+                <div class="col-sm-12">
+                    <div class="card mb-2 mt-2">
+                        <div class="">
+                            <div class="card-block">
+                                <div class="row p-2">
+                                    <div class="col-12">
+                                        <h4 class="text-bold-500 mb-0">{{'menu.Seizures' | translate }}</h4>
+                                        <span class="text-muted">{{'pdf.grap1' | translate }}</span>
+                                        <p class="mb-0">{{'charts.Noseizures' | translate }}
+                                            <span *ngIf="rangeDate!=''">
+                                                {{'charts.in the last' | translate }}
+                                                <span *ngIf="rangeDate=='month'">{{'charts.month' |
+                                                    translate }}</span>
+                                                <span *ngIf="rangeDate=='quarter'">{{'charts.quarter' |
+                                                    translate }}</span>
+                                                <span *ngIf="rangeDate=='year'">{{'charts.year' | translate
+                                                    }}</span>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="feels.length > 0">
+                <div class="col-sm-12">
+                    <div class="card mb-2 mt-2" id="line-chart2">
+                        <div class="mb-2">
+                          <div class="card-block" [ngClass]="(generatingPDF)?'m-0':'m-0'">
+                            <div class="row p-2" *ngIf="!generatingPDF">
+                                    <div class="col-12">
+                                        <h4 class="text-bold-500 mb-0">{{'charts.Quality of life' | translate }}</h4>
+                                        <span class="text-muted">{{'pdf.grap2' | translate }}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                  <div class="height-100">
+                                    <ngx-charts-line-chart [scheme]="lineChartColorScheme"
+                                        [results]="lineChartHeight" [gradient]="barChartGradient"
+                                        [xAxis]="false" [yAxis]="true"
+                                        [legend]="barChartShowLegend"
+                                        [showXAxisLabel]="false"
+                                        [xAxisTickFormatting]="tickFormatting"
+                                        [showYAxisLabel]="false" [xAxisLabel]=""
+                                        [autoScale]="false" [showText]="false"
+                                        [yAxisTicks]=[0,5] [yScaleMax]="5"
+                                        [yAxisTickFormatting]="axisFormat">
+                                        <ng-template #tooltipTemplate let-model="model">
+                                            <span class="d-block">{{ model.name |date }}</span>
+                                            <span *ngIf="model.value==5">{{'charts.Very happy' | translate
+                                                }}</span>
+                                            <span *ngIf="model.value==4">{{'charts.Happy' | translate
+                                                }}</span>
+                                            <span *ngIf="model.value==3">Normal</span>
+                                            <span *ngIf="model.value==2">{{'charts.Sad' | translate
+                                                }}</span>
+                                            <span *ngIf="model.value==1">{{'charts.Very sad' | translate
+                                                }}</span>
+                                        </ng-template>
+                                        <ng-template #seriesTooltipTemplate let-model="model">
+                                            <div *ngFor="let mod of model; let i = index">
+                                                <span class="d-block">{{ mod.name |date }}</span>
+                                                <span *ngIf="mod.value==5">{{'charts.Very happy' | translate
+                                                    }}</span>
+                                                <span *ngIf="mod.value==4">{{'charts.Happy' | translate
+                                                    }}</span>
+                                                <span *ngIf="mod.value==3">Normal</span>
+                                                <span *ngIf="mod.value==2">{{'charts.Sad' | translate
+                                                    }}</span>
+                                                <span *ngIf="mod.value==1">{{'charts.Very sad' | translate
+                                                    }}</span>
+                                            </div>
+                                        </ng-template>
+                                    </ngx-charts-line-chart>
+                                    <div *ngIf="rangeDate=='month'" class="center-elements col-12">
+                                        <span class="float-left font-small-3">{{xAxisTicks[0] | date: 'dd MMM': '' : translate.currentLang}}</span>
+                                        <span class="d-none d-sm-inline font-small-3">{{xAxisTicks[1] | date: 'dd MMM': '' : translate.currentLang}}</span>
+                                        <span class="float-right font-small-3">{{xAxisTicks[2] | date: 'dd MMM': '' : translate.currentLang}}</span>
+                                    </div>
+                                    <div *ngIf="rangeDate!='month'" class="center-elements col-12">
+                                        <span class="float-left font-small-3">{{xAxisTicks[0] | date: 'MMM y': '' : translate.currentLang}}</span>
+                                        <span class="d-none d-sm-inline font-small-3">{{xAxisTicks[1] | date: 'MMM y': '' : translate.currentLang}}</span>
+                                        <span class="float-right font-small-3">{{xAxisTicks[2] | date: 'MMM y': '' : translate.currentLang}}</span>
+                                    </div>
+                                </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="feels.length == 0 && loadedFeels">
+                <div class="col-sm-12">
+                    <div class="card mb-2 mt-2">
+                        <div class="">
+                            <div class="card-block">
+                                <div class="row p-2">
+                                    <div class="col-12">
+                                        <h4 class="text-bold-500 mb-0">{{'charts.Quality of life' |translate }}</h4>
+                                        <span class="text-muted">{{'pdf.grap2' | translate }}</span>
+                                        <p class="mb-0">{{'charts.No data saved' | translate }}
+                                            <span
+                                            *ngIf="rangeDate!=''">{{'charts.in the last' | translate }} 
+                                            <span *ngIf="rangeDate=='month'">{{'charts.month' |
+                                                translate }}</span>
+                                            <span *ngIf="rangeDate=='quarter'">{{'charts.quarter' |
+                                                translate }}</span>
+                                            <span *ngIf="rangeDate=='year'">{{'charts.year' | translate
+                                                }}</span></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="medications.length > 0 && loadedDrugs">
+                <div class="col-sm-12">
+                    <div class="card mt-2 mb-2" #ContainerRef id="line-chart3">
+                        <div class="mb-2">
+                          <div class="card-block" [ngClass]="(generatingPDF)?'m-0':'m-0'">
+                            <div class="row p-2" *ngIf="!generatingPDF">
+                                    <div class="col-12">
+                                        <h4 class="text-bold-500 mb-0">{{'clinicalinfo.Medication' | translate }}</h4>
+                                        <span class="text-muted">{{'pdf.grap3' | translate }}</span>
+                                        <span class="text-muted d-block"> 
+                                            <label class="container pl-0">
+                                                <input type="checkbox" [(ngModel)]="normalized" (change)="normalizedChanged(normalized)">
+                                                <span class="checkmark"></span>
+                                              </label><span style="margin-left: 0.2rem !important;">{{titleDose}}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div >
+                                    <div class="height-100">
+                                      <ngx-charts-line-chart                                                
+                                          [scheme]="lineChartColorScheme"
+                                          [results]="lineChartDrugs" [gradient]="barChartGradient"
+                                          [xAxis]="false" [yAxis]="true" [yAxisTickFormatting]='axisFormat'
+                                          [legend]="false" [legendPosition]="'below'" [showXAxisLabel]="false"
+                                          [showYAxisLabel]="false" [xAxisLabel]="barChartXAxisLabel"
+                                          [yAxisLabel]="barChartYAxisLabel" [yAxisTicks]="yAxisTicksDrugs">
+                                          <!--[timeline]="true"-->
+                                      </ngx-charts-line-chart>                                    
+                                  </div>
+                                  <div *ngIf="rangeDate=='month'" class="center-elements col-12">
+                                      <span class="float-left font-small-3">{{xAxisTicks[0] | date: 'dd MMM': '' : translate.currentLang}}</span>
+                                      <span class="d-none d-sm-inline font-small-3">{{xAxisTicks[1] | date: 'dd MMM': '' : translate.currentLang}}</span>
+                                      <span class="float-right font-small-3">{{xAxisTicks[2] | date: 'dd MMM': '' : translate.currentLang}}</span>
+                                  </div>
+                                  <div *ngIf="rangeDate!='month'" class="center-elements col-12">
+                                      <span class="float-left font-small-3">{{xAxisTicks[0] | date: 'MMM y': '' : translate.currentLang}}</span>
+                                      <span class="d-none d-sm-inline font-small-3">{{xAxisTicks[1] | date: 'MMM y': '' : translate.currentLang}}</span>
+                                      <span class="float-right font-small-3">{{xAxisTicks[2] | date: 'MMM y': '' : translate.currentLang}}</span>
+                                  </div>
+                                  <ngx-charts-legend fxFlex="100%" 
+                                                        class="chart-legend" 
+                                                        [data]="chartNames" 
+                                                        [title]="'Legend Title'" 
+                                                        [colors]="colors">
+                                      </ngx-charts-legend>
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="medications.length == 0 && loadedDrugs">
+                <div class="col-sm-12">
+                    <div class="card mb-2 mt-2">
+                        <div class="">
+                            <div class="card-block">
+                                <div class="row p-2">
+                                    <div class="col-12">
+                                        <h4 class="text-bold-500 mb-0">{{'clinicalinfo.Medication' | translate }}</h4>
+                                        <span class="text-muted">{{'pdf.grap3' | translate }}</span>
+                                        <p class="mb-0">{{'charts.There is no drug data stored' | translate }} <span
+                                            *ngIf="rangeDate!=''">{{'charts.in the last' | translate }}
+                                            <span *ngIf="rangeDate=='month'">{{'charts.month' |
+                                                translate }}</span>
+                                            <span *ngIf="rangeDate=='quarter'">{{'charts.quarter' |
+                                                translate }}</span>
+                                            <span *ngIf="rangeDate=='year'">{{'charts.year' | translate
+                                                }}</span></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row"
+                *ngIf="medications.length > 0 && loadedDrugs && events.length > 0 && loadedEvents">
+                <div class="col-sm-12">
+                    <div class="card mb-2 mt-2" #ContainerRef1 id="line-chart4">
+                        <div class="mb-2">
+                          <div class="card-block" [ngClass]="(generatingPDF)?'m-0':'m-0'">
+                            <div class="row p-2" *ngIf="!generatingPDF">
+                                    <div class="col-12">
+                                        <h4 class="text-bold-500 mb-0">{{'charts.Drugs vs Seizures' | translate }}</h4>
+                                        <span class="text-muted">
+                                            <label class="container pl-0">
+                                                <input type="checkbox" [(ngModel)]="normalized2" (change)="normalizedChanged2(normalized2)">
+                                                <span class="checkmark"></span>
+                                              </label><span style="margin-left: 0.2rem !important;">{{titleDrugsVsDrugs}}</span> 
+                                        </span>
+                                    </div>
+                                </div>
+                                <div>
+                                  <div class="height-100">
+                                    <div id="chartdoseAvgDrugs" style="max-height: 100px;" class="ct-chart"
+                                        height="200px"></div>
+                                        <combo-chart-component
+                                        [view]="[(ContainerRef1.offsetWidth-90), 100]"
+                                        [scheme]="comboBarScheme"
+                                        [colorSchemeLine]="colors"
+                                        [colorsLineToll]="colorsLineToll"
+                                        [results]="barChart"
+                                        [animations]="animations"
+                                        [lineChart]="lineChartSeries"
+                                        [yAxisTickFormatting]="yLeftTickFormat"
+                                        [yLeftAxisScaleFactor]="yLeftAxisScale"
+                                        [yRightAxisScaleFactor]="yRightAxisScale"
+                                        [yRightAxisTickFormatting]="yRightTickFormat"
+                                        [gradient]="gradient"
+                                        [xAxis]="showXAxis"
+                                        [yAxis]="showYAxis"
+                                        [legend]="false"
+                                        [showGridLines]="showGridLines"
+                                        [showXAxisLabel]="showXAxisLabel"
+                                        [showYAxisLabel]="showYAxisLabel"
+                                        [showRightYAxisLabel]="showYAxisLabel"
+                                        [xAxisLabel]="false"
+                                        [yAxisLabel]="yAxisLabel"
+                                        [yAxisLabelRight]="yAxisLabelRight">
+                                        </combo-chart-component>
+                                       
+                                </div>
+                                <div *ngIf="rangeDate=='month'" class="center-elements col-12">
+                                    <span class="float-left font-small-3">{{xAxisTicks[0] | date: 'dd MMM': '' : translate.currentLang}}</span>
+                                    <span class="d-none d-sm-inline font-small-3">{{xAxisTicks[1] | date: 'dd MMM': '' : translate.currentLang}}</span>
+                                    <span class="float-right font-small-3">{{xAxisTicks[2] | date: 'dd MMM': '' : translate.currentLang}}</span>
+                                </div>
+                                <div *ngIf="rangeDate!='month'" class="center-elements col-12">
+                                    <span class="float-left font-small-3">{{xAxisTicks[0] | date: 'MMM y': '' : translate.currentLang}}</span>
+                                    <span class="d-none d-sm-inline font-small-3">{{xAxisTicks[1] | date: 'MMM y': '' : translate.currentLang}}</span>
+                                    <span class="float-right font-small-3">{{xAxisTicks[2] | date: 'MMM y': '' : translate.currentLang}}</span>
+                                </div>
+                                <ngx-charts-legend fxFlex="100%" 
+                                                        class="chart-legend" 
+                                                        [data]="chartNames" 
+                                                        [title]="'Legend Title'" 
+                                                        [colors]="colors">
+                                      </ngx-charts-legend>
+                                      <div class="">
+                                        <ngx-charts-legend fxFlex="100%" 
+                                                          class="chart-legend" 
+                                                          [data]="titleSeizuresLegend" 
+                                                          [title]="'Legend Title'" 
+                                                          [colors]="colors2">
+                                        </ngx-charts-legend>
+                                      </div>
+                                      
+                                </div>
+                                
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="modal-footer">
+  <div class="col-md-12 center-elements">
+    <div ><span id="content"></span></div>
+    <button *ngIf="loadedDrugs" class="btn btn-dark mr-1" type="button"
+    (click)="exportPDF2()">{{'generics.ExportData' | translate }}</button>
+    <i *ngIf="!loadedDrugs" class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i>
+  </div>
+</div>
+</ng-template>
+
+<ng-template #qrPanel let-c="close" let-d="dismiss" appendTo="body">
+  <div class="modal-header" id="idHeader">
+      <button type="button" class="close" aria-label="Close" (click)="closeModalQr();">
+          <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+<div class="modal-body card mb-0">
+  <div class="row">
+    <div class="col-md-12 center-elements">
+      <qrcode id="qrcodeimg" [qrdata]="generateUrlQr" elementType="url" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+
+      <a class="d-block btn btn-info mt-2" (click)="copyClipboard2()">{{'open.Copy url' | translate }}</a>
+    </div>
+  </div>
+  
+</div>
+</ng-template>
+
+<ng-template #infoSharePanel let-c="close" let-d="dismiss" appendTo="body">
+    <div class="modal-header" id="idHeader">
+        <h4 class="mb-0">{{'mydata.q2' | translate }}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="closeModal();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+  <div class="modal-body card mb-0">
+    <div class="row">
+      <div class="col-md-12">
+        {{'homeraito.p1' | translate }}
+      </div>
+    </div>
+    
+  </div>
+  </ng-template>

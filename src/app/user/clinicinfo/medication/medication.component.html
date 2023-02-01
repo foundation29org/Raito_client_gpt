@@ -1,0 +1,996 @@
+<div class="h-100">
+    <div class="card card-block mx-auto width30rem">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-sm-12 align-items-center">
+					<div>
+						<button *ngIf="viewMeditationSection" class="btn btn-primary mb-2" (click)="back()">
+							{{'generics.Back' | translate}}
+						</button>
+					</div>
+					<h2 class="content-header mt-0 mb-2" *ngIf="!viewMeditationSection && !drugSelected">{{'clinicalinfo.Drugs' | translate }}</h2>
+
+					<section id="listMeditationSection" *ngIf="!viewMeditationSection">
+						<div class="row">
+							<div class="col-sm-12 center-elements">
+								<button *ngIf="!loading" type="button" class="mb-0 btn btn-dark"
+									(click)="newMedication()">{{'medication.New drug or dose' | translate }}</button>
+								<span class="d-block">
+									<label class="primary mb-2 pointer" *ngIf="!importing">
+										<input *ngIf="!isMobile" id="file" type="file" style="display:none;" accept=".json"
+											(change)="onImport($event)" />
+										<input *ngIf="isMobile" id="file" type="file" style="display:none;"
+										(change)="onImport($event)" />
+										{{'seizures.Import from seizure tracker' | translate }}
+									</label>
+									<label *ngIf="importing" class="text-center mb-2">
+										<i class="fa fa-spinner fa-spin fa-fw"></i>
+										{{'generics.Please wait' | translate }}
+									</label>
+								</span>
+							</div>
+						</div>
+						<div class="center-elements" *ngIf="loading">
+							<div>
+								<p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+							</div>
+						</div>
+						<div *ngIf="!loading">
+							<div *ngIf="medications.length>0">
+								<div class="row" *ngIf="actualMedications.length>0">
+									<div class="col-md-12 mt-2">
+										<h4 class="text-bold-400">{{'medication.Current drugs' | translate }}</h4>
+									</div>
+									<div class="col-md-12 col-lg-4" *ngFor="let medication of actualMedications; let i = index">
+										<div class="card gradient-red-ocean mt-0">
+											<div class="card-body">
+												<div class="card-block pb-0">
+													<div class="media">
+														<div class="media-body white text-left">
+															<h3 class="white font-medium-3 mb-0">{{medication.drugTranslate}}</h3>
+															<span>{{medication.dose}} {{'medication.mg/day' | translate }}</span>
+														</div>
+													</div>
+												</div>
+												<div class="pt-2 card-block pb-0">
+					
+													<div ngbDropdown class="d-inline-block">
+														<button class="btn btn-primary btn-raised mb-0 btn-round mr-1" id="dropdownBasic1"
+															ngbDropdownToggle>{{'generics.Options' | translate }}</button>
+														<div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+															<a class="dropdown-item"
+																(click)="updateMedication(medication)">{{'generics.View' | translate
+																}}</a>
+															<a class="dropdown-item"
+																(click)="changeNotes(medication, contentNotes)">{{'generics.notes' |
+																translate }}</a>
+															<a class="dropdown-item"
+																(click)="changeDose(medication, content)">{{'medication.Change Dose' |
+																translate }}</a>
+															<a class="dropdown-item"
+																(click)="stopTaking(medication, contentStop)">{{'medication.Stop taking the
+																drug' | translate }}</a>
+															<a class="dropdown-item"
+																(click)="changeSideEffect(medication, contentSideEffect)">{{'medication.Side
+																Effect' | translate }}</a>
+															<a class="dropdown-item"
+																(click)="deleteMedication(medication)">{{'generics.Delete' | translate
+																}}</a>
+														</div>
+													</div>
+												</div>
+					
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="row col-md-12 ml-0" *ngIf="actualMedications.length==0">
+									<h4 class="text-bold-400">{{'medication.Currently it is not taking drugs' | translate }}</h4>
+								</div>
+								<div class="row" *ngIf="oldMedications.length>0">
+									<div class="col-md-12 mt-2">
+										<h4 class="text-bold-400">{{'medication.Previous drugs' | translate }}</h4>
+									</div>
+									<div class="col-md-12 col-lg-4" *ngFor="let medication of oldMedications; let i = index">
+										<div class="card gradient-red-ocean mt-0">
+											<div class="card-body">
+												<div class="card-block pb-0">
+													<div class="media">
+														<div class="media-body white text-left">
+															<h3 class="white font-medium-3 mb-0">{{medication.drugTranslate}}</h3>
+															<span>{{medication.dose}} {{'medication.mg/day' | translate }}</span>
+															<p>{{medication.endDate | date: timeformat}}</p>
+															<!--<span>{{medication.endDate | date:'mediumDate':'':'fr'}}</span>-->
+														</div>
+													</div>
+												</div>
+												<div class="pt-2 card-block pb-0">
+													<div ngbDropdown class="d-inline-block">
+														<button class="btn btn-primary btn-raised mb-0 btn-round mr-1" id="dropdownBasic1"
+															ngbDropdownToggle>{{'generics.Options' | translate }}</button>
+														<div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+															<a class="dropdown-item"
+																(click)="updateMedication(medication)">{{'generics.View' | translate
+																}}</a>
+															<a class="dropdown-item"
+																(click)="deleteMedication(medication)">{{'generics.Delete' | translate
+																}}</a>
+														</div>
+													</div>
+												</div>
+					
+											</div>
+										</div>
+									</div>
+								</div>
+								<!--<div class="row" *ngIf="oldMedications.length==0">
+									<div class="col-md-12 mt-4">
+										<h4 class="text-bold-400">{{'medication.No older drugs' | translate }}</h4>
+									</div>
+								</div>-->
+							</div>
+							<div class="row" *ngIf="medications.length==0">
+								<div class="col-md-12 center-elements">
+									<p class="text-bold-400">{{'medication.No saved drugs' | translate }}</p>
+								</div>
+							</div>
+						</div>
+					</section>
+					<section id="viewMeditationSection" *ngIf="viewMeditationSection">
+						<div class="" *ngIf="!loading && panelMedication">
+							<div class="" *ngIf="drugsLang.length>0">
+								<div class="form-group">
+									<select id="lang" name="lang" class="form-control" [(ngModel)]="drugSelected" #groupselected
+										(ngModelChange)="onChangeDrug()">
+										<option [ngValue]="null" disabled selected>--{{'medication.Select drug' | translate }}--</option>
+										<option *ngFor="let drug of drugsLang" [ngValue]="drug.name"> {{drug.translation}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="" *ngIf="drugsLang.length==0 && !drugSelected">
+								<p>Write the name of the medication you are taking:</p>
+								<div class="form-group">
+									<input type="text" class="form-control" [(ngModel)]="drugToExtract" #groupselected >
+									<button type="button" class="btn btn-dark mt-2" [disabled]="callingOpenai" (click)="extractDrug()">{{'wizard.btn' | translate}}</button>
+								</div>
+							</div>
+							<div class="" *ngIf="drugsLang.length==0 && drugSelected">
+								<h4>{{drugSelected}}</h4>
+							</div>
+							<div class=""
+								*ngIf="(!loading && drugSelected && !viewMedicationForm) && (actualMedication.endDate || !actualMedication.startDate)">
+								<button type="button" class="btn btn-dark" (click)="newDose()">{{'medication.New Dose' | translate
+									}}</button>
+								<em *ngIf="callingOpenai" class="fa fa-spinner fa-spin fa-fw"></em>
+							</div>
+						</div>
+						<div class="row" *ngIf="actualMedication.startDate && !viewMedicationForm">
+							<div class="col-md-12">
+								<div class="card gradient-bloody-mary">
+									<div class="card-body">
+										<div class="card-block pb-0">
+											<div class="media">
+												<div class="media-body white text-left">
+													<h3 class="white font-medium-3 mb-0">{{actualMedication.dose}} {{'medication.mg/day' |
+														translate }}</h3>
+													<span>{{'medication.Current dose' | translate }}</span>
+												</div>
+												<div class="media-right white text-right">
+													<i class="fa fa-medkit font-medium-3"></i>
+												</div>
+											</div>
+										</div>
+										<div class="pt-2 card-block pb-0">
+											<div ngbDropdown class="d-inline-block">
+												<button class="btn btn-secondary btn-raised btn-round mr-1" id="dropdownBasic1"
+													ngbDropdownToggle>{{'generics.Options' | translate }}</button>
+												<div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+													<a class="dropdown-item" (click)="editDrug(actualMedication)">{{'generics.Edit' |
+														translate }}</a>
+													<a class="dropdown-item"
+														(click)="changeNotes(actualMedication, contentNotes)">{{'generics.notes' | translate
+														}}</a>
+													<a class="dropdown-item"
+														(click)="changeDose(actualMedication, content)">{{'medication.Change Dose' |
+														translate }}</a>
+													<a class="dropdown-item"
+														(click)="stopTaking(actualMedication, contentStop)">{{'medication.Stop taking the
+														drug' | translate }}</a>
+													<a class="dropdown-item"
+														(click)="changeSideEffect(actualMedication, contentSideEffect)">{{'medication.Side
+														Effect' | translate }}</a>
+													<a class="dropdown-item" (click)="deleteDose(actualMedication)">{{'generics.Delete'
+														| translate }}</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!--{{actualMedication|json}}
+					{{historyDrugSelected|json}}-->
+						<div class="row" *ngIf="!loading && viewMedicationForm">
+							<div class="col-md-12">
+								<div class="card">
+									<div class="">
+										<div>
+											<form class="form" (ngSubmit)="onSubmit()" #f="ngForm" *ngIf="medication">
+												<div class="">
+													<div class="row">
+														<div class="col-md-12">
+															<div class="form-group">
+																<ng-template #popContent>
+																	<span>
+																		<span *ngIf="recommendedDoses[medication.drug].data=='onlykids' && age.years<18">
+																			<span class="d-block">{{'medication.Recommended dose for children' | translate}} {{'medication.of' | translate}} {{weightUnits | number : '1.0-2'}} {{settings.massunit}}</span>
+																			<span class="text-muted">
+																				<span *ngIf="recommendedDoses[medication.drug].kids.perkg=='yes'">
+																					<span *ngIf="recommendedDoses[medication.drug].kids.initialdose.min!='0' || recommendedDoses[medication.drug].kids.initialdose.max!='0'">
+																						{{'medication.Initial' | translate}}: 
+																						{{recommendedDoses[medication.drug].kids.initialdose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].kids.initialdose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}
+																					</span>
+																					<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].kids.maintenancedose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].kids.maintenancedose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}</span>
+																				</span>
+																				<span *ngIf="recommendedDoses[medication.drug].kids.perkg=='no'">
+																					<span *ngIf="recommendedDoses[medication.drug].kids.initialdose.min!='0' || recommendedDoses[medication.drug].kids.initialdose.max!='0'">
+																						{{'medication.Initial' | translate}}: 
+																						{{recommendedDoses[medication.drug].kids.initialdose.min}}-{{recommendedDoses[medication.drug].kids.initialdose.max}} {{'medication.mg/day' | translate}}
+																					</span>
+																					<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].kids.maintenancedose.min}}-{{recommendedDoses[medication.drug].kids.maintenancedose.max}} {{'medication.mg/day' | translate}}</span>
+																				</span>
+																			</span>
+																		</span>
+																		<span *ngIf="recommendedDoses[medication.drug].data=='onlyadults' && age.years>=18">
+																			<span class="d-block">{{'medication.Recommended dose for adults' | translate}} {{'medication.of' | translate}} {{weightUnits | number : '1.0-2'}} {{settings.massunit}}</span>
+																			<span class="text-muted">
+																				<span *ngIf="recommendedDoses[medication.drug].adults.perkg=='yes'">
+																					<span *ngIf="recommendedDoses[medication.drug].adults.initialdose.min!='0' || recommendedDoses[medication.drug].adults.initialdose.max!='0'">
+																						{{'medication.Initial' | translate}}: 
+																						{{recommendedDoses[medication.drug].adults.initialdose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].adults.initialdose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}
+																					</span>
+																					<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].adults.maintenancedose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].adults.maintenancedose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}</span>
+																				</span>
+																				<span *ngIf="recommendedDoses[medication.drug].adults.perkg=='no'">
+																					<span *ngIf="recommendedDoses[medication.drug].adults.initialdose.min!='0' || recommendedDoses[medication.drug].adults.initialdose.max!='0'">
+																						{{'medication.Initial' | translate}}: 
+																						{{recommendedDoses[medication.drug].adults.initialdose.min}}-{{recommendedDoses[medication.drug].adults.initialdose.max}} {{'medication.mg/day' | translate}}
+																					</span>
+																					<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].adults.maintenancedose.min}}-{{recommendedDoses[medication.drug].adults.maintenancedose.max}} {{'medication.mg/day' | translate}}</span>
+																				</span>
+																			</span>
+																		</span>
+																		<span *ngIf="recommendedDoses[medication.drug].data=='yes'">
+																			<span *ngIf="age.years<18">
+																				<span class="d-block">{{'medication.Recommended dose for children' | translate}} {{'medication.of' | translate}} {{weightUnits | number : '1.0-2'}} {{settings.massunit}}</span>
+																				<span class="text-muted">
+																					<span *ngIf="recommendedDoses[medication.drug].kids.perkg=='yes'">
+																						<span *ngIf="recommendedDoses[medication.drug].kids.initialdose.min!='0' || recommendedDoses[medication.drug].kids.initialdose.max!='0'">
+																							{{'medication.Initial' | translate}}: 
+																							{{recommendedDoses[medication.drug].kids.initialdose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].kids.initialdose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}
+																						</span>
+																						<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].kids.maintenancedose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].kids.maintenancedose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}</span>
+																					</span>
+																					<span *ngIf="recommendedDoses[medication.drug].kids.perkg=='no'">
+																						<span *ngIf="recommendedDoses[medication.drug].kids.initialdose.min!='0' || recommendedDoses[medication.drug].kids.initialdose.max!='0'">
+																							{{'medication.Initial' | translate}}: 
+																							{{recommendedDoses[medication.drug].kids.initialdose.min}}-{{recommendedDoses[medication.drug].kids.initialdose.max}} {{'medication.mg/day' | translate}}
+																						</span>
+																						<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].kids.maintenancedose.min}}-{{recommendedDoses[medication.drug].kids.maintenancedose.max}} {{'medication.mg/day' | translate}}</span>
+																					</span>
+																				</span>
+																			</span>
+																			<span *ngIf="age.years>=18">
+																				<span class="d-block">{{'medication.Recommended dose for adults' | translate}} {{'medication.of' | translate}} {{weightUnits | number : '1.0-2'}} {{settings.massunit}}</span>
+																				<span class="text-muted">
+																					<span *ngIf="recommendedDoses[medication.drug].adults.perkg=='yes'">
+																						<span *ngIf="recommendedDoses[medication.drug].adults.initialdose.min!='0' || recommendedDoses[medication.drug].adults.initialdose.max!='0'">
+																							{{'medication.Initial' | translate}}: 
+																							{{recommendedDoses[medication.drug].adults.initialdose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].adults.initialdose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}
+																						</span>
+																						<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].adults.maintenancedose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].adults.maintenancedose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}</span>
+																					</span>
+																					<span *ngIf="recommendedDoses[medication.drug].adults.perkg=='no'">
+																						<span *ngIf="recommendedDoses[medication.drug].adults.initialdose.min!='0' || recommendedDoses[medication.drug].adults.initialdose.max!='0'">
+																							{{'medication.Initial' | translate}}: 
+																							{{recommendedDoses[medication.drug].adults.initialdose.min}}-{{recommendedDoses[medication.drug].adults.initialdose.max}} {{'medication.mg/day' | translate}}
+																						</span>
+																						<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].adults.maintenancedose.min}}-{{recommendedDoses[medication.drug].adults.maintenancedose.max}} {{'medication.mg/day' | translate}}</span>
+																					</span>
+																				</span>
+																			</span>
+																		</span>
+																		<span *ngIf="recommendedDoses[medication.drug].data=='no' || (recommendedDoses[medication.drug].data=='onlyadults' && age.years<18) || (recommendedDoses[medication.drug].data=='onlykids' && age.years>=18)">
+																			{{'medication.We do not have recommended dose data for this drug' | translate}}
+																		</span>
+																	</span>
+																  </ng-template>
+																<label for="dose" style="display: block;">* {{'medication.Dose' | translate }} ({{'medication.mg/day' | translate }}) <i class="ft-help-circle danger"  style="cursor: pointer;" placement="bottom" #p1="ngbPopover" [ngbPopover]="popContent" popoverTitle="{{'generics.More information' | translate }}"></i></label>
+																<input type="text" id="dose" class="form-control col-md-2" name="dose"
+																	[(ngModel)]="medication.dose" required dose #dose="ngModel"
+																	pattern="[0-9]+([,.][0-9]+)?$">
+																	<small class="form-text text-muted danger"
+																	*ngIf="dose.errors?.pattern">{{'medication.Invalid dose' | translate
+																	}}</small>
+																<small class="form-text text-muted danger"
+																	*ngIf="!dose.valid && (dose.dirty || dose.touched)">{{'generics.required'
+																	| translate }}</small>
+															</div>
+														</div>
+														<div class="col-6">
+															<div class="form-group">
+																<label for="startDate" class="d-block">* {{'generics.Start Date' | translate
+																	}}</label>
+																<span
+																	*ngIf="medication.startDate">{{medication.startDate|date:timeformat}}</span>
+																<input class="form-control w-75 d-none" name="startDate" matInput
+																	[matDatepicker]="picker" [(ngModel)]="medication.startDate" required
+																	dateTime #dateTime="ngModel" (dateChange)="fieldchanged()">
+																<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+																<mat-datepicker touchUi="true" #picker></mat-datepicker>
+																<small class="form-text text-muted danger"
+																	*ngIf="!dateTime.valid && (dateTime.dirty || dateTime.touched)">{{'generics.required'
+																	| translate }}</small>
+																<!--{{medication.startDate|date:timeformat}}
+																<input  class="form-control w-75 d-none" id="startDate" name="startDate"  matInput [value]="medication.startDate" [matDatepicker]="picker1" [max]="today" [(ngModel)]="medication.startDate" required startDate #startDate="ngModel">
+																<mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+																<mat-datepicker touchUi="true" #picker1></mat-datepicker>
+																<small class="form-text text-muted danger" *ngIf="!startDate.valid && (startDate.dirty || startDate.touched)">{{'generics.required' | translate }}</small>-->
+															</div>
+														</div>
+														<div class="col-6">
+															<div class="form-group">
+																<label for="endDate">{{'generics.End Date' | translate }}</label>
+																<div>
+																	<span *ngIf="medication.endDate">{{medication.endDate|date:timeformat}}
+																		<a (click)="deleteEndDate()"
+																			title="{{'generics.Delete' | translate }}"><i
+																				class="fa fa-trash red"></i></a></span>
+																	<input class="col-md-6 col-lg-4 form-control w-75 d-none" name="endDate"
+																		[min]="startDate" matInput [matDatepicker]="picker2"
+																		[(ngModel)]="medication.endDate" (dateChange)="fieldchanged()">
+																	<mat-datepicker-toggle matSuffix [for]="picker2">
+																	</mat-datepicker-toggle>
+																	<mat-datepicker touchUi="true" #picker2></mat-datepicker>
+																	<!--
+																{{medication.endDate|date:timeformat}}
+																<input  class="form-control w-75 d-none" id="endDate" name="endDate" [min]="medication.startDate" [max]="today" matInput [matDatepicker]="picker2" [(ngModel)]="medication.endDate" >
+																<mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+																<mat-datepicker touchUi="true" #picker2></mat-datepicker>-->
+																</div>
+																<small class="form-text text-muted">{{'medication.If you are currently
+																	taking the drug, do not select end date' | translate }}</small>
+															</div>
+														</div>
+													</div>
+													<div *ngIf="!showDetails" class="text-muted">
+														<a class="" style="cursor: pointer;" (click)="showDetails=!showDetails;">
+															{{'generics.Show more options' | translate }} <i class="fas fa-chevron-down"></i>
+														  </a>
+													</div>
+													<div *ngIf="showDetails" class="text-muted">
+														<a class="" style="cursor: pointer;" (click)="showDetails=!showDetails;">
+															{{'generics.Hide options' | translate }} <i class="fas fa-chevron-up"></i>
+														  </a>
+													</div>
+													<div *ngIf="showDetails">
+														<div class="row mt-2">
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label for="schedule">{{'medication.Schedule' | translate }}</label>
+																	<select id="schedule" name="schedule" class="form-control"
+																		[(ngModel)]="medication.schedule">
+																		<option value="Daily">{{'medication.Daily' | translate }}</option>
+																		<option value="10 on / 10 off">{{'medication.10 on / 10 off' | translate
+																			}}</option>
+																		<option value="Other">{{'generics.Other' | translate }}</option>
+																	</select>
+																</div>
+															</div>
+															<div class="col-md-12" *ngIf="medication.schedule=='Other'">
+																<div class="form-group">
+																	<label for="otherSchedule">{{'medication.Schedule' | translate }}:
+																		{{'generics.More information' | translate }}</label>
+																	<input type="text" class="form-control" name="medication.otherSchedule"
+																		[(ngModel)]="medication.otherSchedule">
+																</div>
+															</div>
+															<div class="col-md-12" *ngIf="sideEffectsLang.length>0">
+																<div class="form-group">
+																	<label for="sideEffects">{{'medication.Side Effect' | translate }}</label>
+																	<mat-form-field class="mat-app-background">
+																		<mat-select id="sideEffects" name="sideEffects" multiple
+																			[(ngModel)]="medication.sideEffects">
+																			<mat-option *ngFor="let sideEffect of sideEffectsLang"
+																				[value]="sideEffect.name">{{sideEffect.translation}}
+																			</mat-option>
+																		</mat-select>
+																	</mat-form-field>
+																</div>
+															</div>
+															<div class="col-md-12" *ngIf="sideEffectsLang.length==0">
+																<div class="form-group">
+																	<label for="freesideEffects">{{'medication.Side Effect' | translate
+																		}}</label>
+																	<input type="text" id="freesideEffects" class="form-control"
+																		name="freesideEffects" [(ngModel)]="medication.freesideEffects">
+																</div>
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label for="compassionateUse">{{'medication.Compassionate Use' | translate}} <em class="ft-help-circle danger" style="cursor: pointer;" placement="down" #p3="ngbPopover" [ngbPopover]="popContentdrugs2" popoverTitle="{{'generics.More information' | translate }}"></em>
+																		<ng-template #popContentdrugs2>
+																			<span>
+																				{{'medication.Compassionate Use Description' | translate }}
+																			</span>
+																		  </ng-template></label>
+																	<select id="compassionateUse" name="compassionateUse"
+																		class="form-control col-md-6" [(ngModel)]="medication.compassionateUse">
+																		<option value="yes">{{'generics.Yes' | translate }}</option>
+																		<option value="no">{{'generics.No' | translate }}</option>
+																		<option value="Don't know">{{'generics.Dont know' | translate }}
+																		</option>
+																	</select>
+																</div>
+															</div>
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label for="notes">{{'generics.notes' | translate }}</label>
+																	<textarea name="notes" class="autoajustable form-control"
+																		[(ngModel)]="medication.notes" name="notes"></textarea>
+																</div>
+															</div>
+														</div>
+													</div>
+													
+												</div>
+												<!--<span *ngIf="!f.valid"
+													class="form-text text-muted danger">{{'generics.requiredfieldsmissing' | translate
+													}}</span>-->
+												<div class="border-top form-actions center" *ngIf="!sending">
+													<div *ngIf="f.valid;then formValid else formError"></div>
+													<ng-template #formValid><button class="btn btn-dark"
+															type="submit"><i class="fa fa-check-square-o"></i> {{'generics.Save' | translate
+															}}</button></ng-template>
+													<ng-template #formError><button class="btn btn-dark"
+															type="button" (click)="submitInvalidForm()"><i class="fa fa-check-square-o"></i>
+															{{'generics.Save' | translate }}</button></ng-template>
+												</div>
+												<div class="col-md-12 center-elements" *ngIf="sending">
+													<div>
+														<p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+													</div>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row" *ngIf="historyDrugSelected.length>0 && !viewMedicationForm">
+							<!--&& !viewMedicationForm-->
+							<div class="col-md-12">
+								<div class="card">
+									<div class="">
+										<h4 class="form-section">{{'generics.Historical' | translate }}</h4>
+									</div>
+									<div class="">
+										<div class="">
+											<div *ngIf="historyDrugSelected.length > 0 " class=""
+												style="height: auto !important; overflow: visible !important;">
+												<table class="table-responsive table text-center">
+													<thead>
+														<tr>
+															<th>{{'generics.Options' | translate }}</th>
+															<th>{{'generics.Start Date' | translate }}</th>
+															<th>{{'generics.End Date' | translate }}</th>
+															<th>{{'medication.Dose' | translate }} ({{'medication.mg/day' | translate }})
+															</th>
+															<th>{{'medication.Schedule' | translate }}</th>
+															<th>{{'medication.Compassionate Use' | translate }}</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr *ngFor="let drug of historyDrugSelected ; let i = index">
+															<td>
+																<div ngbDropdown class="ml-1 d-inline-block">
+																	<button class="btn btn-primary btn-raised mb-0 btn-round mr-1"
+																		id="dropdownBasic1" ngbDropdownToggle><i
+																			class="icon-settings font-medium-4 fa  white align-middle"></i></button>
+																	<div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+																		<a class="dropdown-item"
+																			(click)="changeNotes(drug, contentNotes)">{{'generics.notes' |
+																			translate }}</a>
+																		<a *ngIf="!drug.endDate" class="dropdown-item"
+																			(click)="changeDose(drug, content)">{{'medication.Change Dose' |
+																			translate }}</a>
+																		<a *ngIf="!drug.endDate" class="dropdown-item"
+																			(click)="stopTaking(drug, contentStop)">{{'medication.Stop
+																			taking the drug' | translate }}</a>
+																		<a class="dropdown-item"
+																			(click)="changeSideEffect(drug, contentSideEffect)">{{'medication.Side
+																			Effect' | translate }}</a>
+																		<a class="dropdown-item"
+																			(click)="deleteDose(drug)">{{'generics.Delete' | translate
+																			}}</a>
+																	</div>
+																</div>
+															</td>
+															<td>{{drug.startDate | date: timeformat}}</td>
+															<td *ngIf="drug.endDate">{{drug.endDate | date: timeformat}}</td>
+															<td *ngIf="!drug.endDate">{{'medication.Currently taking' | translate }}</td>
+															<td>{{drug.dose}}</td>
+															<td *ngIf="drug.schedule">
+																<select class="select-no-style" disabled [(ngModel)]="drug.schedule">
+																	<option value="Daily">{{'medication.Daily' | translate }}</option>
+																	<option value="10 on / 10 off">{{'medication.10 on / 10 off' | translate
+																		}}</option>
+																	<option value="Other">{{'generics.Other' | translate }}</option>
+																</select>
+															</td>
+															<td *ngIf="!drug.schedule">
+																-
+															</td>
+															<td *ngIf="drug.compassionateUse">
+																<select class="select-no-style" disabled
+																	[(ngModel)]="drug.compassionateUse">
+																	<option value="yes">{{'generics.Yes' | translate }}</option>
+																	<option value="no">{{'generics.No' | translate }}</option>
+																	<option value="Don't know">{{'generics.Dont know' | translate }}
+																	</option>
+																</select>
+															</td>
+															<td *ngIf="!drug.compassionateUse">
+																-
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+					
+					
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div *ngIf="historyDrugSelected.length == 0 && !viewMedicationForm && drugSelected" class="mt-2">
+							{{'medication.no history saved' | translate }}
+						</div>
+					
+					</section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #content let-c="close" let-d="dismiss">
+	<form class="form" (ngSubmit)="onSubmitNewDose()" #f="ngForm" *ngIf="medication">
+		<div class="modal-header">
+			<h4 class="modal-title">{{'medication.New Dose' | translate }}</h4>
+			<button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="">
+
+				<div class="">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<ng-template #popContent>
+									<span>
+										<span *ngIf="recommendedDoses[medication.drug].data=='onlykids' && age.years<18">
+											<span class="d-block">{{'medication.Recommended dose for children' | translate}} {{'medication.of' | translate}} {{weightUnits | number : '1.0-2'}} {{settings.massunit}}</span>
+											<span class="text-muted">
+												<span *ngIf="recommendedDoses[medication.drug].kids.perkg=='yes'">
+													<span *ngIf="recommendedDoses[medication.drug].kids.initialdose.min!='0' || recommendedDoses[medication.drug].kids.initialdose.max!='0'">
+														{{'medication.Initial' | translate}}: 
+														{{recommendedDoses[medication.drug].kids.initialdose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].kids.initialdose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}
+													</span>
+													<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].kids.maintenancedose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].kids.maintenancedose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}</span>
+												</span>
+												<span *ngIf="recommendedDoses[medication.drug].kids.perkg=='no'">
+													<span *ngIf="recommendedDoses[medication.drug].kids.initialdose.min!='0' || recommendedDoses[medication.drug].kids.initialdose.max!='0'">
+														{{'medication.Initial' | translate}}: 
+														{{recommendedDoses[medication.drug].kids.initialdose.min}}-{{recommendedDoses[medication.drug].kids.initialdose.max}} {{'medication.mg/day' | translate}}
+													</span>
+													<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].kids.maintenancedose.min}}-{{recommendedDoses[medication.drug].kids.maintenancedose.max}} {{'medication.mg/day' | translate}}</span>
+												</span>
+											</span>
+										</span>
+										<span *ngIf="recommendedDoses[medication.drug].data=='onlyadults' && age.years>=18">
+											<span class="d-block">{{'medication.Recommended dose for adults' | translate}} {{'medication.of' | translate}} {{weightUnits | number : '1.0-2'}} {{settings.massunit}}</span>
+											<span class="text-muted">
+												<span *ngIf="recommendedDoses[medication.drug].adults.perkg=='yes'">
+													<span *ngIf="recommendedDoses[medication.drug].adults.initialdose.min!='0' || recommendedDoses[medication.drug].adults.initialdose.max!='0'">
+														{{'medication.Initial' | translate}}: 
+														{{recommendedDoses[medication.drug].adults.initialdose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].adults.initialdose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}
+													</span>
+													<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].adults.maintenancedose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].adults.maintenancedose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}</span>
+												</span>
+												<span *ngIf="recommendedDoses[medication.drug].adults.perkg=='no'">
+													<span *ngIf="recommendedDoses[medication.drug].adults.initialdose.min!='0' || recommendedDoses[medication.drug].adults.initialdose.max!='0'">
+														{{'medication.Initial' | translate}}: 
+														{{recommendedDoses[medication.drug].adults.initialdose.min}}-{{recommendedDoses[medication.drug].adults.initialdose.max}} {{'medication.mg/day' | translate}}
+													</span>
+													<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].adults.maintenancedose.min}}-{{recommendedDoses[medication.drug].adults.maintenancedose.max}} {{'medication.mg/day' | translate}}</span>
+												</span>
+											</span>
+										</span>
+										<span *ngIf="recommendedDoses[medication.drug].data=='yes'">
+											<span *ngIf="age.years<18">
+												<span class="d-block">{{'medication.Recommended dose for children' | translate}} {{'medication.of' | translate}} {{weightUnits | number : '1.0-2'}} {{settings.massunit}}</span>
+												<span class="text-muted">
+													<span *ngIf="recommendedDoses[medication.drug].kids.perkg=='yes'">
+														<span *ngIf="recommendedDoses[medication.drug].kids.initialdose.min!='0' || recommendedDoses[medication.drug].kids.initialdose.max!='0'">
+															{{'medication.Initial' | translate}}: 
+															{{recommendedDoses[medication.drug].kids.initialdose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].kids.initialdose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}
+														</span>
+														<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].kids.maintenancedose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].kids.maintenancedose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}</span>
+													</span>
+													<span *ngIf="recommendedDoses[medication.drug].kids.perkg=='no'">
+														<span *ngIf="recommendedDoses[medication.drug].kids.initialdose.min!='0' || recommendedDoses[medication.drug].kids.initialdose.max!='0'">
+															{{'medication.Initial' | translate}}: 
+															{{recommendedDoses[medication.drug].kids.initialdose.min}}-{{recommendedDoses[medication.drug].kids.initialdose.max}} {{'medication.mg/day' | translate}}
+														</span>
+														<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].kids.maintenancedose.min}}-{{recommendedDoses[medication.drug].kids.maintenancedose.max}} {{'medication.mg/day' | translate}}</span>
+													</span>
+												</span>
+											</span>
+											<span *ngIf="age.years>=18">
+												<span class="d-block">{{'medication.Recommended dose for adults' | translate}} {{'medication.of' | translate}} {{weightUnits | number : '1.0-2'}} {{settings.massunit}}</span>
+												<span class="text-muted">
+													<span *ngIf="recommendedDoses[medication.drug].adults.perkg=='yes'">
+														<span *ngIf="recommendedDoses[medication.drug].adults.initialdose.min!='0' || recommendedDoses[medication.drug].adults.initialdose.max!='0'">
+															{{'medication.Initial' | translate}}: 
+															{{recommendedDoses[medication.drug].adults.initialdose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].adults.initialdose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}
+														</span>
+														<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].adults.maintenancedose.min * weight | number : '1.0-2' }}-{{recommendedDoses[medication.drug].adults.maintenancedose.max * weight | number : '1.0-2'}} {{'medication.mg/day' | translate}}</span>
+													</span>
+													<span *ngIf="recommendedDoses[medication.drug].adults.perkg=='no'">
+														<span *ngIf="recommendedDoses[medication.drug].adults.initialdose.min!='0' || recommendedDoses[medication.drug].adults.initialdose.max!='0'">
+															{{'medication.Initial' | translate}}: 
+															{{recommendedDoses[medication.drug].adults.initialdose.min}}-{{recommendedDoses[medication.drug].adults.initialdose.max}} {{'medication.mg/day' | translate}}
+														</span>
+														<span class="d-block">{{'medication.Maintenance' | translate}}: {{recommendedDoses[medication.drug].adults.maintenancedose.min}}-{{recommendedDoses[medication.drug].adults.maintenancedose.max}} {{'medication.mg/day' | translate}}</span>
+													</span>
+												</span>
+											</span>
+										</span>
+										<span *ngIf="recommendedDoses[medication.drug].data=='no' || (recommendedDoses[medication.drug].data=='onlyadults' && age.years<18) || (recommendedDoses[medication.drug].data=='onlykids' && age.years>=18)">
+											{{'medication.We do not have recommended dose data for this drug' | translate}}
+										</span>
+									</span>
+								  </ng-template>
+								  <label for="dose" style="display: block;">* {{'medication.Dose' | translate }} ({{'medication.mg/day' | translate }}) <i class="ft-help-circle danger"  style="cursor: pointer;" placement="down" #p1="ngbPopover" [ngbPopover]="popContent" popoverTitle="{{'generics.More information' | translate }}"></i></label>
+								<input type="text" id="dose" class="form-control" name="dose"
+									[(ngModel)]="medication.dose" required dose #dose="ngModel"
+									pattern="[0-9]+([,.][0-9]+)?$">
+								<small class="form-text text-muted danger" *ngIf="dose.errors?.pattern">Invalid
+									dose</small>
+								<small class="form-text text-muted danger"
+									*ngIf="!dose.valid && (dose.dirty || dose.touched)">{{'generics.required' |
+									translate }}</small>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="startDate">* {{'medication.Date of dose change' | translate }}</label>
+								<div>
+									{{medication.startDate | date: timeformat}}
+									<input class="form-control w-75 d-none" id="startDate" name="startDate" matInput
+										[matDatepicker]="picker3" [min]="minDateChangeDose" [max]="today"
+										[(ngModel)]="medication.startDate" required startDate #startDate="ngModel">
+									<mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+									<mat-datepicker touchUi="true" #picker3></mat-datepicker>
+									<small class="form-text text-muted danger"
+										*ngIf="!startDate.valid && (startDate.dirty || startDate.touched)">{{'generics.required'
+										| translate }}</small>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<span *ngIf="!f.valid" class="form-text text-muted danger">{{'generics.requiredfieldsmissing' | translate
+				}}</span>
+		</div>
+		<div class="modal-footer">
+			<div class="form-actions center" *ngIf="!sending">
+				<button type="button" class="btn btn-secondary"
+					(click)="c('Close click')">{{'generics.Cancel' | translate }}</button>
+				<div *ngIf="f.valid;then formValid else formError"></div>
+				<ng-template #formValid><button class="btn btn-dark"
+						type="submit">{{'generics.Save' | translate }}</button></ng-template>
+				<ng-template #formError><button class="btn btn-dark" type="button"
+						(click)="submitInvalidForm()"><i class="fa fa-check-square-o"></i> {{'generics.Save' | translate
+						}}</button></ng-template>
+			</div>
+			<div class="col-md-12 center-elements" *ngIf="sending">
+				<div>
+					<p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+				</div>
+			</div>
+		</div>
+	</form>
+</ng-template>
+<ng-template #contentStop let-c="close" let-d="dismiss">
+	<form class="form" (ngSubmit)="onSubmitStopTaking()" #f="ngForm" *ngIf="medication">
+		<div class="modal-header">
+			<h4 class="modal-title">{{'medication.Stop taking the drug' | translate }}</h4>
+			<button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="">
+
+				<div class="form-body">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="startDate">* {{'medication.Date you stopped taking the drug' | translate
+									}}</label>
+								<div>
+									{{medication.startDate | date: timeformat}}
+									<input class="form-control w-75 d-none" id="startDate" name="startDate" matInput
+										[matDatepicker]="picker4" [min]="minDateChangeDose" [max]="today"
+										[(ngModel)]="medication.startDate" required startDate #startDate="ngModel">
+									<mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+									<mat-datepicker touchUi="true" #picker4></mat-datepicker>
+									<small class="form-text text-muted danger"
+										*ngIf="!startDate.valid && (startDate.dirty || startDate.touched)">{{'generics.required'
+										| translate }}</small>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<span *ngIf="!f.valid" class="form-text text-muted danger">{{'generics.requiredfieldsmissing' | translate
+				}}</span>
+		</div>
+		<div class="modal-footer">
+
+			<div class="form-actions center" *ngIf="!sending">
+				<button type="button" class="btn btn-secondary"
+					(click)="c('Close click')">{{'generics.Cancel' | translate }}</button>
+				<div *ngIf="f.valid;then formValid else formError"></div>
+				<ng-template #formValid><button class="btn btn-dark"
+						type="submit">{{'generics.Save' | translate }}</button></ng-template>
+				<ng-template #formError><button class="btn btn-dark" type="button"
+						(click)="submitInvalidForm()"><i class="fa fa-check-square-o"></i> {{'generics.Save' | translate
+						}}</button></ng-template>
+			</div>
+			<div class="col-md-12 center-elements" *ngIf="sending">
+				<div>
+					<p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+				</div>
+			</div>
+		</div>
+	</form>
+</ng-template>
+
+<ng-template #contentNotes let-c="close" let-d="dismiss">
+	<form class="form" (ngSubmit)="onSubmitChangeNotes()" #f="ngForm" *ngIf="medication">
+		<div class="modal-header">
+			<h4 class="modal-title">{{'generics.notes' | translate }}</h4>
+			<button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="">
+
+				<div class="form-body">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<div>
+									<textarea name="notes" class="autoajustable form-control"
+										[(ngModel)]="medication.notes" name="notes"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<span *ngIf="!f.valid" class="form-text text-muted danger">{{'generics.requiredfieldsmissing' | translate
+				}}</span>
+		</div>
+		<div class="modal-footer">
+
+			<div class="form-actions center" *ngIf="!sending">
+				<button type="button" class="btn btn-secondary"
+					(click)="c('Close click')">{{'generics.Cancel' | translate }}</button>
+				<div *ngIf="f.valid;then formValid else formError"></div>
+				<ng-template #formValid><button class="btn btn-dark"
+						type="submit">{{'generics.Save' | translate }}</button></ng-template>
+				<ng-template #formError><button class="btn btn-dark" type="button"
+						(click)="submitInvalidForm()"><i class="fa fa-check-square-o"></i> {{'generics.Save' | translate
+						}}</button></ng-template>
+			</div>
+			<div class="col-md-12 center-elements" *ngIf="sending">
+				<div>
+					<p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+				</div>
+			</div>
+		</div>
+	</form>
+</ng-template>
+<ng-template #contentSideEffect let-c="close" let-d="dismiss">
+	<form class="form" (ngSubmit)="onSubmitSideEffect()" #f="ngForm" *ngIf="medication">
+		<div class="modal-header">
+			<h4 class="modal-title">{{'medication.Side Effect' | translate }}</h4>
+			<button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="">
+
+				<div class="form-body">
+					<div class="row">
+						<div class="col-md-12" *ngIf="sideEffectsLang.length>0">
+							<div class="form-group">
+								<div>
+									<mat-form-field class="mat-app-background">
+										<mat-select id="sideEffects" name="sideEffects" multiple
+											[(ngModel)]="medication.sideEffects">
+											<mat-option *ngFor="let sideEffect of sideEffectsLang"
+												[value]="sideEffect.name">{{sideEffect.translation}}</mat-option>
+										</mat-select>
+									</mat-form-field>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12" *ngIf="sideEffectsLang.length==0">
+							<div class="form-group">
+								<label for="freesideEffects">{{'medication.Side Effect' | translate }}</label>
+								<input type="text" id="freesideEffects" class="form-control" name="freesideEffects"
+									[(ngModel)]="medication.freesideEffects">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<span *ngIf="!f.valid" class="form-text text-muted danger">{{'generics.requiredfieldsmissing' | translate
+				}}</span>
+		</div>
+		<div class="modal-footer">
+
+			<div class="form-actions center" *ngIf="!sending">
+				<button type="button" class="btn btn-secondary"
+					(click)="c('Close click')">{{'generics.Cancel' | translate }}</button>
+				<div *ngIf="f.valid;then formValid else formError"></div>
+				<ng-template #formValid><button class="btn btn-raised btn-dark"
+						type="submit">{{'generics.Save' | translate }}</button></ng-template>
+				<ng-template #formError><button class="btn btn-raised btn-dark" type="button"
+						(click)="submitInvalidForm()"><i class="fa fa-check-square-o"></i> {{'generics.Save' | translate
+						}}</button></ng-template>
+			</div>
+			<div class="col-md-12 center-elements" *ngIf="sending">
+				<div>
+					<p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+				</div>
+			</div>
+		</div>
+	</form>
+</ng-template>
+<button id="openModalWeightAndBirthdate" [hidden]="true" (click)="showPanel(contentWeightAndBirthdate)">.</button>
+<ng-template #contentWeightAndBirthdate let-c="close" let-d="dismiss">
+	<form class="form" #fWeightAndBirthdate="ngForm">
+		<div class="modal-header">
+			<h4 class="modal-title">{{'medication.There is patient information needed' | translate }}</h4>
+		</div>
+		<div class="modal-body">
+			<div class="">
+
+				<div class="form-body">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>* {{'medication.Select date of birth' | translate }}</label>
+								<div>
+									{{birthday | date: timeformat}}
+									<input class="form-control w-75 d-none" id="startDate" name="startDate" matInput
+										[matDatepicker]="picker3" [max]="today"
+										required startDate #startDate="ngModel" ngModel [(ngModel)]="birthday">
+									<mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+									<mat-datepicker startView="multi-year" touchUi="true" #picker3></mat-datepicker>
+									<small class="form-text text-muted danger"
+										*ngIf="!startDate.valid && (startDate.dirty || startDate.touched)">{{'generics.required'
+										| translate }}</small>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="mb-0">{{'medication.Patients weight' | translate }} <span
+										*ngIf="settings.massunit == 'kg'">(kg)</span><span
+										*ngIf="settings.massunit == 'lb'">(lb)</span></label>
+								<input type="text" id="weight" class="form-control w-50" name="weight"
+									required weight #weight="ngModel" ngModel [(ngModel)]="newweight"
+									pattern="[0-9]+([\,\.][0-9]+)?$">
+								<small class="form-text text-muted danger"
+									*ngIf="weight.errors?.pattern">{{'anthropometry.Invalid weight' |
+									translate }}</small>
+								<small class="form-text text-muted danger"
+									*ngIf="!weight.valid && (weight.dirty || weight.touched)">{{'generics.required'
+									| translate }}</small>
+								<span class="">{{'medication.if you want to change' | translate }} <a
+										href="/pages/profile">{{'medication.here' | translate }}</a></span>
+							</div>
+						</div>	
+					</div>
+				</div>
+			</div>
+			<span *ngIf="!fWeightAndBirthdate.valid" class="form-text text-muted danger">{{'generics.requiredfieldsmissing' | translate
+				}}</span>
+		</div>
+		<div class="modal-footer">
+			<div class="col-md-12 center-elements" *ngIf="!sending">
+				<div>
+					<button class="btn btn-raised btn-dark"	[disabled]="!fWeightAndBirthdate.valid" (click)="onSubmitWeightAndBirthdate();">{{'generics.Save' | translate }}</button>
+				</div>
+			</div>
+			<div class="col-md-12 center-elements" *ngIf="sending">
+				<div>
+					<p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+				</div>
+			</div>
+		</div>
+	</form>
+</ng-template>
+
+<button id="openModalBirthdate" [hidden]="true" (click)="showPanel(contentBirthdate)">.</button>
+<ng-template #contentBirthdate let-c="close" let-d="dismiss">
+	<form class="form" #fBirthdate="ngForm">
+		<div class="modal-header">
+			<h4 class="modal-title">{{'medication.The recommended doses depend on' | translate }}</h4>
+		</div>
+		<div class="modal-body">
+			<div class="">
+
+				<div class="form-body">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>* {{'medication.Select date of birth' | translate }}</label>
+								<div>
+									{{birthday | date: timeformat}}
+									<input class="form-control w-75 d-none" id="startDate" name="startDate" matInput
+										[matDatepicker]="picker3" [max]="today"
+										required startDate #startDate="ngModel" ngModel [(ngModel)]="birthday">
+									<mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+									<mat-datepicker startView="multi-year" touchUi="true" #picker3></mat-datepicker>
+									<small class="form-text text-muted danger"
+										*ngIf="!startDate.valid && (startDate.dirty || startDate.touched)">{{'generics.required'
+										| translate }}</small>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<span *ngIf="!fBirthdate.valid" class="form-text text-muted danger">{{'generics.requiredfieldsmissing' | translate
+				}}</span>
+		</div>
+		<div class="modal-footer">
+			<div class="col-md-12 center-elements" *ngIf="!sending">
+				<div>
+					<button class="btn btn-raised btn-dark"	[disabled]="!fBirthdate.valid" (click)="onSubmitBirthdate();">{{'generics.Save' | translate }}</button>
+				</div>
+			</div>
+			<div class="col-md-12 center-elements" *ngIf="sending">
+				<div>
+					<p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+				</div>
+			</div>
+		</div>
+	</form>
+</ng-template>

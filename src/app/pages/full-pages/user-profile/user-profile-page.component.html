@@ -1,0 +1,86 @@
+<div class="card card-block mx-auto" style="max-width: 60rem !important;">
+	<div class="card-body">
+		<div class="center-elements" *ngIf="loading">
+			<div><p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p></div>
+		</div>
+		<div class="row" *ngIf="!loading">
+			<div class="col-12 col-sm-12 align-items-center">
+				<div>
+					<h2 class="content-header mt-0 mb-2">{{'navbar.My Profile' | translate }}</h2>
+						<form class="form" (ngSubmit)="onSubmit()" #f="ngForm">
+							<div class="form-body">
+								<div class="row">
+									<div class="col-md-12 mt-2">
+										<label for="iscaregiver">{{'homeraito.twho' | translate }}</label>
+										<div class="form-group mb-2" >
+											<mat-radio-group aria-label="Select an option" class="form-control border-0 pl-0" name="iscaregiver" [(ngModel)]="user.iscaregiver">
+												<mat-radio-button [value]=false (change)="changedCaretaker($event)">{{'homeraito.patient' | translate }}</mat-radio-button>
+												<mat-radio-button [value]=true class="ml-2" (change)="changedCaretaker($event)">{{'homeraito.caregiver' | translate }}</mat-radio-button>
+											  </mat-radio-group>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="userName">{{'generics.Name' | translate }}</label>
+											<input type="text" id="userName" class="form-control"  name="userName" [(ngModel)]="user.userName" required #userName="ngModel">
+											<small class="form-text text-muted danger" *ngIf="!userName.valid && (userName.dirty || userName.touched)">{{'generics.required' | translate }}</small>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="lastName">{{'personalinfo.Last Name' | translate }}</label>
+											<input type="text" id="lastName" class="form-control"  name="lastName" [(ngModel)]="user.lastName" required #lastName="ngModel">
+											<small class="form-text text-muted danger" *ngIf="!lastName.valid && (lastName.dirty || lastName.touched)">{{'generics.required' | translate }}</small>
+										</div>
+									</div>
+								</div>
+								<h4 class="form-section mt-3"><i class="ft-settings warning"></i> {{'profile.Settings' | translate }}</h4>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="lang">{{'generics.Lang' | translate }}</label>
+											<select id="lang" name="lang" class="form-control"  [(ngModel)]="user.lang" #langselected (ngModelChange)="onChangeLang($event, langselected.value)">
+												<option *ngFor="let lang of langs" [ngValue]="lang.code"> {{lang.name}}</option>
+											</select>
+											<p *ngIf="user.lang != userCopy.lang" class="text-danger">{{'profile.Save the changes' | translate }}</p>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="massunit">{{'profile.Mass unit' | translate }}</label>
+											<select id="massunit" name="massunit" class="form-control"  [(ngModel)]="user.massunit">
+												<option value="kg">{{'profile.Kilogram' | translate }}</option>
+												<option value="lb">{{'profile.Pound' | translate }}</option>
+											</select>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="lengthunit">{{'profile.Length unit' | translate }}</label>
+											<select id="lengthunit" name="lengthunit" class="form-control"  [(ngModel)]="user.lengthunit">
+												<option value="cm">{{'profile.Centimetre' | translate }}</option>
+												<option value="ft">{{'profile.Foot' | translate }}</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-actions mt-0 pb-0 center" *ngIf="!sending">
+								<div *ngIf="f.valid;then formValid else formError"></div>
+								<ng-template #formValid><button class="btn btn-dark" type="submit"><i class="fa fa-check-square-o"></i> {{'generics.Save' | translate }}</button></ng-template>
+								<ng-template #formError><button class="btn btn-dark" type="button" (click)="submitInvalidForm()"><i class="fa fa-check-square-o"></i> {{'generics.Save' | translate }}</button></ng-template>
+								<!--<button type="button" (click)="resetForm()" class="btn btn-raised btn-raised btn-warning">
+									<i class="ft-x"></i> {{'generics.Cancel' | translate }}
+								</button>-->
+							</div>
+							<div class="col-md-12 center-elements" *ngIf="sending">
+								<div><p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p></div>
+							</div>
+						</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

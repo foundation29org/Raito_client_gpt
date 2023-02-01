@@ -1,0 +1,465 @@
+<div class="row">
+	<!--patient info-->
+	<div class="col-md-12 col-lg-6" *ngIf="!editingWeightHistory && !editingHeightHistory && !settingWeight && !settingHeight">
+		<div class="card card-block mx-auto width30rem">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-12 col-sm-12 align-items-center">
+						<div>
+							<h2 class="content-header mt-0 mb-2">{{'menu.Basic Info' |
+								translate }}</h2>
+							<form (ngSubmit)="onSubmit()" #f="ngForm">
+								<div class="form-group">
+									<div class="">
+										<input type="text" class="form-control" name="userName" id="userName"
+											placeholder="{{'generics.Name' | translate }}" ngModel required
+											#userName="ngModel" [(ngModel)]="datainfo.patientName">
+									</div>
+									<small class="form-text text-muted danger"
+										*ngIf="!userName.valid && (userName.dirty || userName.touched)">{{'generics.required'
+										| translate }}</small>
+								</div>
+								<div class="form-group">
+									<div class="">
+										<input type="text" class="form-control" name="lastName" id="lastName"
+											placeholder="{{'personalinfo.Last Name' | translate }}" ngModel required
+											#lastName="ngModel" [(ngModel)]="datainfo.surname">
+									</div>
+									<small class="form-text text-muted danger"
+										*ngIf="!lastName.valid && (lastName.dirty || lastName.touched)">{{'generics.required'
+										| translate }}</small>
+								</div>
+								<div class="form-group">
+									<select id="gender" name="gender" class="form-control"
+										[(ngModel)]="datainfo.gender">
+										<option [ngValue]="null" disabled selected>--{{'generics.Please select' |
+											translate }}--</option>
+										<option value="male">{{'personalinfo.Male' | translate }}</option>
+										<option value="female">{{'personalinfo.Female' | translate }}</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<div class="">
+										<input class="form-control d-none" id="birthDate_" name="birthDate" matInput
+											placeholder="{{'personalinfo.Birth Date' | translate }}" readonly
+											[matDatepicker]="pickerOnset" (click)="pickerOnset.open()"
+											[(ngModel)]="datainfo.birthDate">
+										<input readonly class="form-control d-inline" (click)="pickerOnset.open()"
+											style="background-color: #fff !important;"
+											[placeholder]="(datainfo.birthDate!=null) ? (datainfo.birthDate | date: 'dd MMM y': '' : translate.currentLang) : getLiteral('personalinfo.Birth Date')">
+
+										<mat-datepicker-toggle matSuffix [for]="pickerOnset" class="d-none">
+										</mat-datepicker-toggle>
+										<mat-datepicker startView="multi-year"
+											(daySelected)="closeDatePickerStart($event, pickerOnset)" touchUi="true"
+											#pickerOnset></mat-datepicker>
+										<!--<p *ngIf="datainfo.birthDate ==null || datainfo.birthDate ==''" class="danger">{{'generics.required' | translate }}</p>-->
+									</div>
+								</div>
+
+								<div class="form-group">
+									<select class="form-control" id="countryselectedCode" name="countryselectedCode"
+										[(ngModel)]="datainfo.country" #countryselectedCode="ngModel" ngModel>
+										<option [ngValue]="null" disabled selected>--{{'registration.Please select a
+											code' | translate }}--</option>
+										<option *ngFor="let country of countries; let i=index"
+											value="{{country.countryName}}">
+											<label *ngIf="lang!='es'"
+												style="color:blue !important">{{country.countryName}}</label>
+											<label *ngIf="lang=='es'"
+												style="color:blue !important">{{country.countryNombre}}</label>
+										</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<div class="">
+										<select id="group" name="group" class="form-control" ngModel #group="ngModel"
+												[(ngModel)]="datainfo.group" [required]="true">
+											<option [value]="null" disabled selected>--{{'registration.Please select a
+												group' | translate }}--</option>
+												<option *ngFor="let group of groups" [ngValue]="group._id">
+													<span *ngIf="group.name != 'Dravet Syndrome European Federation' && group.name != 'Childhood syndrome with epilepsy' && group.name != 'Undiagnosed'  && group.name != 'None'">{{group.name}}</span>
+													<span *ngIf="group.name == 'Dravet Syndrome European Federation'">{{'personalinfo.Patients with epilepsy' | translate }}</span>
+													<span *ngIf="group.name == 'Childhood syndrome with epilepsy'">{{'personalinfo.Childhood syndrome with epilepsy' | translate }}</span>
+													<span *ngIf="group.name == 'Undiagnosed'">{{'personalinfo.I dont have a diagnosis' | translate }}</span>
+													<span *ngIf="group.name == 'None'">{{'personalinfo.I dont belong to a patient group' | translate }}</span>
+												</option>
+										</select>
+										<small class="form-text text-muted danger"
+										*ngIf="!group.valid && (group.dirty || group.touched)">{{'generics.required'
+										| translate }}</small>
+									</div>
+								</div>
+
+								<div class="form-group text-center mb-0">
+									<span *ngIf="!sending">
+										<div *ngIf="f.valid;then formValid else formError"></div>
+										<ng-template #formValid><button class="ml-2 mb-0 btn btn-dark" type="submit">
+												{{'generics.Save' | translate }}</button></ng-template>
+										<ng-template #formError><button class="ml-2 mb-0 btn btn-dark" type="button"
+												(click)="submitInvalidForm()"> {{'generics.Save' | translate
+												}}</button></ng-template>
+									</span>
+									<span *ngIf="sending">
+										<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+									</span>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--Weight and height-->
+	<div class="col-md-12 col-lg-6" [ngClass]="{'offset-lg-3': (settingWeight || settingHeight || editingHeightHistory || editingWeightHistory) }">
+		<div class="card card-block mx-auto width30rem">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-12 col-sm-12 align-items-center">
+						<section id="basic-form-layouts" *ngIf="!editingWeightHistory && !editingHeightHistory">
+							<div class="row">
+								<div class="col-sm-12">
+									<div class="content-header mt-0 mb-2">{{'clinicalinfo.Anthropometry' | translate }}
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12 center-elements" *ngIf="!loadedWeight">
+								<div>
+									<p class="centerSpinner"><i class="fa fa-spinner fa-spin fa-3x fa-fw pink"></i></p>
+								</div>
+							</div>
+							<!--Statistics cards Starts-->
+							<div class="" *ngIf="!settingWeight && !settingHeight">
+								<div class="row mt-1" *ngIf="loadedWeight">
+									<div class="col-12">
+										<button *ngIf="!actualWeight._id" type="button" class="btn btn-dark float-right"
+												(click)="setWeight()"><em class="fas fa-edit"></em></button>
+												<button *ngIf="actualWeight._id" type="button" class="mt-2 btn btn-dark ml-1 float-right"
+													(click)="updateWeight()"><em class="fas fa-edit"></em></button>
+												<button *ngIf="weightHistory.length>1" type="button"
+													class="mt-2 btn btn-dark float-right"
+													(click)="openWeightHistory(contentWeightHistory)"><em class="fas fa-chart-area"></em></button>
+										<p class="text-bold-500 mb-0">{{'anthropometry.Weight' | translate }}</p>
+										<p class="mb-0" *ngIf="!actualWeight._id">{{'anthropometry.You have not added the weight' | translate }}</p>
+										<p class="mb-0" *ngIf="actualWeight._id">
+											<span *ngIf="settings.massunit == 'kg'" class="font-large-1 mb-0">{{actualWeight.value |
+												number : '1.0-2'}} kg</span>
+											<span *ngIf="settings.massunit == 'lb'" class="font-large-1 mb-0">{{actualWeight.value |
+												number : '1.0-2'}} lb</span>
+										</p>
+									</div>
+								</div>
+								<div class="row mt-2" *ngIf="loadedHeight">
+									<div class="col-12">
+										<button *ngIf="!actualHeight._id" type="button" class="btn btn-dark float-right"
+												(click)="setHeight()"><em class="fas fa-edit"></em></button>
+										<button *ngIf="actualHeight._id" type="button" class="mt-2 btn btn-dark float-right ml-1"
+													(click)="updateHeight()"><em class="fas fa-edit"></em></button>
+										<button *ngIf="heightHistory.length>1" type="button"
+											class="mt-2 btn btn-dark float-right"
+											(click)="openHeightHistory(contentHeightHistory)"><em class="fas fa-chart-area"></em></button>
+										<p class="text-bold-500 mb-0">{{'anthropometry.Height' | translate }}</p>
+										<p class="mb-0" *ngIf="!actualHeight._id">{{'anthropometry.You have not added the height' | translate }}</p>
+										<p class="mb-0" *ngIf="actualHeight._id">
+											<span *ngIf="settings.lengthunit == 'cm'" class="font-large-1 mb-0">{{actualHeight.value | number : '1.0-2'}} cm</span>
+											<span *ngIf="settings.lengthunit == 'ft'" class="font-large-1 mb-0">{{footHeight.feet |
+												number : '1.0-2'}} ' {{footHeight.inches | number : '1.0-2'}} "</span>
+										</p>
+									</div>
+								</div>
+							</div>
+							<!--Statistics cards Ends-->
+							<div class="row" *ngIf="settingWeight">
+								<div class="col-md-12">
+									<div class="">
+										<div class="">
+											<div class="">
+												<form class="form" (ngSubmit)="onSubmitWeight()" #fWeight="ngForm">
+													<div class="form-body">
+														<h4 class="form-section"><i class="ft-user danger"></i> {{'anthropometry.Weight' |
+															translate }}</h4>
+														<div class="row">
+															<div class="col-sm-6">
+																<div class="form-group">
+																	<label class="mb-0" for="weight">{{'anthropometry.Weight' | translate }} <span
+																			*ngIf="settings.massunit == 'kg'">(kg)</span><span
+																			*ngIf="settings.massunit == 'lb'">(lb)</span></label>
+																	<input type="text" id="weight" class="form-control w-50" name="weight"
+																		[(ngModel)]="selectedWeight.value" required weight #weight="ngModel"
+																		pattern="[0-9]+([\,\.][0-9]+)?$">
+																	<small class="form-text text-muted danger"
+																		*ngIf="weight.errors?.pattern">{{'anthropometry.Invalid weight' |
+																		translate }}</small>
+																	<small class="form-text text-muted danger"
+																		*ngIf="!weight.valid && (weight.dirty || weight.touched)">{{'generics.required'
+																		| translate }}</small>
+																	<span class="">{{'medication.if you want to change' | translate }} <a
+																			href="/pages/profile">{{'medication.here' | translate }}</a></span>
+																</div>
+															</div>
+															<div class="col-sm-6">
+																<div class="form-group">
+																	<label class="mb-0" for="date">{{'generics.Date' | translate }}</label>
+																	<div>
+																		<input class="form-control w-50 d-inline" id="date" name="date" matInput
+																			[matDatepicker]="picker" [(ngModel)]="selectedWeight.date" required
+																			date #date="ngModel">
+																		<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+																		<mat-datepicker touchUi="true" #picker></mat-datepicker>
+																		<small class="form-text text-muted danger"
+																			*ngIf="!date.valid && (date.dirty || date.touched)">{{'generics.required'
+																			| translate }}</small>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="form-actions mt-0 pb-0 center-elements">
+														<button type="button" (click)="resetFormWeight()"
+															class="btn btn-secondary mr-1 mb-0">
+															<i class="ft-x"></i> {{'generics.Cancel' | translate }}
+														</button>
+														<div *ngIf="fWeight.valid;then formValid else formError"></div>
+														<ng-template #formValid><button class="ml-1 mb-0 btn btn-dark"
+																type="submit"><i class="fa fa-check-square-o"></i> {{'generics.Save' | translate
+																}}</button></ng-template>
+														<ng-template #formError><button class="ml-1 mb-0 btn btn-dark"
+																type="button" (click)="submitInvalidFormWeight()"><i
+																	class="fa fa-check-square-o"></i> {{'generics.Save' | translate }}</button>
+														</ng-template>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						
+							<div class="row" *ngIf="settingHeight">
+								<div class="col-md-12">
+									<div class="">
+										<div class="">
+											<div class="">
+												<form class="form" (ngSubmit)="onSubmitHeight()" #fHeight="ngForm">
+													<div class="form-body">
+														<h4 class="form-section"><i class="ft-user danger"></i> {{'anthropometry.Height' |
+															translate }}</h4>
+														<div class="row">
+															<div class="col-sm-6" *ngIf="settings.lengthunit == 'cm'">
+																<div class="form-group">
+																	<label class="mb-0" for="height">{{'anthropometry.Height' | translate }}
+																		<span>(cm)</span></label>
+																	<input type="text" id="height" class="form-control w-50" name="height"
+																		[(ngModel)]="selectedHeight.value" required height #height="ngModel"
+																		pattern="[0-9]+([\,\.][0-9]+)?$">
+																	<small class="form-text text-muted danger"
+																		*ngIf="height.errors?.pattern">{{'anthropometry.Invalid height' |
+																		translate }}</small>
+																	<small class="form-text text-muted danger"
+																		*ngIf="!height.valid && (height.dirty || height.touched)">{{'generics.required'
+																		| translate }}</small>
+																	<span class="">{{'medication.if you want to change' | translate }} <a
+																			href="/pages/profile">{{'medication.here' | translate }}</a></span>
+																</div>
+															</div>
+						
+															<div class="col-sm-3" *ngIf="settings.lengthunit == 'ft'">
+																<div class="form-group">
+																	<label class="mb-0" for="feet"><span>{{'anthropometry.Feet' | translate }}</span></label>
+																	<input type="text" id="feet" class="form-control w-50" name="feet"
+																		[(ngModel)]="footHeight.feet" required feet #feet="ngModel"
+																		pattern="[0-9]+">
+																	<small class="form-text text-muted danger"
+																		*ngIf="feet.errors?.pattern">{{'anthropometry.Invalid height' |
+																		translate }}</small>
+																	<small class="form-text text-muted danger"
+																		*ngIf="!feet.valid && (feet.dirty || feet.touched)">{{'generics.required'
+																		| translate }}</small>
+																</div>
+															</div>
+															<div class="col-sm-3" *ngIf="settings.lengthunit == 'ft'">
+																<div class="form-group">
+																	<label class="mb-0" for="inches"><span>{{'anthropometry.Inches' | translate
+																			}}</span></label>
+																	<input type="text" id="inches" class="form-control w-50" name="inches"
+																		[(ngModel)]="footHeight.inches" required inches #inches="ngModel"
+																		pattern="[0-9]+">
+																	<small class="form-text text-muted danger"
+																		*ngIf="inches.errors?.pattern">{{'anthropometry.Invalid height' |
+																		translate }}</small>
+																	<small class="form-text text-muted danger"
+																		*ngIf="!inches.valid && (inches.dirty || inches.touched)">{{'generics.required'
+																		| translate }}</small>
+																</div>
+															</div>
+															<div class="col-sm-6">
+																<div class="form-group">
+																	<label class="mb-0" for="date">{{'generics.Date' | translate }}</label>
+																	<div>
+																		<input class="form-control w-50 d-inline" id="date" name="date" matInput
+																			[matDatepicker]="picker" [(ngModel)]="selectedHeight.date" required
+																			date #date="ngModel">
+																		<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+																		<mat-datepicker touchUi="true" #picker></mat-datepicker>
+																		<small class="form-text text-muted danger"
+																			*ngIf="!date.valid && (date.dirty || date.touched)">{{'generics.required'
+																			| translate }}</small>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="form-actions mt-0 pb-0 center-elements">
+														<button type="button" (click)="resetFormHeight()"
+															class="btn btn-secondary mr-1 mb-0">
+															<i class="ft-x"></i> {{'generics.Cancel' | translate }}
+														</button>
+														<div *ngIf="fHeight.valid;then formValid else formError"></div>
+														<ng-template #formValid><button class="ml-1 mb-0 btn btn-dark"
+																type="submit"><i class="fa fa-check-square-o"></i> {{'generics.Save' | translate
+																}}</button></ng-template>
+														<ng-template #formError><button class="ml-1 mb-0 btn btn-dark"
+																type="button" (click)="submitInvalidFormHeight()"><i
+																	class="fa fa-check-square-o"></i> {{'generics.Save' | translate }}</button>
+														</ng-template>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</section>
+						<section *ngIf="editingWeightHistory || editingHeightHistory">
+							<div class="row">
+								<div class="col-sm-12" *ngIf="editingWeightHistory">
+									<div class="content-header mt-0 mb-2">{{'anthropometry.Weight history' | translate }}<button type="button"
+											class="float-right btn btn-primary mb-2" (click)="back()">{{'generics.Back' | translate
+											}}</button></div>
+								</div>
+								<div class="col-sm-12" *ngIf="editingHeightHistory">
+									<div class="content-header mt-0 mb-2">{{'anthropometry.Height history' | translate }}<button type="button"
+											class="float-right btn btn-primary mb-2" (click)="back()">{{'generics.Back' | translate
+											}}</button></div>
+								</div>
+							</div>
+							<div class="row" *ngIf="weightHistory.length > 0 && editingWeightHistory">
+								<table class="table text-center">
+									<thead>
+										<tr>
+											<th>{{'generics.Date' | translate }}</th>
+											<th>{{'anthropometry.Weight' | translate }} ({{settings.massunit}})</th>
+											<th>{{'generics.Delete' | translate }}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let weight of weightHistory ; let i = index">
+											<td>{{weight.date | date: timeformat}}</td>
+											<td>{{weight.value}}</td>
+											<td>
+												<a class="danger" data-original-title="" title=""
+													(click)="confirmDeleteWeight(i)">
+													<i class="ft-x"></i>
+												</a>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="row" *ngIf="heightHistory.length > 0 && editingHeightHistory">
+								<table class="table text-center">
+									<thead>
+										<tr>
+											<th>{{'generics.Date' | translate }}</th>
+											<th>{{'anthropometry.Height' | translate }} ({{settings.lengthunit}})</th>
+											<th>{{'generics.Delete' | translate }}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let height of heightHistory ; let i = index">
+											<td>{{height.date | date: timeformat}}</td>
+											<td>{{height.value}}</td>
+											<td>
+												<a class="danger" data-original-title="" title=""
+													(click)="confirmDeleteHeight(i)">
+													<i class="ft-x"></i>
+												</a>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</section>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<ng-template #contentWeightHistory let-c="close" let-d="dismiss">
+	<div class="modal-header">
+		<h4 class="modal-title">{{'anthropometry.Weight history' | translate }} <span>({{settings.massunit}})</span></h4>
+		<button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<div *ngIf="lineChartWeight.length > 0">
+			<div id="line-chart2" class="height-400">
+				<ngx-charts-line-chart [scheme]="lineChartColorScheme"
+					[results]="lineChartWeight" [gradient]="lineChartGradient"
+					[xAxisTickFormatting]="tickFormatting" [xAxis]="lineChartShowXAxis"
+					[yAxis]="lineChartShowYAxis" [legend]="lineChartShowLegend"
+					[showXAxisLabel]="lineChartShowXAxisLabel"
+					[showYAxisLabel]="lineChartShowYAxisLabel" [xAxisLabel]="msgDate"
+					[yAxisLabel]="transWeight" [autoScale]="lineChartAutoScale"
+					(select)="onSelect($event)">
+				</ngx-charts-line-chart>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+
+		<div class="form-actions center" *ngIf="!sending">
+			<button type="button" class="btn btn-dark" (click)="editWeightHistory()">{{'generics.Edit' |
+				translate }}</button>
+			<button type="button" class="btn btn-secondary" (click)="c('Close click')">{{'generics.Close' |
+				translate }}</button>
+		</div>
+	</div>
+</ng-template>
+
+<ng-template #contentHeightHistory let-c="close" let-d="dismiss">
+	<div class="modal-header">
+		<h4 class="modal-title">{{'anthropometry.Height history' | translate }} <span>({{settings.lengthunit}})</span></h4>
+		<button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="modal-body">
+		<div *ngIf="lineChartHeight.length > 0">
+			<div id="line-chart2" class="height-400">
+				<ngx-charts-line-chart [scheme]="lineChartColorScheme"
+					[results]="lineChartHeight" [gradient]="lineChartGradient"
+					[xAxis]="lineChartShowXAxis" [yAxis]="lineChartShowYAxis"
+					[legend]="lineChartShowLegend" [showXAxisLabel]="lineChartShowXAxisLabel"
+					[xAxisTickFormatting]="tickFormatting"
+					[showYAxisLabel]="lineChartShowYAxisLabel" [xAxisLabel]="msgDate"
+					[yAxisLabel]="transHeight" [autoScale]="lineChartAutoScale"
+					(select)="onSelect($event)">
+				</ngx-charts-line-chart>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+
+		<div class="form-actions center" *ngIf="!sending">
+			<button type="button" class="btn btn-dark" (click)="editHeightHistory()">{{'generics.Edit' |
+				translate }}</button>
+			<button type="button" class="btn btn-secondary" (click)="c('Close click')">{{'generics.Close' |
+				translate }}</button>
+		</div>
+	</div>
+</ng-template>

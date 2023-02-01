@@ -1,0 +1,268 @@
+
+
+    <div class="col-sm-12 my-auto d-block d-xl-none">
+        <div class="mt-4 mb-4 card card-block mx-auto" style="max-width: 30rem !important;">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 class="text-bold-500">{{'landraito.t1' | translate }}</h2>
+                        <p class="">{{'landraito.p1' | translate }}</p>
+                        <div class="col-md-12 center-elements">
+                            <button *ngIf="!sending" (click)="login()" class="btn btn-dark mt-1" title="I want to join">
+                                <span class="menu-title">{{'landraito.button' | translate }}</span>
+                            </button>
+                            <p *ngIf="!detectedMetamask && !sending && showMsgMetamask">
+                                {{'landraito.Metamask not detected' | translate }} <em class="ft-info font-medium-1" style="cursor: pointer;" placement="down" #p1="ngbPopover" [ngbPopover]="popContentseizures" popoverTitle="{{'landraito.Metamask not detected' | translate }}"></em>
+                                <ng-template #popContentseizures>
+                                    <span [innerHTML]="'landraito.infoMetamask' | translate">
+                                       
+                                    </span>
+                                    <p><a href="https://metamask.io/" target="_blank" title="web metamask" class="">https://metamask.io</a></p>
+                                </ng-template>
+                            </p>
+                            <div class="center-elements" *ngIf="sending">
+                                <div><p class="centerSpinner">{{'generics.Pending' | translate }}... <i class="fa fa-spinner fa-spin fa-2x fa-fw pink"></i></p>
+                                    <p>{{'landraito.You have a pending action before continuing' | translate }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-12 center-elements">
+                            <img class="w-80 center-elements" style="max-width: 200px !important;" src='assets/img/home/home1.webp'>
+                        </div>                        
+                        <h3 class="text-bold-500 mt-5">{{'landraito.t2' | translate }}</h3>
+                        <p>{{'landraito.t2subtitle' | translate }}</p>
+                        <div class="row mt-3">
+                            <div class="col-3 pr-0 pl-0">
+                                <img class="w-100" src='assets/img/home/home2.webp' alt="step 1 raito">
+                            </div>
+                            <div class="col-9">
+                                <h5 class="text-bold-500">1. {{'landraito.t2.1t' | translate }}</h5>
+                                <p>{{'landraito.t2.1a' | translate }}</p>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-3 pr-0 pl-0">
+                                <img class="w-100" src='assets/img/home/home3.webp' alt="step 2 raito">
+                            </div>
+                            <div class="col-9">
+                                <h5 class="text-bold-500">2. {{'landraito.t2.2t' | translate }}</h5>
+                                <p>{{'landraito.t2.2a' | translate }}</p>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-3 pr-0 pl-0">
+                                <img class="w-100" src='assets/img/home/home4.webp' alt="step 3 raito">
+                            </div>
+                            <div class="col-9">
+                                <h5 class="text-bold-500">3. {{'landraito.t2.3t' | translate }}</h5>
+                                <p>{{'landraito.t2.3a' | translate }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mt-4 center-elements">
+                            <button *ngIf="!sending" (click)="login()" class="btn btn-dark " title="I want to join">
+                                <span class="menu-title">{{'landraito.button' | translate }}</span>
+                            </button>
+                            <p *ngIf="!detectedMetamask && !sending && showMsgMetamask">
+                                {{'landraito.Metamask not detected' | translate }} <em class="ft-info font-medium-1" style="cursor: pointer;" placement="down" #p1="ngbPopover" [ngbPopover]="popContentseizures" popoverTitle="{{'landraito.Metamask not detected' | translate }}"></em>
+                                <ng-template #popContentseizures>
+                                    <span [innerHTML]="'landraito.infoMetamask' | translate">
+                                       
+                                    </span>
+                                    <p><a href="https://metamask.io/" target="_blank" title="web metamask" class="">https://metamask.io</a></p>
+                                </ng-template>
+                            </p>
+                            <div class="center-elements" *ngIf="sending">
+                                <div><p class="centerSpinner">{{'generics.Pending' | translate }}... <i class="fa fa-spinner fa-spin fa-2x fa-fw pink"></i></p>
+                                    <p>{{'landraito.You have a pending action before continuing' | translate }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <section style="padding-bottom: 50px !important;" class="col-lg-12">
+                        <h3 class="text-bold-500 mt-5">{{'land.aboutUs.titlef29' | translate }}</h3>
+                        <span class="">
+                            <p>{{'land.aboutUs.p1f29' | translate }}</p>
+                            <p>{{'land.aboutUs.p2f29' | translate }}</p>
+                          </span>
+                          <div class="center-elements">
+                            <a href="https://www.foundation29.org" target="_blank" title="foundation29 web" class="mt-2 btn btn-dark mb-1"
+                                  type="button"><strong>{{'land.aboutUs.Who are we' | translate }}</strong>
+                            </a>
+                          </div>
+                      </section>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section id="login" class="d-none d-xl-block">
+        <div class="container-fluid">
+            <div class="row m-0" style="min-height: 100vh !important;">
+                <div class="col-12 d-flex align-items-center justify-content-center">
+                  <div class="offset-xl-2 col-xl-8 card overflow-hidden">
+                    <div class="card-content">
+                      <div class="card-body auth-img">
+                        <div class="row m-0">
+                          <div class="col-lg-6 d-none d-lg-flex justify-content-center align-items-center auth-img-bg p-3 hide-img">
+                            <img src="assets/img/home/home1.webp" alt="">
+                          </div>
+                          <div class="col-lg-6 col-12 px-4 py-3 more-width">
+                            <h2 class="text-bold-500">{{'landraito.t1' | translate }}</h2>
+                            <p class="">{{'landraito.p1' | translate }}</p>
+                            <hr>
+                            <div class="">
+                                <button *ngIf="!sending" (click)="login()" class="btn btn-dark mt-1 mb-1 d-block" title="I want to join">
+                                    <span class="menu-title">{{'landraito.button' | translate }}</span>
+                                </button>
+                                <p *ngIf="!detectedMetamask && !sending && showMsgMetamask">
+                                    {{'landraito.Metamask not detected' | translate }} <em class="ft-info font-medium-1" style="cursor: pointer;" placement="down" #p1="ngbPopover" [ngbPopover]="popContentseizures" popoverTitle="{{'landraito.Metamask not detected' | translate }}"></em>
+                                    <ng-template #popContentseizures>
+                                        <span [innerHTML]="'landraito.infoMetamask' | translate">
+                                           
+                                        </span>
+                                        <p><a href="https://metamask.io/" target="_blank" title="web metamask" class="">https://metamask.io</a></p>
+                                    </ng-template>
+                                </p>
+                                <div class="center-elements" *ngIf="sending">
+                                    <div><p class="centerSpinner">{{'generics.Pending' | translate }}... <i class="fa fa-spinner fa-spin fa-2x fa-fw pink"></i></p>
+                                        <p>{{'landraito.You have a pending action before continuing' | translate }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                    <div class="offset-xl-1 col-xl-10">
+                        <div class="card p-4">
+                            <h3 class="text-bold-500">{{'landraito.t2' | translate }}</h3>
+                            <p>{{'landraito.t2subtitle' | translate }}</p>
+                            <div class="row">
+                                <div class="col-xl-4">
+                                    <div class="row mt-3">
+                                        <div class="col-3 pr-0 pl-0">
+                                            <img class="w-100" src='assets/img/home/home2.webp' alt="step 1 raito">
+                                        </div>
+                                        <div class="col-9">
+                                            <h5 class="text-bold-500">1. {{'landraito.t2.1t' | translate }}</h5>
+                                            <p>{{'landraito.t2.1a' | translate }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4">
+                                    <div class="row mt-3">
+                                        <div class="col-3 pr-0 pl-0">
+                                            <img class="w-100" src='assets/img/home/home3.webp' alt="step 2 raito">
+                                        </div>
+                                        <div class="col-9">
+                                            <h5 class="text-bold-500">2. {{'landraito.t2.2t' | translate }}</h5>
+                                            <p>{{'landraito.t2.2a' | translate }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4">
+                                    <div class="row mt-3">
+                                        <div class="col-3 pr-0 pl-0">
+                                            <img class="w-100" src='assets/img/home/home4.webp' alt="step 3 raito">
+                                        </div>
+                                        <div class="col-9">
+                                            <h5 class="text-bold-500">3. {{'landraito.t2.3t' | translate }}</h5>
+                                            <p>{{'landraito.t2.3a' | translate }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                  </div>
+              </div>
+              
+    
+              <div class="row mt-4 mb-5">
+                <div class="offset-xl-3 col-xl-6">
+                    <div class="card p-4">
+                        <div class="card-body">
+                            <div class="row">
+                                <section class="col-lg-12">
+                                    <h3 class="text-bold-500">{{'land.aboutUs.titlef29' | translate }}</h3>
+                                    <span class="">
+                                        <p>{{'land.aboutUs.p1f29' | translate }}</p>
+                                        <p>{{'land.aboutUs.p2f29' | translate }}</p>
+                                      </span>
+                                      <div class="center-elements">
+                                        <a href="https://www.foundation29.org" target="_blank" title="foundation29 web" class="mt-2 btn btn-dark mb-1"
+                                              type="button"><strong>{{'land.aboutUs.Who are we' | translate }}</strong>
+                                        </a>
+                                      </div>
+                                  </section>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+              </div>
+        </div>
+      </section>
+      <ng-template #contentIntro let-c="close" let-d="dismiss" appendTo="body">
+        <div class="modal-header d-block" id="idHeader">
+            <button type="button" class="close" aria-label="Close" (click)="c('Close click');">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div>
+                <h4 class="modal-title text-muted">{{'landraito.opttitle' | translate }}</h4>
+            </div>
+        </div>
+        <div class="modal-body">
+          <section>
+              <div class="row text-left">
+                <div class="card-body col-md-12">
+                    <p><strong>{{'landraito.optsub' | translate }}</strong></p>
+                  <div class="row">
+                    <div class="col-sm-8">
+                        <p class="" [innerHTML]="'landraito.opt1' | translate"></p>
+                    </div>
+                    <div class="col-md-4">
+                        <img class="w-100 border mb-4" style="max-width: 300px !important;" src='assets/img/home/opts/opt1_{{langWeb3auth}}.webp' alt="option 1 login raito">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-8">
+                        <p class="" [innerHTML]="'landraito.opt2' | translate"></p>
+                    </div>
+                    <div class="col-md-4">
+                        <img class="w-100 border mb-4" style="max-width: 300px !important;" src='assets/img/home/opts/opt2_{{langWeb3auth}}.webp' alt="option 2 login raito">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-8">
+                        <p class="" [ngClass]="(!detectedMetamask)?'mb-0':''" [innerHTML]="'landraito.opt3' | translate"></p>
+                        <p *ngIf="!detectedMetamask" class="">{{'landraito.Install Metamask' | translate }}: <a href="https://metamask.io/" target="_blank" title="web metamask" class="">https://metamask.io</a> </p>
+                    </div>
+                    <div class="col-md-4">
+                        <img class="w-100 border mb-4" style="max-width: 300px !important;" src='assets/img/home/opts/opt3_{{langWeb3auth}}.webp' alt="option 3 login raito">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12 center-elements">
+                  <mat-checkbox
+                      class="example-margin" name="terms2" ngModel required #terms2="ngModel" id="terms2" (change)="showOptions($event)">
+                    <label style="margin-top: 0.4em;white-space: normal;text-transform: none;letter-spacing: 0px;"  >
+                      <span>{{'landraito.check' | translate }}</span>
+                    </label>
+                  </mat-checkbox>
+                </div>
+              </div>
+          </section>
+            </div>
+            <div class="modal-footer row">
+                <div class="form-actions col-md-12 center-elements">
+                        <button type="button" class="btn btn-raised btn-primary" (click)="c('Close click');">{{'wizard.btn' | translate }}</button>
+                </div>
+            </div>
+    </ng-template>
+    <button id="openModalIntro" [hidden]="true" (click)="showPanelIntro(contentIntro)">.</button>
