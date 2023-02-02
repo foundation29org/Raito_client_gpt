@@ -70,8 +70,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   maxDate = new Date();
   responseEntities = "";
-  //posibleEntities = [];
-  posibleEntities = [
+  posibleEntities = [];
+  /*posibleEntities = [
   {
     "name": "convulsiones",
     "type": "symptom",
@@ -108,7 +108,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     "date": null,
     "notes": ""
   }
-];
+];*/
   loadedEvents: boolean = false;
   loadingPosibleEntities: boolean = false;
 
