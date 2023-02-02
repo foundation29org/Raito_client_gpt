@@ -33,11 +33,18 @@
             <a class="nav-link position-relative" id="dropdownBasic2" ngbDropdownToggle
               title="{{'menu.Personal Info' | translate }}">
               <i class="fas fa-microscope font-medium-3 white"
-                [ngClass]="{'grey': actualUrl=='/symptoms' || actualUrl=='/medical-records' || actualUrl=='/seizures' || actualUrl=='/medication' || actualUrl=='/prom' || actualUrl=='/feel' || actualUrl=='/medical-records'}"></i>
+                [ngClass]="{'grey': actualUrl=='/symptoms' || actualUrl=='/medical-records' || actualUrl=='/seizures' || actualUrl=='/medication' || actualUrl=='/events' || actualUrl=='/feel' || actualUrl=='/medical-records'}"></i>
               <p class="d-none">{{'navbar.menu.Personal Info' | translate }}</p>
             </a>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic2">
-
+              <a class="dropdown-item" routerLink="/events">
+                <span>{{'menu.Events' | translate }}</span>
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" routerLink="/medical-records">
+                <span>{{'menu.My documents' | translate }}</span>
+              </a>
+              <div class="dropdown-divider"></div>
               <a class="dropdown-item" routerLink="/calendar">
                 <span>{{'menu.Calendar' | translate }}</span>
               </a>
@@ -59,18 +66,10 @@
               <a class="dropdown-item" routerLink="/symptoms">
                 <span>{{'menu.Phenotype' | translate }}</span>
               </a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" routerLink="/medical-records">
-                <span>{{'menu.My documents' | translate }}</span>
-              </a>
               <!--<div class="dropdown-divider"></div>
                       <a class="dropdown-item" routerLink="/anthropometry">
                         <span>{{'clinicalinfo.Anthropometry' | translate }}</span>
                       </a>-->
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" routerLink="/prom">
-                <span>{{'menu.Events' | translate }}</span>
-              </a>
             </div>
           </li>
           <li class="nav-item">

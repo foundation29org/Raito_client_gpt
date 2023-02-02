@@ -115,8 +115,12 @@
 										<td>
 											{{event.name}}
 										</td>
-										<td>
+										<td *ngIf="event.date!=null">
 											{{event.date |date}}
+                                            
+										</td>
+                                        <td *ngIf="event.date==null">
+											-
 										</td>
 										<td>
 											<span>{{event.notes}}</span>

@@ -440,7 +440,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.callingOpenai = true;
     var years = this.ageFromDateOfBirthday(this.basicInfoPatient.birthDate);
-    var promDrug = 'Compórtate como un médico. El paciente tiene ' + years + ' años y es ' + this.basicInfoPatient.gender + '. ';
+    var promDrug = 'Compórtate como un médico. Tienes que dar información específica y no general. Utiliza solo fuentes de información médica. El paciente tiene ' + years + ' años y es ' + this.basicInfoPatient.gender + '. ';
 
     if (this.patientInfo.patientAllergies.length > 0) {
       for (var i = 0; i < this.patientInfo.patientAllergies.length; i++) {
