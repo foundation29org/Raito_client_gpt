@@ -57,9 +57,7 @@
 }
 
 .chat-messages {
-  flex: 1;
-  height: calc(100% - 50px);
-  overflow-y: scroll;
+
 }
 
 .user-message {
@@ -77,8 +75,39 @@
   margin-bottom: 1rem;
 }
 
+.entities-container {
+  width: 25%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.entity {
+  border-radius: 10px;
+}
+
+.allergy {
+  background-color: #ffb3b3;
+}
+
+.disease {
+  background-color: #ffcc80;
+}
+
+.drug {
+  background-color: #b3e0ff;
+}
+
+.symptom {
+  background-color: #b3ffb3;
+}
+
+.treatment {
+  background-color: #ccccff;
+}
+
 input[type="text"],
-button {
+.btn-chat {
   width: 100%;
   padding: 1rem;
   box-sizing: border-box;
@@ -89,8 +118,8 @@ button {
 
 @media (min-width: 600px) {
   .chat-container {
-    height: 60%;
-    width: 50%;
+    /*height: 60%;
+    width: 50%;*/
   }
 }
 

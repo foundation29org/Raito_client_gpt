@@ -25,12 +25,15 @@
         <div class="list-options">
             <div class="list-options w-100">
                 <div class="mt-2 w-100">
-                    <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput placeholder="Cuando nació?"
-                      [max]="maxDate" readonly [matDatepicker]="pickerOnset" (click)="pickerOnset.open()" [(ngModel)]="basicInfoPatient.birthDate">
-                      <span class="form-control w-75 d-inline" (click)="pickerOnset.open()" style="background-color: #e9ecef;min-width: 200px;">{{basicInfoPatient.birthDate | date: 'dd MMM y': '' : translate.currentLang}} </span>
+                    <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
+                        placeholder="Cuando nació?" [max]="maxDate" readonly [matDatepicker]="pickerOnset"
+                        (click)="pickerOnset.open()" [(ngModel)]="basicInfoPatient.birthDate">
+                    <span class="form-control w-75 d-inline" (click)="pickerOnset.open()"
+                        style="background-color: #e9ecef;min-width: 200px;">{{basicInfoPatient.birthDate | date: 'dd MMM
+                        y': '' : translate.currentLang}} </span>
                     <mat-datepicker-toggle matSuffix [for]="pickerOnset"></mat-datepicker-toggle>
                     <mat-datepicker startView="multi-year" touchUi="true" #pickerOnset></mat-datepicker>
-                  </div>
+                </div>
             </div>
         </div>
         <div class="buttons-panel">
@@ -81,9 +84,10 @@
             <h5 for="nueva-alergia">Nueva Alergia</h5>
             <div class="list-options w-100">
                 <div>
-                    <input type="text" class="form-control" [(ngModel)]="newAlergy.name" placeholder="Escribe la alergia"/>
-                    <a (click)="addAlergy()" class="mt-2 ml-1 btn btn-dark"
-                        title="add alergy" href="javascript:;"><span>Añadir</span></a>
+                    <input type="text" class="form-control" [(ngModel)]="newAlergy.name"
+                        placeholder="Escribe la alergia" />
+                    <a (click)="addAlergy()" class="mt-2 ml-1 btn btn-dark" title="add alergy"
+                        href="javascript:;"><span>Añadir</span></a>
                 </div>
             </div>
 
@@ -104,25 +108,32 @@
                 </div>
             </div>
         </div>
-        <p class="mb-0">Por favor, proporcione información sobre las enfermedades o afecciones que ha tenido en el pasado (opcional).
+        <p class="mb-0">Por favor, proporcione información sobre las enfermedades o afecciones que ha tenido en el
+            pasado (opcional).
         </p>
         <div class="card p-2 border panel-add">
             <h5 for="nueva-enfermedad">Nueva enfermedad</h5>
             <div class="list-options">
                 <div class="list-options w-100">
-                    <input type="text" class="form-control" [(ngModel)]="newDisease.name" placeholder="Escribe el nombre de la enfermedad" />
+                    <input type="text" class="form-control" [(ngModel)]="newDisease.name"
+                        placeholder="Escribe el nombre de la enfermedad" />
                     <!--<input type="date" [(ngModel)]="newDisease.date" />-->
                     <div class="mt-2 w-100">
-                        <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput placeholder="Cuando apareció"
-                          [max]="maxDate" readonly [matDatepicker]="pickerOnset" (click)="pickerOnset.open()" [(ngModel)]="newDisease.date">
-                          <span class="form-control w-75 d-inline" (click)="pickerOnset.open()" style="background-color: #e9ecef;">{{newDisease.date | date: 'MMM y': '' : translate.currentLang}} </span>
+                        <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
+                            placeholder="Cuando apareció" [max]="maxDate" readonly [matDatepicker]="pickerOnset"
+                            (click)="pickerOnset.open()" [(ngModel)]="newDisease.date">
+                        <span class="form-control w-75 d-inline" (click)="pickerOnset.open()"
+                            style="background-color: #e9ecef;">{{newDisease.date | date: 'MMM y': '' :
+                            translate.currentLang}} </span>
                         <mat-datepicker-toggle matSuffix [for]="pickerOnset"></mat-datepicker-toggle>
-                        <mat-datepicker startView="multi-year" (monthSelected)="closeDatePickerDisease($event, i, pickerOnset)" touchUi="true" #pickerOnset></mat-datepicker>
-                      </div>
-                    <a (click)="addDisease()" class="ml-1 btn btn-dark"
-                        title="add disease" href="javascript:;"><span>Añadir</span></a>
+                        <mat-datepicker startView="multi-year"
+                            (monthSelected)="closeDatePickerDisease($event, i, pickerOnset)" touchUi="true"
+                            #pickerOnset></mat-datepicker>
+                    </div>
+                    <a (click)="addDisease()" class="ml-1 btn btn-dark" title="add disease"
+                        href="javascript:;"><span>Añadir</span></a>
                 </div>
-            </div>   
+            </div>
         </div>
         <div class="buttons-panel">
             <button class="mr-1 btn btn-danger" (click)="goBack()">Volver</button>
@@ -148,19 +159,25 @@
             <h5 for="nueva-enfermedad">Nuevo fármaco</h5>
             <div class="list-options">
                 <div class="list-options w-100">
-                    <input type="text" class="form-control" [(ngModel)]="newDrug.name" placeholder="Escribe el nombre del fármaco" />
+                    <input type="text" class="form-control" [(ngModel)]="newDrug.name"
+                        placeholder="Escribe el nombre del fármaco" />
                     <!--<input type="date" [(ngModel)]="newDrug.date" />-->
                     <div class="mt-2 w-100">
-                        <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput placeholder="{{'generics.Start Date' | translate }}"
-                          [max]="maxDate" readonly [matDatepicker]="pickerOnset" (click)="pickerOnset.open()" [(ngModel)]="newDrug.date">
-                          <span class="form-control w-75 d-inline" (click)="pickerOnset.open()" style="background-color: #e9ecef;">{{newDrug.date | date: 'MMM y': '' : translate.currentLang}} </span>
+                        <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
+                            placeholder="{{'generics.Start Date' | translate }}" [max]="maxDate" readonly
+                            [matDatepicker]="pickerOnset" (click)="pickerOnset.open()" [(ngModel)]="newDrug.date">
+                        <span class="form-control w-75 d-inline" (click)="pickerOnset.open()"
+                            style="background-color: #e9ecef;">{{newDrug.date | date: 'MMM y': '' :
+                            translate.currentLang}} </span>
                         <mat-datepicker-toggle matSuffix [for]="pickerOnset"></mat-datepicker-toggle>
-                        <mat-datepicker startView="multi-year" (monthSelected)="closeDatePickerDrug($event, i, pickerOnset)" touchUi="true" #pickerOnset></mat-datepicker>
-                      </div>
-                    <a (click)="addMedication()" class="ml-1 btn btn-dark"
-                        title="add drug" href="javascript:;"><span>Añadir</span></a>
+                        <mat-datepicker startView="multi-year"
+                            (monthSelected)="closeDatePickerDrug($event, i, pickerOnset)" touchUi="true"
+                            #pickerOnset></mat-datepicker>
+                    </div>
+                    <a (click)="addMedication()" class="ml-1 btn btn-dark" title="add drug"
+                        href="javascript:;"><span>Añadir</span></a>
                 </div>
-            </div>   
+            </div>
         </div>
         <div class="buttons-panel">
             <button class="mr-1 btn btn-danger" (click)="goBack()">Volver</button>
@@ -169,7 +186,7 @@
 
     </div>
 
-    <div @fadeSlideInOut class="chat-container" *ngIf="step===7">
+    <!--<div @fadeSlideInOut class="chat-container" *ngIf="step===7">
         <div class="chat-messages">
             <div *ngFor="let message of messages">
                 <div [ngClass]="{'user-message': message.isUser, 'response-message': !message.isUser}">
@@ -186,6 +203,108 @@
 
         <span *ngIf="valueProm" class="text-muted mt-3">{{valueProm.value}}</span>
 
-        <span *ngIf="posibleEntities!=''" class="text-muted mt-3">Posibles entidades: {{posibleEntities}}</span>
+        <span *ngIf="responseEntities!=''" class="text-muted mt-3">Posibles entidades: {{responseEntities}}</span>
+    </div>
+
+    <div class="d-flex" @fadeSlideInOut *ngIf="step===7">
+        <div class="chat-container d-flex flex-column align-items-center" style="width:75%;">
+            <div class="chat-messages">
+                <div *ngFor="let message of messages">
+                    <div [ngClass]="{'user-message': message.isUser, 'response-message': !message.isUser}">
+                        {{ message.text }}
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="callingOpenai">
+                <em class="fa fa-spinner fa-spin fa-fw"></em>
+            </div>
+            <input type="text" [(ngModel)]="message" [disabled]="callingOpenai" placeholder="Escribe un mensaje...">
+            <button class="btn btn-dark" [disabled]="callingOpenai" (click)="sendMessage()">Enviar</button>
+            <span *ngIf="valueProm" class="text-muted mt-3">{{valueProm.value}}</span>
+        </div>
+
+        <div class="d-flex flex-column align-items-center" style="width:25%;">
+            <span *ngIf="responseEntities!=''" class="text-muted mt-3">Posibles entidades:</span>
+            <div *ngFor="let entity of posibleEntities">
+                <div
+                    [ngClass]="{'allergy': entity.type === 'allergy', 'disease': entity.type === 'disease', 'drug': entity.type === 'drug', 'symptom': entity.type === 'symptom', 'treatment': entity.type === 'treatment'}">
+                    {{entity.value}}
+                </div>
+                <div class="d-flex">
+                    <button class="btn btn-primary mr-2">Añadir</button>
+                    <button class="btn btn-danger">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+    <div class="row"  @fadeSlideInOut *ngIf="step===7">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <h5 class="text-muted mt-3">Chat</h5>
+            <div class="chat-container">
+                <div class="chat-messages">
+                    <div *ngFor="let message of messages">
+                        <div [ngClass]="{'user-message': message.isUser, 'response-message': !message.isUser}">
+                            {{ message.text }}
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="callingOpenai">
+                    <em class="fa fa-spinner fa-spin fa-fw"></em>
+                </div>
+                <input type="text" [(ngModel)]="message" [disabled]="callingOpenai" placeholder="Escribe un mensaje...">
+                <button class="btn btn-dark btn-chat" [disabled]="callingOpenai" (click)="sendMessage()">Enviar</button>
+            </div>
+            <span *ngIf="valueProm" class="text-muted mt-3">{{valueProm.value}}</span>
+
+            <span *ngIf="responseEntities!=''" class="text-muted mt-3">Posibles entidades: {{responseEntities}}</span>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="loadingPosibleEntities || posibleEntities.length>0">
+            <h5 class="text-muted mt-3">Posibles entidades</h5>
+            <div class="row" style="padding: 1rem;padding-top: 0px;" *ngIf="loadingPosibleEntities">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <em class="fa fa-spinner fa-spin fa-fw"></em>
+                </div>
+            </div>
+            <div class="row" style="padding: 1rem;padding-top: 0px;" *ngIf="posibleEntities.length>0">
+                <div *ngFor="let entity of posibleEntities; let i = index" class="p-2 col-lg-6 col-md-6 col-sm-12">
+                    <div class="p-2 entity" [ngClass]="{'allergy': entity.type === 'allergy', 'disease': entity.type === 'disease', 'drug': entity.type === 'drug', 'symptom': entity.type === 'symptom', 'treatment': entity.type === 'treatment'}">
+                        <div>
+                            <strong *ngIf="entity.type=='allergy'">Allergy:</strong>
+                            <strong *ngIf="entity.type=='disease'">Disease:</strong>
+                            <strong *ngIf="entity.type=='drug'">Drug:</strong>
+                            <strong *ngIf="entity.type=='symptom'">Symptom:</strong>
+                            <strong *ngIf="entity.type=='treatment'">Treatment:</strong>
+                            {{ entity.name }}
+                        </div>
+                        <div class="">
+                            <label><strong>{{'generics.Date' | translate }}:</strong></label>
+                            <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
+                                placeholder="{{'generics.Start Date' | translate }}" [max]="maxDate" readonly
+                                [matDatepicker]="pickerOnset" (click)="pickerOnset.open()" [(ngModel)]="entity.date">
+                            <span *ngIf="entity.date!=null" class="ml-1" (click)="pickerOnset.open()">{{entity.date | date: 'MMM y': '' :
+                                translate.currentLang}} </span>
+                            <mat-datepicker-toggle matSuffix [for]="pickerOnset"></mat-datepicker-toggle>
+                            <mat-datepicker startView="multi-year"
+                                (monthSelected)="closeDateEntity($event, i, pickerOnset)" touchUi="true"
+                                #pickerOnset></mat-datepicker>
+                        </div>
+                        <div class="">
+                            <div class="form-group">
+                                <label><strong>{{'generics.notes' | translate }}:</strong></label>
+                                <textarea maxlength="150" [(ngModel)]="entity.notes"
+                                    placeholder="{{'seizures.Write down any details' | translate }}"
+                                    class="autoajustable form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <button class="btn btn-secondary"><em class="fa fa-plus" (click)="addEntity(i)"></em></button>
+                            <button class="btn btn-danger"><em class="fa fa-trash" (click)="removeEntity(i)"></em></button>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
     </div>
 </div>
