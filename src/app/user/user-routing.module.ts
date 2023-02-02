@@ -38,10 +38,10 @@ const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard]
   },
   {
-    path: 'prom',
+    path: 'events',
     component: PromComponent,
     data: {
-      title: 'Prom',
+      title: 'events',
       expectedRole: ['User']
     },
     canActivate: [AuthGuard, RoleGuard]

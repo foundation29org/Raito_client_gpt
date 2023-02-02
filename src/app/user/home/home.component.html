@@ -58,7 +58,7 @@
             </div>
             <div>
                 <input type="radio" name="gender" [(ngModel)]="basicInfoPatient.gender" value="other" />
-                <label class="ml-1">Otro</label>
+                <label class="ml-1">Prefiero no decirlo</label>
             </div>
         </div>
         <div class="buttons-panel">
@@ -94,8 +94,8 @@
         </div>
         <div class="buttons-panel">
             <button class="mr-1 btn btn-danger" (click)="goBack()">Volver</button>
-            <button class="mr-1 ml-1" (click)="skipAllergies()">Saltar</button>
-            <button class="ml-1 btn btn-dark" (click)="submitAllergies()">Siguiente</button>
+            <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientAllergies.length==0" (click)="skipAllergies()">Siguiente</button>
+            <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientAllergies.length>0" (click)="submitAllergies()">Siguiente</button>
         </div>
     </div>
     <div @fadeSlideInOut class="input-screen" *ngIf="step===5">
@@ -113,16 +113,17 @@
         </p>
         <div class="card p-2 border panel-add">
             <h5 for="nueva-enfermedad">Nueva enfermedad</h5>
-            <div class="list-options">
-                <div class="list-options w-100">
+            <div class="">
+                <div class="w-100">
                     <input type="text" class="form-control" [(ngModel)]="newDisease.name"
                         placeholder="Escribe el nombre de la enfermedad" />
                     <!--<input type="date" [(ngModel)]="newDisease.date" />-->
                     <div class="mt-2 w-100">
+                        <label class="d-block">Indica la fecha del diagnóstico (Opcional):</label>
                         <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
                             placeholder="Cuando apareció" [max]="maxDate" readonly [matDatepicker]="pickerOnset"
                             (click)="pickerOnset.open()" [(ngModel)]="newDisease.date">
-                        <span class="form-control w-75 d-inline" (click)="pickerOnset.open()"
+                        <span *ngIf="newDisease.date" class="form-control w-75 d-inline" (click)="pickerOnset.open()"
                             style="background-color: #e9ecef;">{{newDisease.date | date: 'MMM y': '' :
                             translate.currentLang}} </span>
                         <mat-datepicker-toggle matSuffix [for]="pickerOnset"></mat-datepicker-toggle>
@@ -130,16 +131,15 @@
                             (monthSelected)="closeDatePickerDisease($event, i, pickerOnset)" touchUi="true"
                             #pickerOnset></mat-datepicker>
                     </div>
-                    <a (click)="addDisease()" class="ml-1 btn btn-dark" title="add disease"
-                        href="javascript:;"><span>Añadir</span></a>
+                    <button (click)="addDisease()" [disabled]="newDisease.name.length === 0" class="mt-2 btn btn-dark" title="add disease"
+                        href="javascript:;"><span>Añadir</span></button>
                 </div>
             </div>
         </div>
         <div class="buttons-panel">
             <button class="mr-1 btn btn-danger" (click)="goBack()">Volver</button>
-            <button class="mr-1 ml-1" (click)="skipDiseases()">Saltar</button>
-            <button class="ml-1 btn btn-dark" [disabled]="patientInfo.patientDiseases.length === 0"
-                (click)="submitDiseases()">Siguiente</button>
+            <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientDiseases.length==0" (click)="skipDiseases()">Siguiente</button>
+            <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientDiseases.length>0" (click)="submitDiseases()">Siguiente</button>
         </div>
     </div>
 
@@ -157,16 +157,17 @@
         <p class="mb-0">Por favor, añada los medicamentos que está tomando actualmente (opcional):</p>
         <div class="card p-2 border panel-add">
             <h5 for="nueva-enfermedad">Nuevo fármaco</h5>
-            <div class="list-options">
-                <div class="list-options w-100">
+            <div class="">
+                <div class="w-100">
                     <input type="text" class="form-control" [(ngModel)]="newDrug.name"
                         placeholder="Escribe el nombre del fármaco" />
                     <!--<input type="date" [(ngModel)]="newDrug.date" />-->
                     <div class="mt-2 w-100">
+                        <label class="d-block">Cuando empezó a tomarlo (Opcional):</label>
                         <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
                             placeholder="{{'generics.Start Date' | translate }}" [max]="maxDate" readonly
                             [matDatepicker]="pickerOnset" (click)="pickerOnset.open()" [(ngModel)]="newDrug.date">
-                        <span class="form-control w-75 d-inline" (click)="pickerOnset.open()"
+                        <span *ngIf="newDrug.date" class="form-control w-75 d-inline" (click)="pickerOnset.open()"
                             style="background-color: #e9ecef;">{{newDrug.date | date: 'MMM y': '' :
                             translate.currentLang}} </span>
                         <mat-datepicker-toggle matSuffix [for]="pickerOnset"></mat-datepicker-toggle>
@@ -174,8 +175,8 @@
                             (monthSelected)="closeDatePickerDrug($event, i, pickerOnset)" touchUi="true"
                             #pickerOnset></mat-datepicker>
                     </div>
-                    <a (click)="addMedication()" class="ml-1 btn btn-dark" title="add drug"
-                        href="javascript:;"><span>Añadir</span></a>
+                    <button (click)="addMedication()" [disabled]="newDrug.name.length === 0" class="ml-1 btn btn-dark" title="add drug"
+                        href="javascript:;"><span>Añadir</span></button>
                 </div>
             </div>
         </div>
@@ -185,59 +186,6 @@
         </div>
 
     </div>
-
-    <!--<div @fadeSlideInOut class="chat-container" *ngIf="step===7">
-        <div class="chat-messages">
-            <div *ngFor="let message of messages">
-                <div [ngClass]="{'user-message': message.isUser, 'response-message': !message.isUser}">
-                    {{ message.text }}
-                </div>
-            </div>
-        </div>
-        <div *ngIf="callingOpenai">
-            <em class="fa fa-spinner fa-spin fa-fw"></em>
-        </div>
-
-        <input type="text" [(ngModel)]="message" [disabled]="callingOpenai" placeholder="Escribe un mensaje...">
-        <button class="btn btn-dark" [disabled]="callingOpenai" (click)="sendMessage()">Enviar</button>
-
-        <span *ngIf="valueProm" class="text-muted mt-3">{{valueProm.value}}</span>
-
-        <span *ngIf="responseEntities!=''" class="text-muted mt-3">Posibles entidades: {{responseEntities}}</span>
-    </div>
-
-    <div class="d-flex" @fadeSlideInOut *ngIf="step===7">
-        <div class="chat-container d-flex flex-column align-items-center" style="width:75%;">
-            <div class="chat-messages">
-                <div *ngFor="let message of messages">
-                    <div [ngClass]="{'user-message': message.isUser, 'response-message': !message.isUser}">
-                        {{ message.text }}
-                    </div>
-                </div>
-            </div>
-            <div *ngIf="callingOpenai">
-                <em class="fa fa-spinner fa-spin fa-fw"></em>
-            </div>
-            <input type="text" [(ngModel)]="message" [disabled]="callingOpenai" placeholder="Escribe un mensaje...">
-            <button class="btn btn-dark" [disabled]="callingOpenai" (click)="sendMessage()">Enviar</button>
-            <span *ngIf="valueProm" class="text-muted mt-3">{{valueProm.value}}</span>
-        </div>
-
-        <div class="d-flex flex-column align-items-center" style="width:25%;">
-            <span *ngIf="responseEntities!=''" class="text-muted mt-3">Posibles entidades:</span>
-            <div *ngFor="let entity of posibleEntities">
-                <div
-                    [ngClass]="{'allergy': entity.type === 'allergy', 'disease': entity.type === 'disease', 'drug': entity.type === 'drug', 'symptom': entity.type === 'symptom', 'treatment': entity.type === 'treatment'}">
-                    {{entity.value}}
-                </div>
-                <div class="d-flex">
-                    <button class="btn btn-primary mr-2">Añadir</button>
-                    <button class="btn btn-danger">Eliminar</button>
-                </div>
-            </div>
-        </div>
-    </div>-->
-
     <div class="row"  @fadeSlideInOut *ngIf="step===7">
         <div class="col-lg-6 col-md-6 col-sm-12">
             <h5 class="text-muted mt-3">Chat</h5>
@@ -261,6 +209,7 @@
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="loadingPosibleEntities || posibleEntities.length>0">
             <h5 class="text-muted mt-3">Posibles eventos</h5>
+            <span>Ayúdame a ser más listo seleccionando tus eventos, al conocerte más, las respuesta serán más precisas. Tus eventos podrás verlos <a routerLink="/events">aquí</a></span>
             <div class="row" style="padding: 1rem;padding-top: 0px;" *ngIf="loadingPosibleEntities">
                 <div class="col-lg-12 col-md-12 col-sm-12">
                     <em class="fa fa-spinner fa-spin fa-fw"></em>

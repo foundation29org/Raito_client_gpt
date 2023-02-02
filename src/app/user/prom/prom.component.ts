@@ -114,9 +114,6 @@ export class PromComponent {
       }else{
         if(res.length>0){
           res.sort(this.sortService.DateSort("dateInput"));
-          for(var i = 0; i < res.length; i++) {
-            res[i].date = new Date(res[i].date);
-          }
           this.events = res;
           this.refresh.next();
         }else{
