@@ -21,5 +21,70 @@ export class OpenAiService {
       })
     }
 
+    parseResponse = (response: string): { symtoms: string[], drugs: string[], treatments: string[], diseases: string[], allergy: string[] } => {
+      const lines = response.split('\n');
+      let symtoms: string[] = [];
+      let drugs: string[] = [];
+      let treatments: string[] = [];
+      let diseases: string[] = [];
+      let allergy: string[] = [];
+  
+      for (const line of lines) {
+        if (line.startsWith('Síntomas:')) {
+          symtoms = line.substring('Síntomas:'.length).trim().split(', ');
+        } else if (line.startsWith('Medicación:')) {
+          drugs = line.substring('Medicación:'.length).trim().split(', ');
+        } else if (line.startsWith('Tratamientos:')) {
+          treatments = line.substring('Tratamientos:'.length).trim().split(', ');
+        } else if (line.startsWith('Enfermedades o afecciones previas:')) {
+          diseases = line.substring('Enfermedades o afecciones previas:'.length).trim().split(', ');
+        } else if (line.startsWith('Alergias:')) {
+          allergy = line.substring('Alergias:'.length).trim().split(', ');
+        }
+      }
+      return { symtoms, drugs, treatments, diseases, allergy };
+    };
+
+    parseEntities(parsedResponse) {
+      var posibleEntities = [];
+      if(parsedResponse['symtoms'].length>0){
+        for(let i=0; i<parsedResponse['symtoms'].length; i++){
+          if(parsedResponse['symtoms'][i]!='no' && parsedResponse['symtoms'][i]!='No'){
+            posibleEntities.push({ name: parsedResponse['symtoms'][i], type: 'symptom', date: null, notes:''  })
+          }
+        }
+      }
+      if(parsedResponse['drugs'].length>0){
+        for(let i=0; i<parsedResponse['drugs'].length; i++){
+          if(parsedResponse['drugs'][i]!='no' && parsedResponse['drugs'][i]!='No'){
+            posibleEntities.push({ name: parsedResponse['drugs'][i], type: 'drug', date: null, notes:''  })
+          }
+        }
+      }
+      if(parsedResponse['treatments'].length>0){
+        for(let i=0; i<parsedResponse['treatments'].length; i++){
+          if(parsedResponse['treatments'][i]!='no' && parsedResponse['treatments'][i]!='No'){
+            posibleEntities.push({ name: parsedResponse['treatments'][i], type: 'treatment', date: null, notes:''  })
+          }
+        }
+      }
+      if(parsedResponse['diseases'].length>0){
+        for(let i=0; i<parsedResponse['diseases'].length; i++){
+          if(parsedResponse['diseases'][i]!='no' && parsedResponse['diseases'][i]!='No'){
+            posibleEntities.push({ name: parsedResponse['diseases'][i], type: 'disease', date: null, notes:''  })
+          }
+        }
+      }
+      if(parsedResponse['allergy'].length>0){
+        for(let i=0; i<parsedResponse['allergy'].length; i++){
+          if(parsedResponse['allergy'][i]!='no' && parsedResponse['allergy'][i]!='No'){
+            posibleEntities.push({ name: parsedResponse['allergy'][i], type: 'allergy', date: null, notes:'' })
+          }
+        }
+      }
+      console.log(posibleEntities)
+      return posibleEntities;
+    }
+
 
 }

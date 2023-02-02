@@ -257,10 +257,10 @@
             </div>
             <span *ngIf="valueProm" class="text-muted mt-3">{{valueProm.value}}</span>
 
-            <span *ngIf="responseEntities!=''" class="text-muted mt-3">Posibles entidades: {{responseEntities}}</span>
+            <span *ngIf="responseEntities!=''" class="text-muted mt-3">Posibles eventos: {{responseEntities}}</span>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="loadingPosibleEntities || posibleEntities.length>0">
-            <h5 class="text-muted mt-3">Posibles entidades</h5>
+            <h5 class="text-muted mt-3">Posibles eventos</h5>
             <div class="row" style="padding: 1rem;padding-top: 0px;" *ngIf="loadingPosibleEntities">
                 <div class="col-lg-12 col-md-12 col-sm-12">
                     <em class="fa fa-spinner fa-spin fa-fw"></em>
@@ -298,7 +298,7 @@
                             </div>
                         </div>
                         <div class="d-flex justify-content-between mt-2">
-                            <button class="btn btn-secondary"><em class="fa fa-plus" (click)="addEntity(i)"></em></button>
+                            <button class="btn btn-dark"><em class="fa fa-check" (click)="addEntity(i)"></em></button>
                             <button class="btn btn-danger"><em class="fa fa-trash" (click)="removeEntity(i)"></em></button>
                         </div>
                     </div>

@@ -101,7 +101,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr *ngFor="let event of events ; let i = index">
+									<tr *ngFor="let event of events ; let i = index" [ngClass]="{'allergy': event.type === 'allergy', 'disease': event.type === 'disease', 'drug': event.type === 'drug', 'symptom': event.type === 'symptom', 'treatment': event.type === 'treatment'}">
 										<td>
 											<select [(ngModel)]="event.type" disabled>
 												<option value="allergy">Allergy</option>
