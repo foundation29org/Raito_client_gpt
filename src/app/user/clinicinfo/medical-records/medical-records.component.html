@@ -75,6 +75,11 @@
                                                                     class="ml-2">{{'generics.View' | translate
                                                                     }}</span>
                                                             </a>
+                                                            <a class="dropdown-item py-1" *ngIf="onefile.hasResults" href="javascript:;"
+                                                            (click)="openEntities(onefile.name, contentEntities);">
+                                                                <i class="far fa-calendar"></i><span
+                                                                    class="ml-2">Events</span>
+                                                            </a>
                                                             <a class="dropdown-item py-1" href="javascript:;"
                                                                 (click)="editDocument(onefile,updateDocument);">
                                                                 <i class="ft-edit fa-xs"></i><span
@@ -184,6 +189,11 @@
                                                                 <i class="ft-eye fa-xs"></i><span
                                                                     class="ml-2">{{'generics.View' | translate
                                                                     }}</span>
+                                                            </a>
+                                                            <a class="dropdown-item py-1" *ngIf="onefile.hasResults" href="javascript:;"
+                                                            (click)="openEntities(onefile.name, contentEntities);">
+                                                                <i class="far fa-calendar"></i><span
+                                                                    class="ml-2">Events</span>
                                                             </a>
                                                             <a class="dropdown-item py-1" href="javascript:;"
                                                                 (click)="editDocument(onefile,updateDocument);">
@@ -609,3 +619,56 @@
         </form>
     </div>
 </ng-template>
+
+
+<ng-template #contentEntities let-c="close" let-d="dismiss" appendTo="body">
+    <div class="modal-header" id="idHeader">
+        Events detected
+        <button type="button" class="close" aria-label="Close" (click)="closeModal2();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body content-wrapper p-2" id="idBody">
+        <div class="row" style="padding: 1rem;padding-top: 0px;" *ngIf="posibleEntities.length>0">
+            <div *ngFor="let entity of posibleEntities; let i = index" class="p-2 col-lg-6 col-md-6 col-sm-12">
+                <div class="p-2 entity" [ngClass]="{'allergy': entity.type === 'allergy', 'disease': entity.type === 'disease', 'drug': entity.type === 'drug', 'symptom': entity.type === 'symptom', 'treatment': entity.type === 'treatment'}">
+                    <div>
+                        <strong *ngIf="entity.type=='allergy'">Allergy:</strong>
+                        <strong *ngIf="entity.type=='disease'">Disease:</strong>
+                        <strong *ngIf="entity.type=='drug'">Drug:</strong>
+                        <strong *ngIf="entity.type=='symptom'">Symptom:</strong>
+                        <strong *ngIf="entity.type=='treatment'">Treatment:</strong>
+                        {{ entity.name }}
+                    </div>
+                    <div class="">
+                        <label><strong>{{'generics.Date' | translate }}:</strong></label>
+                        <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
+                            placeholder="{{'generics.Start Date' | translate }}" [max]="maxDate" readonly
+                            [matDatepicker]="pickerOnset" (click)="pickerOnset.open()" [(ngModel)]="entity.date">
+                        <span *ngIf="entity.date!=null" class="ml-1" (click)="pickerOnset.open()">{{entity.date | date: 'MMM y': '' :
+                            translate.currentLang}} </span>
+                        <mat-datepicker-toggle matSuffix [for]="pickerOnset"></mat-datepicker-toggle>
+                        <mat-datepicker startView="multi-year"
+                            (monthSelected)="closeDateEntity($event, i, pickerOnset)" touchUi="true"
+                            #pickerOnset></mat-datepicker>
+                    </div>
+                    <div class="">
+                        <div class="form-group">
+                            <label><strong>{{'generics.notes' | translate }}:</strong></label>
+                            <textarea maxlength="150" [(ngModel)]="entity.notes"
+                                placeholder="{{'seizures.Write down any details' | translate }}"
+                                class="autoajustable form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <button class="btn btn-dark"><em class="fa fa-check" (click)="addEntity(i)"></em></button>
+                        <button class="btn btn-danger"><em class="fa fa-trash" (click)="removeEntity(i)"></em></button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<button id="openModalEntitiesId" [hidden]="true" (click)="showModalEntities(contentEntities)">.</button>

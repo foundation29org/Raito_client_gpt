@@ -70,63 +70,45 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   maxDate = new Date();
   responseEntities = "";
-  posibleEntities = [];
-  /*posibleEntities = [
-    {
-      "name": "no",
-      "type": "symptom",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "Clobazam",
-      "type": "drug",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "Valproato de sodio",
-      "type": "drug",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "Fenobarbital",
-      "type": "drug",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "Topiramato",
-      "type": "drug",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "Stiripentol",
-      "type": "drug",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "Zonisamida",
-      "type": "drug",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "Levetiracetam",
-      "type": "drug",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "Cacahuetes y cacahuetes",
-      "type": "allergy",
-      "date": null,
-      "notes": ""
-    }
-  ];*/
+  //posibleEntities = [];
+  posibleEntities = [
+  {
+    "name": "convulsiones",
+    "type": "symptom",
+    "date": null,
+    "notes": ""
+  },
+  {
+    "name": "retraso en el desarrollo",
+    "type": "symptom",
+    "date": null,
+    "notes": ""
+  },
+  {
+    "name": "problemas de comportamiento",
+    "type": "symptom",
+    "date": null,
+    "notes": ""
+  },
+  {
+    "name": "problemas de aprendizaje.",
+    "type": "symptom",
+    "date": null,
+    "notes": ""
+  },
+  {
+    "name": "hablar con el médico",
+    "type": "treatment",
+    "date": null,
+    "notes": ""
+  },
+  {
+    "name": "Dravet",
+    "type": "disease",
+    "date": null,
+    "notes": ""
+  }
+];
   loadedEvents: boolean = false;
   loadingPosibleEntities: boolean = false;
 
@@ -558,76 +540,16 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.loadingPosibleEntities = false;
         console.log(res)
         this.responseEntities = res.choices[0].text;
-        const parsedResponse = this.parseResponse(res.choices[0].text);
+        const parsedResponse = this.openAiService.parseResponse(res.choices[0].text);
         console.log(parsedResponse);
-        this.parseEntities(parsedResponse);
+        var tempPosibleEntities = this.openAiService.parseEntities(parsedResponse);
+        for(var i = 0; i < tempPosibleEntities.length; i++){
+            this.posibleEntities.push(tempPosibleEntities[i])
+        }
       }, (err) => {
         console.log(err);
         this.loadingPosibleEntities = false;
       }));
-  }
-
-  parseResponse = (response: string): { symtoms: string[], drugs: string[], treatments: string[], diseases: string[], allergy: string[] } => {
-    const lines = response.split('\n');
-    let symtoms: string[] = [];
-    let drugs: string[] = [];
-    let treatments: string[] = [];
-    let diseases: string[] = [];
-    let allergy: string[] = [];
-
-    for (const line of lines) {
-      if (line.startsWith('Síntomas:')) {
-        symtoms = line.substring('Síntomas:'.length).trim().split(', ');
-      } else if (line.startsWith('Medicación:')) {
-        drugs = line.substring('Medicación:'.length).trim().split(', ');
-      } else if (line.startsWith('Tratamientos:')) {
-        treatments = line.substring('Tratamientos:'.length).trim().split(', ');
-      } else if (line.startsWith('Enfermedades o afecciones previas:')) {
-        diseases = line.substring('Enfermedades o afecciones previas:'.length).trim().split(', ');
-      } else if (line.startsWith('Alergias:')) {
-        allergy = line.substring('Alergias:'.length).trim().split(', ');
-      }
-    }
-    return { symtoms, drugs, treatments, diseases, allergy };
-  };
-  
-  parseEntities(parsedResponse) {
-    if(parsedResponse['symtoms'].length>0){
-      for(let i=0; i<parsedResponse['symtoms'].length; i++){
-        if(parsedResponse['symtoms'][i]!='no'){
-          this.posibleEntities.push({ name: parsedResponse['symtoms'][i], type: 'symptom', date: null, notes:''  })
-        }
-      }
-    }
-    if(parsedResponse['drugs'].length>0){
-      for(let i=0; i<parsedResponse['drugs'].length; i++){
-        if(parsedResponse['drugs'][i]!='no'){
-          this.posibleEntities.push({ name: parsedResponse['drugs'][i], type: 'drug', date: null, notes:''  })
-        }
-      }
-    }
-    if(parsedResponse['treatments'].length>0){
-      for(let i=0; i<parsedResponse['treatments'].length; i++){
-        if(parsedResponse['treatments'][i]!='no'){
-          this.posibleEntities.push({ name: parsedResponse['treatments'][i], type: 'treatment', date: null, notes:''  })
-        }
-      }
-    }
-    if(parsedResponse['diseases'].length>0){
-      for(let i=0; i<parsedResponse['diseases'].length; i++){
-        if(parsedResponse['diseases'][i]!='no'){
-          this.posibleEntities.push({ name: parsedResponse['diseases'][i], type: 'disease', date: null, notes:''  })
-        }
-      }
-    }
-    if(parsedResponse['allergy'].length>0){
-      for(let i=0; i<parsedResponse['allergy'].length; i++){
-        if(parsedResponse['allergy'][i]!='no'){
-          this.posibleEntities.push({ name: parsedResponse['allergy'][i], type: 'allergy', date: null, notes:'' })
-        }
-      }
-    }
-    console.log(this.posibleEntities)
   }
 
 
