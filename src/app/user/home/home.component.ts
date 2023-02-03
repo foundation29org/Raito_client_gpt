@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild  } from '@angular/core';
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import * as kf from './keyframes';
 import { Router } from "@angular/router";
@@ -129,6 +129,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   currentEntity = this.posibleEntities[this.currentIndex];
   swipeDirection: 'left' | 'right' | null = null;
   animationState: string;
+  private _threshold = 15;
+  @ViewChild("panelcard") _el: ElementRef;
 
   constructor(private http: HttpClient, public translate: TranslateService, private authService: AuthService, private patientService: PatientService, public searchFilterPipe: SearchFilterPipe, public toastr: ToastrService, private dateService: DateService, private sortService: SortService, private adapter: DateAdapter<any>, private searchService: SearchService, private router: Router, public trackEventsService: TrackEventsService, private openAiService: OpenAiService) {
     this.adapter.setLocale(this.authService.getLang());
@@ -618,6 +620,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         for (var i = 0; i < tempPosibleEntities.length; i++) {
           this.posibleEntities.push(tempPosibleEntities[i])
         }
+        this.currentEntity = this.posibleEntities[this.currentIndex];
       }, (err) => {
         console.log(err);
         this.loadingPosibleEntities = false;
@@ -635,7 +638,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.subscription.add(this.http.post(environment.api + '/api/events/' + this.authService.getCurrentPatient().sub, info)
       .subscribe((res: any) => {
         this.posibleEntities.splice(index, 1);
-        this.startAnimation('fadeIn');
+        this.currentEntity = this.posibleEntities[this.currentIndex];
+        setTimeout(() => {
+          this.startAnimation('fadeIn');
+        }, 200);
       }, (err) => {
         console.log(err);
       }));
@@ -644,10 +650,55 @@ export class HomeComponent implements OnInit, OnDestroy {
   removeEntity(index) {
     console.log(index)
     this.posibleEntities.splice(index, 1);
-    this.startAnimation('fadeIn');
+    this.currentEntity = this.posibleEntities[this.currentIndex];
+    setTimeout(() => {
+      this.startAnimation('fadeIn');
+    }, 200);
+  }
+
+  @HostListener('pan', ['$event'])
+  onPan(event: any) {
+    const x = event.deltaX;
+    const y = event.deltaY;
+
+    if (x > this._threshold) {
+      this._el.nativeElement.style.transform = `translateX(${x}px) rotate(30deg)`;
+      this._el.nativeElement.style.background = `#b3ffb361`;
+      this._el.nativeElement.style.border= `7px solid #dee2e6`;
+    } else if (x < -this._threshold) {
+      this._el.nativeElement.style.transform = `translateX(${x}px) rotate(-30deg)`;
+      this._el.nativeElement.style.background = `#ffb3b361`;
+      this._el.nativeElement.style.border= `7px solid #dee2e6`;
+    } else {
+      this._el.nativeElement.style.transform = `translateX(${x}px)`;
+      this._el.nativeElement.style.background = '';
+      this._el.nativeElement.style.border= '';
+    }
+  }
+
+  @HostListener('panend', ['$event'])
+  onPanEnd(event: any) {
+    console.log(event.deltaX)
+    this._el.nativeElement.style.transform = '';
+    this._el.nativeElement.style.background = '';
+    this._el.nativeElement.style.border= '';
+
+    this.swipeDirection = event.deltaX > 30 ? 'right' : 'left';
+    setTimeout(() => {
+      if (this.swipeDirection === 'left') {
+        this.startAnimation('slideOutRight')
+        this.removeEntity(this.currentIndex);
+        //this.discardEntity();
+      } else if (this.swipeDirection === 'right') {
+        //this.saveEntity();
+        this.startAnimation('slideOutLeft')
+        this.addEntity(this.currentIndex);
+      }
+    }, 200);
   }
 
   onSwipe(event) {
+    console.log(event)
     this.swipeDirection = event.deltaX > 0 ? 'right' : 'left';
     setTimeout(() => {
       if (this.swipeDirection === 'left') {
