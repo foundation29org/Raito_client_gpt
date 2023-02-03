@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { animate, style, transition, trigger } from '@angular/animations';
+import { animate, keyframes, style, transition, trigger } from '@angular/animations';
+import * as kf from './keyframes';
 import { Router } from "@angular/router";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'environments/environment';
@@ -19,6 +20,8 @@ import Swal from 'sweetalert2';
 import { DateAdapter } from '@angular/material/core';
 
 import { OpenAiService } from 'app/shared/services/openAi.service';
+import 'hammerjs';
+import { Console } from 'console';
 
 
 @Component({
@@ -34,7 +37,17 @@ import { OpenAiService } from 'app/shared/services/openAi.service';
       transition(':leave', [
         animate('500ms', style({ opacity: 0, transform: 'translateY(10px)' })),
       ]),
-    ])
+    ]),
+    trigger('cardAnimation', [
+      //transition('* => wobble', animate(1000, keyframes (kf.wobble))),
+      transition('* => swing', animate(1000, keyframes(kf.swing))),
+      //transition('* => jello', animate(1000, keyframes (kf.jello))),
+      //transition('* => zoomOutRight', animate(1000, keyframes (kf.zoomOutRight))),
+      transition('* => slideOutLeft', animate(1000, keyframes(kf.slideOutRight))),
+      transition('* => slideOutRight', animate(1000, keyframes(kf.slideOutLeft))),
+      //transition('* => rotateOutUpRight', animate(1000, keyframes (kf.rotateOutUpRight))),
+      transition('* => fadeIn', animate(1000, keyframes(kf.fadeIn))),
+    ]),
   ],
   providers: [PatientService, OpenAiService]
 })
@@ -72,45 +85,50 @@ export class HomeComponent implements OnInit, OnDestroy {
   responseEntities = "";
   posibleEntities = [];
   /*posibleEntities = [
-  {
-    "name": "convulsiones",
-    "type": "symptom",
-    "date": null,
-    "notes": ""
-  },
-  {
-    "name": "retraso en el desarrollo",
-    "type": "symptom",
-    "date": null,
-    "notes": ""
-  },
-  {
-    "name": "problemas de comportamiento",
-    "type": "symptom",
-    "date": null,
-    "notes": ""
-  },
-  {
-    "name": "problemas de aprendizaje.",
-    "type": "symptom",
-    "date": null,
-    "notes": ""
-  },
-  {
-    "name": "hablar con el médico",
-    "type": "treatment",
-    "date": null,
-    "notes": ""
-  },
-  {
-    "name": "Dravet",
-    "type": "disease",
-    "date": null,
-    "notes": ""
-  }
-];*/
+    {
+      "name": "convulsiones",
+      "type": "symptom",
+      "date": null,
+      "notes": ""
+    },
+    {
+      "name": "retraso en el desarrollo",
+      "type": "symptom",
+      "date": null,
+      "notes": ""
+    },
+    {
+      "name": "problemas de comportamiento",
+      "type": "symptom",
+      "date": null,
+      "notes": ""
+    },
+    {
+      "name": "problemas de aprendizaje.",
+      "type": "symptom",
+      "date": null,
+      "notes": ""
+    },
+    {
+      "name": "hablar con el médico",
+      "type": "treatment",
+      "date": null,
+      "notes": ""
+    },
+    {
+      "name": "Dravet",
+      "type": "disease",
+      "date": null,
+      "notes": ""
+    }
+  ];*/
   loadedEvents: boolean = false;
   loadingPosibleEntities: boolean = false;
+
+  currentIndex = 0;
+  currentEntity = this.posibleEntities[this.currentIndex];
+  swipeDirection: 'left' | 'right' | null = null;
+  animationState: string;
 
   constructor(private http: HttpClient, public translate: TranslateService, private authService: AuthService, private patientService: PatientService, public searchFilterPipe: SearchFilterPipe, public toastr: ToastrService, private dateService: DateService, private sortService: SortService, private adapter: DateAdapter<any>, private searchService: SearchService, private router: Router, public trackEventsService: TrackEventsService, private openAiService: OpenAiService) {
     this.adapter.setLocale(this.authService.getLang());
@@ -130,6 +148,16 @@ export class HomeComponent implements OnInit, OnDestroy {
         break;
 
     }
+  }
+
+  startAnimation(state) {
+    console.log(state)
+    if (!this.animationState) {
+      this.animationState = state;
+    }
+  }
+  resetAnimationState() {
+    this.animationState = '';
   }
 
   ngOnDestroy() {
@@ -427,6 +455,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       }));
   }
 
+  differenceInDays(date1: string, date2: string) {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    const timeDiff = Math.abs(d2.getTime() - d1.getTime());
+    const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    return diffDays;
+  }
 
   sendMessage() {
     if (!this.message) {
@@ -440,7 +475,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.callingOpenai = true;
     var years = this.ageFromDateOfBirthday(this.basicInfoPatient.birthDate);
-    var promDrug = 'Compórtate como un médico. Tienes que dar información específica y no general. Utiliza solo fuentes de información médica. El paciente tiene ' + years + ' años y es ' + this.basicInfoPatient.gender + '. ';
+    var gener = 'Hombre';
+    if(this.basicInfoPatient.gender=='female'){
+      gener = 'Mujer';
+    }
+    var promDrug = 'Compórtate como un médico. Tienes que dar información específica y no general. Utiliza solo fuentes de información médica. El paciente tiene ' + years + ' años y es ' + gener + '. ';
 
     if (this.patientInfo.patientAllergies.length > 0) {
       for (var i = 0; i < this.patientInfo.patientAllergies.length; i++) {
@@ -458,31 +497,64 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
     if (this.patientInfo.patientDiseases.length > 0) {
       for (var i = 0; i < this.patientInfo.patientDiseases.length; i++) {
-        if (i == 0) {
-          promDrug += 'El paciente tiene ' + this.patientInfo.patientDiseases[i].name + ' desde ' + this.patientInfo.patientDiseases[i].date;
-          if (i == 0 && this.patientInfo.patientDiseases.length == 1) {
-            promDrug += '. ';
+        const today = new Date().toISOString();
+        var days = this.differenceInDays(today, this.patientInfo.patientDiseases[i].date);
+        if(this.patientInfo.patientDiseases[i].date!=null && days>0){
+          if (i == 0) {
+            promDrug += 'El paciente tiene ' + this.patientInfo.patientDiseases[i].name + ' desde hace ' + days + ' dias';
+            if (i == 0 && this.patientInfo.patientDiseases.length == 1) {
+              promDrug += '. ';
+            }
+          } else if (i == this.patientInfo.patientDiseases.length - 1) {
+            promDrug += ' y ' + this.patientInfo.patientDiseases[i].name + ' desde hace ' + days + ' dias.';
+          } else {
+            promDrug += ', ' + this.patientInfo.patientDiseases[i].name + ' desde hace ' + days + ' dias';
           }
-        } else if (i == this.patientInfo.patientDiseases.length - 1) {
-          promDrug += ' y ' + this.patientInfo.patientDiseases[i].name + ' desde ' + this.patientInfo.patientDiseases[i].date + '.';
-        } else {
-          promDrug += ', ' + this.patientInfo.patientDiseases[i].name + ' desde ' + this.patientInfo.patientDiseases[i].date;
+        }else{
+          if (i == 0) {
+            promDrug += 'El paciente tiene ' + this.patientInfo.patientDiseases[i].name;
+            if (i == 0 && this.patientInfo.patientDiseases.length == 1) {
+              promDrug += '. ';
+            }
+          } else if (i == this.patientInfo.patientDiseases.length - 1) {
+            promDrug += ' y ' + this.patientInfo.patientDiseases[i].name + '.';
+          } else {
+            promDrug += ', ' + this.patientInfo.patientDiseases[i].name;
+          }
         }
+
+       
       }
       //promDrug += 'El paciente tiene ' + this.patientInfo.patientDiseases + '. ';
     }
     if (this.patientInfo.patientMedications.length > 0) {
       for (var i = 0; i < this.patientInfo.patientMedications.length; i++) {
-        if (i == 0) {
-          promDrug += 'El paciente toma ' + this.patientInfo.patientMedications[i].name + ' desde ' + this.patientInfo.patientMedications[i].date;
-          if (i == 0 && this.patientInfo.patientMedications.length == 1) {
-            promDrug += '. ';
+        const today = new Date().toISOString();
+        var days = this.differenceInDays(today, this.patientInfo.patientMedications[i].date);
+        if(this.patientInfo.patientMedications[i].date!=null && days>0){
+          if (i == 0) {
+            promDrug += 'El paciente toma ' + this.patientInfo.patientMedications[i].name + ' desde hace ' + days + ' dias';
+            if (i == 0 && this.patientInfo.patientMedications.length == 1) {
+              promDrug += '. ';
+            }
+          } else if (i == this.patientInfo.patientMedications.length - 1) {
+            promDrug += ' y ' + this.patientInfo.patientMedications[i].name + ' desde hace ' + days + ' dias.';
+          } else {
+            promDrug += ', ' + this.patientInfo.patientMedications[i].name + ' desde hace ' + days + ' dias';
           }
-        } else if (i == this.patientInfo.patientMedications.length - 1) {
-          promDrug += ' y ' + this.patientInfo.patientMedications[i].name + ' desde ' + this.patientInfo.patientMedications[i].date + '.';
-        } else {
-          promDrug += ', ' + this.patientInfo.patientMedications[i].name + ' desde ' + this.patientInfo.patientMedications[i].date;
+        }else{
+          if (i == 0) {
+            promDrug += 'El paciente toma ' + this.patientInfo.patientMedications[i].name;
+            if (i == 0 && this.patientInfo.patientMedications.length == 1) {
+              promDrug += '. ';
+            }
+          } else if (i == this.patientInfo.patientMedications.length - 1) {
+            promDrug += ' y ' + this.patientInfo.patientMedications[i].name + '.';
+          } else {
+            promDrug += ', ' + this.patientInfo.patientMedications[i].name;
+          }
         }
+        
       }
       //promDrug += 'El paciente toma ' + this.patientInfo.patientMedications + '. ';
     }
@@ -543,8 +615,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         const parsedResponse = this.openAiService.parseResponse(res.choices[0].text);
         console.log(parsedResponse);
         var tempPosibleEntities = this.openAiService.parseEntities(parsedResponse);
-        for(var i = 0; i < tempPosibleEntities.length; i++){
-            this.posibleEntities.push(tempPosibleEntities[i])
+        for (var i = 0; i < tempPosibleEntities.length; i++) {
+          this.posibleEntities.push(tempPosibleEntities[i])
         }
       }, (err) => {
         console.log(err);
@@ -560,17 +632,47 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   addEntity(index) {
     var info = { name: this.posibleEntities[index].name, type: this.posibleEntities[index].type, date: this.posibleEntities[index].date, notes: this.posibleEntities[index].notes };
-    this.subscription.add( this.http.post(environment.api+'/api/events/'+this.authService.getCurrentPatient().sub, info)
-        .subscribe( (res : any) => {
-          this.posibleEntities.splice(index, 1);
-         }, (err) => {
-           console.log(err);
-         }));
+    this.subscription.add(this.http.post(environment.api + '/api/events/' + this.authService.getCurrentPatient().sub, info)
+      .subscribe((res: any) => {
+        this.posibleEntities.splice(index, 1);
+        this.startAnimation('fadeIn');
+      }, (err) => {
+        console.log(err);
+      }));
   }
 
   removeEntity(index) {
     console.log(index)
     this.posibleEntities.splice(index, 1);
+    this.startAnimation('fadeIn');
+  }
+
+  onSwipe(event) {
+    this.swipeDirection = event.deltaX > 0 ? 'right' : 'left';
+    setTimeout(() => {
+      if (this.swipeDirection === 'left') {
+        this.removeEntity(this.currentIndex);
+        //this.discardEntity();
+      } else if (this.swipeDirection === 'right') {
+        //this.saveEntity();
+        this.addEntity(this.currentIndex);
+      }
+    }, 200);
+  }
+
+  discardEntity() {
+    this.currentIndex++;
+    this.swipeDirection = null;
+    if (this.currentIndex >= this.posibleEntities.length) {
+      this.currentEntity = null;
+    } else {
+      this.currentEntity = this.posibleEntities[this.currentIndex];
+    }
+  }
+
+  saveEntity() {
+    // Aquí puedes guardar la entidad actual
+    this.discardEntity();
   }
 
 }

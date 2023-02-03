@@ -55,6 +55,9 @@ import { Data } from 'app/shared/services/data.service';
 import { CordovaService } from 'app/shared/services/cordova.service';
 import { TrackEventsService } from 'app/shared/services/track-events.service';
 import { AuthInterceptor } from './shared/auth/auth.interceptor';
+import {
+  HammerModule, // <-- Hammer Module
+} from '@angular/platform-browser';
 
 import { QRCodeModule } from 'angularx-qrcode';
 
@@ -87,7 +90,8 @@ export function createTranslateLoader(http: HttpClient) {
       }
     }),
     PerfectScrollbarModule,
-    QRCodeModule
+    QRCodeModule,
+    HammerModule
   ],
   providers: [
     AuthService,

@@ -94,8 +94,10 @@
         </div>
         <div class="buttons-panel">
             <button class="mr-1 btn btn-danger" (click)="goBack()">Volver</button>
-            <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientAllergies.length==0" (click)="skipAllergies()">Siguiente</button>
-            <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientAllergies.length>0" (click)="submitAllergies()">Siguiente</button>
+            <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientAllergies.length==0"
+                (click)="skipAllergies()">Siguiente</button>
+            <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientAllergies.length>0"
+                (click)="submitAllergies()">Siguiente</button>
         </div>
     </div>
     <div @fadeSlideInOut class="input-screen" *ngIf="step===5">
@@ -131,15 +133,17 @@
                             (monthSelected)="closeDatePickerDisease($event, i, pickerOnset)" touchUi="true"
                             #pickerOnset></mat-datepicker>
                     </div>
-                    <button (click)="addDisease()" [disabled]="newDisease.name.length === 0" class="mt-2 btn btn-dark" title="add disease"
-                        href="javascript:;"><span>Añadir</span></button>
+                    <button (click)="addDisease()" [disabled]="newDisease.name.length === 0" class="mt-2 btn btn-dark"
+                        title="add disease" href="javascript:;"><span>Añadir</span></button>
                 </div>
             </div>
         </div>
         <div class="buttons-panel">
             <button class="mr-1 btn btn-danger" (click)="goBack()">Volver</button>
-            <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientDiseases.length==0" (click)="skipDiseases()">Siguiente</button>
-            <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientDiseases.length>0" (click)="submitDiseases()">Siguiente</button>
+            <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientDiseases.length==0"
+                (click)="skipDiseases()">Siguiente</button>
+            <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientDiseases.length>0"
+                (click)="submitDiseases()">Siguiente</button>
         </div>
     </div>
 
@@ -175,8 +179,8 @@
                             (monthSelected)="closeDatePickerDrug($event, i, pickerOnset)" touchUi="true"
                             #pickerOnset></mat-datepicker>
                     </div>
-                    <button (click)="addMedication()" [disabled]="newDrug.name.length === 0" class="ml-1 btn btn-dark" title="add drug"
-                        href="javascript:;"><span>Añadir</span></button>
+                    <button (click)="addMedication()" [disabled]="newDrug.name.length === 0" class="ml-1 btn btn-dark"
+                        title="add drug" href="javascript:;"><span>Añadir</span></button>
                 </div>
             </div>
         </div>
@@ -186,7 +190,7 @@
         </div>
 
     </div>
-    <div class="row"  @fadeSlideInOut *ngIf="step===7">
+    <div class="row" @fadeSlideInOut *ngIf="step===7">
         <div class="col-lg-6 col-md-6 col-sm-12">
             <h5 class="text-muted mt-3">Chat</h5>
             <div class="chat-container">
@@ -203,20 +207,91 @@
                 <input type="text" [(ngModel)]="message" [disabled]="callingOpenai" placeholder="Escribe un mensaje...">
                 <button class="btn btn-dark btn-chat" [disabled]="callingOpenai" (click)="sendMessage()">Enviar</button>
             </div>
-            <span *ngIf="valueProm" class="text-muted mt-3">{{valueProm.value}}</span>
+            <p *ngIf="valueProm" class="text-muted mt-3">{{valueProm.value}}</p>
 
-            <span *ngIf="responseEntities!=''" class="text-muted mt-3">Posibles eventos: {{responseEntities}}</span>
+            <p *ngIf="responseEntities!=''" class="text-muted mt-3">Posibles eventos: {{responseEntities}}</p>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="loadingPosibleEntities || posibleEntities.length>0">
             <h5 class="text-muted mt-3">Posibles eventos</h5>
-            <span>Ayúdame a ser más listo seleccionando tus eventos, al conocerte más, las respuesta serán más precisas. Tus eventos podrás verlos <a routerLink="/events">aquí</a></span>
+            <span>Ayúdame a ser más listo seleccionando tus eventos, al conocerte más, las respuesta serán más precisas.
+                Tus eventos podrás verlos <a routerLink="/events">aquí</a></span>
             <div class="row" style="padding: 1rem;padding-top: 0px;" *ngIf="loadingPosibleEntities">
                 <div class="col-lg-12 col-md-12 col-sm-12">
                     <em class="fa fa-spinner fa-spin fa-fw"></em>
                 </div>
             </div>
             <div class="row" style="padding: 1rem;padding-top: 0px;" *ngIf="posibleEntities.length>0">
-                <div *ngFor="let entity of posibleEntities; let i = index" class="p-2 col-lg-6 col-md-6 col-sm-12">
+                <!--<mat-card class="col-lg-12 col-md-12 col-sm-12 example-card" 
+                [@cardAnimation]="animationState"
+                (@cardAnimation.done)="resetAnimationState()"
+                (swiperight)="startAnimation('slideOutLeft')"
+                (swipeleft)="startAnimation('slideOutRight')"
+                *ngFor="let entity of posibleEntities">
+                    <mat-card-header>
+                        <mat-card-title>{{entity.name}}</mat-card-title>
+                        <mat-card-subtitle>{{entity.type}}</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <p>{{entity.description}}</p>
+                    </mat-card-content>
+                    <mat-card-actions>
+                        <button mat-raised-button (tap)="startAnimation(slideOutRight)" (click)="addEntity(entity)">Añadir</button>
+                    </mat-card-actions>
+                </mat-card>-->
+                <div *ngIf="currentEntity" class="entity-card p-2 col-sm-12">
+                    <div [ngClass]="{ 'left-swipe': swipeDirection === 'left', 'right-swipe': swipeDirection === 'right' }"
+                        class="swipe-card" (swipe)="onSwipe($event)" [@cardAnimation]="animationState"
+                        (@cardAnimation.done)="resetAnimationState()" (swiperight)="startAnimation('slideOutLeft')"
+                        (swipeleft)="startAnimation('slideOutRight')">
+                        <div class="p-2 entity"
+                            [ngClass]="{'allergy': currentEntity.type === 'allergy', 'disease': currentEntity.type === 'disease', 'drug': currentEntity.type === 'drug', 'symptom': currentEntity.type === 'symptom', 'treatment': currentEntity.type === 'treatment'}">
+                            <div>
+                                <strong *ngIf="currentEntity.type=='allergy'">Allergy:</strong>
+                                <strong *ngIf="currentEntity.type=='disease'">Disease:</strong>
+                                <strong *ngIf="currentEntity.type=='drug'">Drug:</strong>
+                                <strong *ngIf="currentEntity.type=='symptom'">Symptom:</strong>
+                                <strong *ngIf="currentEntity.type=='treatment'">Treatment:</strong>
+                                {{ currentEntity.name }}
+                            </div>
+                            <div class="">
+                                <label><strong>{{'generics.Date' | translate }}:</strong></label>
+                                <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
+                                    placeholder="{{'generics.Start Date' | translate }}" [max]="maxDate" readonly
+                                    [matDatepicker]="pickerOnset" (click)="pickerOnset.open()"
+                                    [(ngModel)]="currentEntity.date">
+                                <span *ngIf="currentEntity.date!=null" class="ml-1"
+                                    (click)="pickerOnset.open()">{{currentEntity.date | date: 'MMM y': '' :
+                                    translate.currentLang}} </span>
+                                <mat-datepicker-toggle matSuffix [for]="pickerOnset"></mat-datepicker-toggle>
+                                <mat-datepicker startView="multi-year"
+                                    (monthSelected)="closeDateEntity($event, i, pickerOnset)" touchUi="true"
+                                    #pickerOnset></mat-datepicker>
+                            </div>
+                            <div class="">
+                                <div class="form-group">
+                                    <label><strong>{{'generics.notes' | translate }}:</strong></label>
+                                    <textarea maxlength="150" [(ngModel)]="currentEntity.notes"
+                                        placeholder="{{'seizures.Write down any details' | translate }}"
+                                        class="autoajustable form-control"></textarea>
+                                </div>
+                            </div>
+                            <!--<div class="d-flex justify-content-between mt-2">
+                                <button class="btn btn-danger"><em class="fa fa-times"
+                                        (click)="removeEntity(i); startAnimation('slideOutLeft')"></em></button>
+                                <button class="btn btn-dark"><em class="fa fa-check"
+                                        (click)="addEntity(i); startAnimation('slideOutRight');"></em></button>
+
+                            </div>-->
+                        </div>
+                    </div>
+                    <div class="tinder--buttons">
+                        <button (click)="removeEntity(currentIndex); startAnimation('slideOutRight')" class="tno"><i class="fa fa-remove"></i></button>
+                        <div class="ti">{{currentIndex+1}} / {{posibleEntities.length}}</div>
+                        <button (click)="addEntity(currentIndex); startAnimation('slideOutLeft');" class="tyes"><i class="fa fa-check"></i></button>
+                      </div>
+                    
+                </div>
+                <!--<div *ngFor="let entity of posibleEntities; let i = index" class="p-2 col-lg-6 col-md-6 col-sm-12">
                     <div class="p-2 entity" [ngClass]="{'allergy': entity.type === 'allergy', 'disease': entity.type === 'disease', 'drug': entity.type === 'drug', 'symptom': entity.type === 'symptom', 'treatment': entity.type === 'treatment'}">
                         <div>
                             <strong *ngIf="entity.type=='allergy'">Allergy:</strong>
@@ -252,7 +327,7 @@
                         </div>
                     </div>
                     
-                </div>
+                </div>-->
             </div>
         </div>
     </div>
