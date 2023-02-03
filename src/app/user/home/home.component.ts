@@ -638,6 +638,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.subscription.add(this.http.post(environment.api + '/api/events/' + this.authService.getCurrentPatient().sub, info)
       .subscribe((res: any) => {
         this.posibleEntities.splice(index, 1);
+        this.currentEntity = this.posibleEntities[this.currentIndex];
         setTimeout(() => {
           this.startAnimation('fadeIn');
         }, 200);
@@ -649,6 +650,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   removeEntity(index) {
     console.log(index)
     this.posibleEntities.splice(index, 1);
+    this.currentEntity = this.posibleEntities[this.currentIndex];
     setTimeout(() => {
       this.startAnimation('fadeIn');
     }, 200);
