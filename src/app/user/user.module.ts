@@ -25,6 +25,8 @@ import { PromComponent } from './prom/prom.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
+import {MatCardModule} from '@angular/material/card';
+import {MatButtonModule} from '@angular/material/button';
 
 
 @NgModule({
@@ -48,7 +50,9 @@ import {MatRadioModule} from '@angular/material/radio';
         MatNativeDateModule,
         NgxChartsModule,
         MatCheckboxModule,
-        MatRadioModule
+        MatRadioModule,
+        MatCardModule,
+        MatButtonModule
     ],
     declarations: [
         HomeComponent,

@@ -116,6 +116,29 @@ input[type="text"],
   border-radius: 1rem;
 }
 
+.tinder--buttons {
+  display: block ruby;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.tinder--buttons button {
+  border-radius: 50%;
+  line-height: 60px;
+  width: 60px;
+  border: 0;
+  background: #FFFFFF;
+  display: inline-block;
+  margin: 0 8px;
+}
+
+.fa-remove {
+  color: #CDD6DD;
+}
+.fa-check {
+  color: #4eea2e;
+}
+
 @media (min-width: 600px) {
   .chat-container {
     /*height: 60%;
