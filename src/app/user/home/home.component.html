@@ -238,12 +238,16 @@
                         <button mat-raised-button (tap)="startAnimation(slideOutRight)" (click)="addEntity(entity)">Añadir</button>
                     </mat-card-actions>
                 </mat-card>-->
-                <div *ngIf="currentEntity" class="entity-card p-2 col-sm-12">
+                <div *ngIf="currentEntity" class="entity-card p-2 offset-sm-3 col-sm-6">
+                    <!--(swipe)="onSwipe($event)" -->
                     <div [ngClass]="{ 'left-swipe': swipeDirection === 'left', 'right-swipe': swipeDirection === 'right' }"
-                        class="swipe-card" (swipe)="onSwipe($event)" [@cardAnimation]="animationState"
-                        (@cardAnimation.done)="resetAnimationState()" (swiperight)="startAnimation('slideOutLeft')"
-                        (swipeleft)="startAnimation('slideOutRight')">
-                        <div class="p-2 entity"
+                        class="swipe-card" 
+                        [@cardAnimation]="animationState"
+                        (@cardAnimation.done)="resetAnimationState()" 
+                        (swiperight)="startAnimation('slideOutLeft')"
+                        (swipeleft)="startAnimation('slideOutRight')"
+                        >
+                        <div #panelcard class="p-2 entity"
                             [ngClass]="{'allergy': currentEntity.type === 'allergy', 'disease': currentEntity.type === 'disease', 'drug': currentEntity.type === 'drug', 'symptom': currentEntity.type === 'symptom', 'treatment': currentEntity.type === 'treatment'}">
                             <div>
                                 <strong *ngIf="currentEntity.type=='allergy'">Allergy:</strong>
