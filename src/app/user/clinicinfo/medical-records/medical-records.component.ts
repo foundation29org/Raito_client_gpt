@@ -1,4 +1,6 @@
-import { Component, OnInit, LOCALE_ID, OnDestroy } from '@angular/core';
+import { Component, OnInit, LOCALE_ID, OnDestroy, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { animate, keyframes, style, transition, trigger } from '@angular/animations';
+import * as kf from '../../home/keyframes';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'environments/environment';
@@ -18,6 +20,7 @@ import { DateService } from 'app/shared/services/date.service';
 import { HighlightSearch } from 'app/shared/services/search-filter-highlight.service';
 import { CordovaService } from 'app/shared/services/cordova.service';
 import { OpenAiService } from 'app/shared/services/openAi.service';
+import 'hammerjs';
 
 import Swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
@@ -36,6 +39,27 @@ declare var Docxgen: any;
   selector: 'app-medical-records',
   templateUrl: './medical-records.component.html',
   styleUrls: ['./medical-records.component.scss'],
+  animations: [
+    trigger('fadeSlideInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('500ms', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
+      transition(':leave', [
+        animate('500ms', style({ opacity: 0, transform: 'translateY(10px)' })),
+      ]),
+    ]),
+    trigger('cardAnimation', [
+      //transition('* => wobble', animate(1000, keyframes (kf.wobble))),
+      transition('* => swing', animate(1000, keyframes(kf.swing))),
+      //transition('* => jello', animate(1000, keyframes (kf.jello))),
+      //transition('* => zoomOutRight', animate(1000, keyframes (kf.zoomOutRight))),
+      transition('* => slideOutLeft', animate(1000, keyframes(kf.slideOutRight))),
+      transition('* => slideOutRight', animate(1000, keyframes(kf.slideOutLeft))),
+      //transition('* => rotateOutUpRight', animate(1000, keyframes (kf.rotateOutUpRight))),
+      transition('* => fadeIn', animate(1000, keyframes(kf.fadeIn))),
+    ]),
+  ],
   providers: [PatientService, ApiDx29ServerService, { provide: LOCALE_ID, useFactory: getCulture }, Apif29BioService, OpenAiService]
 })
 export class MedicalRecordsComponent implements OnInit, OnDestroy {
@@ -97,6 +121,14 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
   medicalText: string = '';
   posibleEntities = [];
   loadingPosibleEntities: boolean = false;
+
+  currentIndex = 0;
+  currentEntity = this.posibleEntities[this.currentIndex];
+  swipeDirection: 'left' | 'right' | null = null;
+  animationState: string;
+  private _threshold = 15;
+  @ViewChild("panelcard") _el: ElementRef;
+  showingEntities: boolean = false;
 
   constructor(private http: HttpClient, private blob: BlobStorageService, private authService: AuthService, private patientService: PatientService, private apiDx29ServerService: ApiDx29ServerService, public translate: TranslateService, public toastr: ToastrService, private apif29BioService: Apif29BioService, private searchService: SearchService, private sortService: SortService, private modalService: NgbModal, private authGuard: AuthGuard, private highlightSearch: HighlightSearch, private formBuilder: FormBuilder, private dateService: DateService, public cordovaService: CordovaService, private openAiService: OpenAiService) {
     $.getScript("./assets/js/docs/jszip-utils.js").done(function (script, textStatus) {
@@ -174,6 +206,16 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
       }
     }));
 
+  }
+
+  startAnimation(state) {
+    console.log(state)
+    if (!this.animationState) {
+      this.animationState = state;
+    }
+  }
+  resetAnimationState() {
+    this.animationState = '';
   }
 
   ngOnDestroy() {
@@ -647,37 +689,12 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
         this.saveResultsToBlob(bookText, this.posibleEntities, actualDate, blobName);
       }
       if(this.posibleEntities.length>0){
-        this.openModalEntities();
+        this.currentEntity = this.posibleEntities[this.currentIndex];
+        console.log(this.currentEntity )
+        this.showEntities();
       }
     });
   }
-
-  openModalEntities() {
-    if (this.modalReference2 != undefined) {
-        this.modalReference2.close();
-        this.modalReference2 = undefined;
-        document.getElementById("openModalEntitiesId").click();
-    } else {
-        document.getElementById("openModalEntitiesId").click();
-    }
-}
-
-  showModalEntities(contentEntities){
-    let ngbModalOptions: NgbModalOptions = {
-      keyboard: false,
-      windowClass: 'ModalClass-sm'// xl, lg, sm
-    };
-    this.modalReference2 = this.modalService.open(contentEntities, ngbModalOptions);
-  }
-
-  closeModal2() {
-    if (this.modalReference2 != undefined) {
-      this.modalReference2.close();
-      this.modalReference2 = undefined;
-    }
-    this.posibleEntities = [];
-  }
-
 
   getEntities(text) {
     return new Promise((resolve, reject) => {
@@ -693,6 +710,7 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
           for(var i = 0; i < tempPosibleEntities.length; i++){
               this.posibleEntities.push(tempPosibleEntities[i])
           }
+          this.currentEntity = this.posibleEntities[this.currentIndex];
           resolve('ok');
         }, (err) => {
           console.log(err);
@@ -709,16 +727,27 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
         console.log(res)
         this.posibleEntities = res.data;
-        let ngbModalOptions: NgbModalOptions = {
+        this.currentEntity = this.posibleEntities[this.currentIndex];
+        this.showEntities();
+        /*let ngbModalOptions: NgbModalOptions = {
           keyboard: false,
           windowClass: 'ModalClass-sm'// xl, lg, sm
         };
-        this.modalReference2 = this.modalService.open(contentEntities, ngbModalOptions);
+        this.modalReference2 = this.modalService.open(contentEntities, ngbModalOptions);*/
       }, (err) => {
         console.log(err);
       }));
-
   }
+
+  showEntities(){
+    this.showingEntities = true;
+  }
+
+  hideEntities(){
+    this.showingEntities = false;
+    this.posibleEntities = [];
+  }
+
 
   closeDateEntity(eventData: any, index: any, dp?: any) {
     this.posibleEntities[index].date = eventData;
@@ -730,6 +759,7 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
     this.subscription.add( this.http.post(environment.api+'/api/events/'+this.authService.getCurrentPatient().sub, info)
         .subscribe( (res : any) => {
           this.posibleEntities.splice(index, 1);
+          this.currentEntity = this.posibleEntities[this.currentIndex];
          }, (err) => {
            console.log(err);
          }));
@@ -738,6 +768,64 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
   removeEntity(index) {
     console.log(index)
     this.posibleEntities.splice(index, 1);
+    this.currentEntity = this.posibleEntities[this.currentIndex];
+    setTimeout(() => {
+      this.startAnimation('fadeIn');
+    }, 200);
+  }
+
+  @HostListener('pan', ['$event'])
+  onPan(event: any) {
+    const x = event.deltaX;
+    const y = event.deltaY;
+
+    if (x > this._threshold) {
+      this._el.nativeElement.style.transform = `translateX(${x}px) rotate(30deg)`;
+      this._el.nativeElement.style.background = `#b3ffb361`;
+      this._el.nativeElement.style.border= `7px solid #dee2e6`;
+    } else if (x < -this._threshold) {
+      this._el.nativeElement.style.transform = `translateX(${x}px) rotate(-30deg)`;
+      this._el.nativeElement.style.background = `#ffb3b361`;
+      this._el.nativeElement.style.border= `7px solid #dee2e6`;
+    } else {
+      this._el.nativeElement.style.transform = `translateX(${x}px)`;
+      this._el.nativeElement.style.background = '';
+      this._el.nativeElement.style.border= '';
+    }
+  }
+
+  @HostListener('panend', ['$event'])
+  onPanEnd(event: any) {
+    this._el.nativeElement.style.transform = '';
+    this._el.nativeElement.style.background = '';
+    this._el.nativeElement.style.border= '';
+
+    this.swipeDirection = event.deltaX > 30 ? 'right' : 'left';
+    setTimeout(() => {
+      if (this.swipeDirection === 'left' && (event.deltaX < -this._threshold)) {
+        this.startAnimation('slideOutRight')
+        this.removeEntity(this.currentIndex);
+        //this.discardEntity();
+      } else if (this.swipeDirection === 'right' && (event.deltaX > this._threshold)) {
+        //this.saveEntity();
+        this.startAnimation('slideOutLeft')
+        this.addEntity(this.currentIndex);
+      }
+    }, 200);
+  }
+
+  onSwipe(event) {
+    console.log(event)
+    this.swipeDirection = event.deltaX > 0 ? 'right' : 'left';
+    setTimeout(() => {
+      if (this.swipeDirection === 'left') {
+        this.removeEntity(this.currentIndex);
+        //this.discardEntity();
+      } else if (this.swipeDirection === 'right') {
+        //this.saveEntity();
+        this.addEntity(this.currentIndex);
+      }
+    }, 200);
   }
 
 

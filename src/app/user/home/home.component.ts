@@ -21,7 +21,6 @@ import { DateAdapter } from '@angular/material/core';
 
 import { OpenAiService } from 'app/shared/services/openAi.service';
 import 'hammerjs';
-import { Console } from 'console';
 
 
 @Component({
@@ -678,18 +677,17 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   @HostListener('panend', ['$event'])
   onPanEnd(event: any) {
-    console.log(event.deltaX)
     this._el.nativeElement.style.transform = '';
     this._el.nativeElement.style.background = '';
     this._el.nativeElement.style.border= '';
 
     this.swipeDirection = event.deltaX > 30 ? 'right' : 'left';
     setTimeout(() => {
-      if (this.swipeDirection === 'left') {
+      if (this.swipeDirection === 'left' && (event.deltaX < -this._threshold)) {
         this.startAnimation('slideOutRight')
         this.removeEntity(this.currentIndex);
         //this.discardEntity();
-      } else if (this.swipeDirection === 'right') {
+      } else if (this.swipeDirection === 'right' && (event.deltaX > this._threshold)) {
         //this.saveEntity();
         this.startAnimation('slideOutLeft')
         this.addEntity(this.currentIndex);
