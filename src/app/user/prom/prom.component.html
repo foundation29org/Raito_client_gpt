@@ -9,7 +9,8 @@
 							{{'generics.Back' | translate}}
 						</button>
 						<div class="row">
-							<h2 class="content-header mt-0 mb-2">Nuevo evento</h2>
+							<h2 *ngIf="!editing" class="content-header mt-0 mb-2">Nuevo evento</h2>
+							<h2 *ngIf="editing" class="content-header mt-0 mb-2">Editar evento</h2>
 						</div>
 					</div>
 				</div>
@@ -79,7 +80,9 @@
 						</form>
 					</div>
 					<div class="col-md-12 center-elements">
-						<button type="button" class="btn btn-dark" (click)="saveData();">{{'generics.SaveAndClose' |
+						<button *ngIf="!editing" type="button" class="btn btn-dark" (click)="saveData();">{{'generics.SaveAndClose' |
+							translate }}</button>
+						<button *ngIf="editing" type="button" class="btn btn-dark" (click)="updateData();">{{'generics.SaveAndClose' |
 							translate }}</button>
 					</div>
 				</div>
@@ -142,7 +145,7 @@
 							</ng-container>
 
 							<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-							<tr mat-row *matRowDef="let row; columns: displayedColumns;"
+							<tr mat-row (click)="showForm(row)" *matRowDef="let row; columns: displayedColumns;"
 								[ngClass]="{'allergy': row.type === 'allergy', 'disease': row.type === 'disease', 'drug': row.type === 'drug', 'symptom': row.type === 'symptom', 'treatment': row.type === 'treatment'}">
 							</tr>
 

@@ -38,7 +38,15 @@
   .small-width {
     max-width: 30rem !important;
   }
-
+  
+  .mat-row .mat-cell {
+    cursor: pointer;
+  }
+  
+  .mat-row:hover .mat-cell {
+    border-bottom: 2px solid #000;
+    border-top: 2px solid #000;
+  }
   /*::ng-deep .mat-form-field-infix {
     display: contents !important;
   }*/
