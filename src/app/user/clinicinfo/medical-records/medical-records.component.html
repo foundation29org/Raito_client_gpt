@@ -1,4 +1,4 @@
-<div *ngIf="!showingEntities">
+<div *ngIf="!showingEntities" @fadeSlideInOut>
     <div class="card card-block mx-auto" style="max-width: 30rem !important;">
         <div class="card-body">
             <div class="row">
@@ -321,7 +321,7 @@
         </div>
     </div>
 </div>
-<div *ngIf="showingEntities" >
+<div *ngIf="showingEntities" @fadeSlideInOut>
    
     <div class="input-screen">
         <p><button class="ml-2 btn btn-primary" (click)="hideEntities();">{{'generics.Back' | translate

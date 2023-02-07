@@ -27,6 +27,9 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material/button';
+import {MatTableModule} from '@angular/material/table';
+import {MatSortModule} from '@angular/material/sort';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 
 @NgModule({
@@ -52,7 +55,10 @@ import {MatButtonModule} from '@angular/material/button';
         MatCheckboxModule,
         MatRadioModule,
         MatCardModule,
-        MatButtonModule
+        MatButtonModule,
+        MatTableModule,
+        MatSortModule,
+        MatPaginatorModule
     ],
     declarations: [
         HomeComponent,

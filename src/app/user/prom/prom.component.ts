@@ -1,4 +1,6 @@
-import { Component, ViewChild, TemplateRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, TemplateRef, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { animate, keyframes, style, transition, trigger } from '@angular/animations';
+import * as kf from '../home/keyframes';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { startOfDay, endOfDay, subDays, addDays, endOfMonth, isSameDay, isSameMonth, addHours } from 'date-fns';
 import { Router } from "@angular/router";
@@ -18,13 +20,37 @@ import { Subscription } from 'rxjs/Subscription';
 import { NgbModal, NgbModalRef, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { CordovaService } from 'app/shared/services/cordova.service';
 
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
+import {MatTableDataSource} from '@angular/material/table';
+
 @Component({
   selector: 'app-prom',
   templateUrl: './prom.component.html',
   styleUrls: ['./prom.component.scss'],
+  animations: [
+    trigger('fadeSlideInOut', [
+      transition(':enter', [
+        animate('500ms', style({ opacity: 1, transform: 'rotateY(180deg)' })),
+      ]),
+      transition(':leave', [
+        animate('500ms', style({ opacity: 0, transform: 'rotateY(180deg)'})),
+      ]),
+    ]),
+    trigger('cardAnimation', [
+      //transition('* => wobble', animate(1000, keyframes (kf.wobble))),
+      transition('* => swing', animate(1000, keyframes(kf.swing))),
+      //transition('* => jello', animate(1000, keyframes (kf.jello))),
+      //transition('* => zoomOutRight', animate(1000, keyframes (kf.zoomOutRight))),
+      transition('* => slideOutLeft', animate(1000, keyframes(kf.slideOutRight))),
+      transition('* => slideOutRight', animate(1000, keyframes(kf.slideOutLeft))),
+      //transition('* => rotateOutUpRight', animate(1000, keyframes (kf.rotateOutUpRight))),
+      transition('* => fadeIn', animate(1000, keyframes(kf.fadeIn))),
+    ]),
+  ],
   providers: [PatientService]
 })
-export class PromComponent {
+export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('modalContent') modalContent: TemplateRef<any>;
   @ViewChild('modalGraphContent') modalGraphContent: TemplateRef<any>;
 
@@ -52,6 +78,14 @@ export class PromComponent {
   submitted = false;
   isMobile: boolean = false;
   events: any = [];
+  eventsCopy: any = [];
+
+  displayedColumns: string[] = ['type', 'name', 'date', 'notes', 'actions'];
+  dataSource: MatTableDataSource<any>;
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+
 
   constructor(private http: HttpClient, private router: Router, private authService: AuthService, private authGuard: AuthGuard, private modalService: NgbModal, public translate: TranslateService, public toastr: ToastrService, private searchService: SearchService, private dateService: DateService, private formBuilder: FormBuilder, private sortService: SortService, private patientService: PatientService, public cordovaService: CordovaService) { }
 
@@ -75,6 +109,10 @@ export class PromComponent {
     this.loadTranslations();
   }
 
+  ngAfterViewInit() {
+    
+  }
+
   get f() { return this.seizuresForm.controls; }
 
   loadTranslations(){
@@ -87,7 +125,6 @@ export class PromComponent {
   }
 
  loadData(){
-    this.events = [];
     this.loading = true;
     this.subscription.add( this.patientService.getPatientId()
     .subscribe( (res : any) => {
@@ -106,21 +143,25 @@ export class PromComponent {
   loadEvents(){
     this.loadedEvents=false;
     this.events =[];
+    this.eventsCopy = [];
     this.subscription.add( this.http.get(environment.api+'/api/events/'+this.authService.getCurrentPatient().sub)
     .subscribe( (res : any) => {
       if(res.message){
         //no tiene información
-        this.events = [];
+        this.dataSource = new MatTableDataSource([]);
       }else{
         if(res.length>0){
           res.sort(this.sortService.DateSort("dateInput"));
           this.events = res;
-          this.refresh.next();
-        }else{
-          this.events = [];
+          this.eventsCopy = JSON.parse(JSON.stringify(res));
+           // Assign the data to the data source for the table to render
+          this.dataSource = new MatTableDataSource(this.events);
+          //this.refresh.next();
         }
 
       }
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
       this.loadedEvents=true;
       this.loading = false;
      }, (err) => {
@@ -145,10 +186,12 @@ export class PromComponent {
         .subscribe( (res : any) => {
           this.saving = false;
           this.toastr.success('', this.msgDataSavedOk);
-          this.events.push(this.seizuresForm.value);
+          /*this.events.push(this.seizuresForm.value);
+          this.eventsCopy.push(this.seizuresForm.value);*/
           this.submitted = false;
           this.seizuresForm.reset();
           this.step = '1';
+          this.loadEvents();
          }, (err) => {
            console.log(err);
            this.saving = false;
@@ -161,6 +204,7 @@ export class PromComponent {
   }
 
   deleteSeizure(event) {
+    console.log(event)
     Swal.fire({
       title: this.translate.instant("generics.Are you sure delete") + "?",
       icon: 'warning',
@@ -193,6 +237,7 @@ export class PromComponent {
 
   openStats(){
     this.step = '1';
+    this.loadEvents();
   }
 
   goto(index){
@@ -207,6 +252,15 @@ export class PromComponent {
   }
 
   showAll(){
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
 }
