@@ -1,7 +1,7 @@
 import { Component, ViewChild, TemplateRef, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import * as kf from '../home/keyframes';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { startOfDay, endOfDay, subDays, addDays, endOfMonth, isSameDay, isSameMonth, addHours } from 'date-fns';
 import { Router } from "@angular/router";
 import { environment } from 'environments/environment';
@@ -86,6 +86,10 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
+  range = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+  });
 
   constructor(private http: HttpClient, private router: Router, private authService: AuthService, private authGuard: AuthGuard, private modalService: NgbModal, public translate: TranslateService, public toastr: ToastrService, private searchService: SearchService, private dateService: DateService, private formBuilder: FormBuilder, private sortService: SortService, private patientService: PatientService, public cordovaService: CordovaService) { }
 
@@ -261,6 +265,49 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  showDates(contentDates){
+    let ngbModalOptions: NgbModalOptions = {
+      keyboard: false,
+      windowClass: 'ModalClass-xs'// xl, lg, sm
+    };
+    this.modalReference = this.modalService.open(contentDates, ngbModalOptions);
+  }
+
+  closeModal() {
+    if (this.modalReference != undefined) {
+      this.modalReference.close();
+      this.modalReference = undefined;
+    }
+  }
+
+  applyRangeDates(){
+    this.closeModal();
+    //range.value.start - range.value.end
+    console.log(this.range.value)
+    var test = this.dateService.transformDate(this.range.value.start );
+    var test2 = this.dateService.transformDate(this.range.value.end );
+    this.events = this.eventsCopy.filter(x => new Date(x.date) >= new Date(test) && new Date(x.date) <= new Date(test2));
+    console.log(this.events )
+
+    //this.events =[];
+    this.dataSource = new MatTableDataSource(this.events);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  clear(){
+    if (this.modalReference != undefined) {
+      this.modalReference.close();
+      this.modalReference = undefined;
+    }
+    this.range.value.start = null;
+    this.range.value.end = null;
+    this.events = this.eventsCopy;
+    this.dataSource = new MatTableDataSource(this.events);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
 }
