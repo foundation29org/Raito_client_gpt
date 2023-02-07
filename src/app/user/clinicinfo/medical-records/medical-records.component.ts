@@ -209,7 +209,6 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
   }
 
   startAnimation(state) {
-    console.log(state)
     if (!this.animationState) {
       this.animationState = state;
     }
@@ -440,7 +439,6 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
           this.modalReference = undefined;
         }
         this.dataFile = {};
-        console.log(info);
         if (info.typedocument == 'general') {
           this.uploadingGenotype = false;
         }
@@ -678,7 +676,6 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
   
     Promise.all(chunkPromises).then((data) => {
       console.log("Todas las llamadas a getEntities han terminado");
-      console.log(this.posibleEntities)
       this.loadingPosibleEntities = false;
       if (bookText.length < 5) {
         //Swal.fire('', this.translate.instant("land.placeholderError"), "warning");
@@ -690,8 +687,23 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
       }
       if(this.posibleEntities.length>0){
         this.currentEntity = this.posibleEntities[this.currentIndex];
-        console.log(this.currentEntity )
-        this.showEntities();
+        Swal.fire({
+          title: 'Se han detectado ' + " " + this.posibleEntities.length + " eventos.",
+          text: "¿Desea revisarlos para así poder añadirlos a la historia clínica?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#2F8BE6',
+          cancelButtonColor: '#B0B6BB',
+          confirmButtonText: this.translate.instant("generics.Accept"),
+          cancelButtonText: this.translate.instant("generics.Cancel"),
+          showLoaderOnConfirm: true,
+          allowOutsideClick: false,
+          reverseButtons: true
+        }).then((result) => {
+          if (result.value) {
+            this.showEntities();
+          }
+        });
       }
     });
   }
@@ -699,13 +711,10 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
   getEntities(text) {
     return new Promise((resolve, reject) => {
       let promEntities = 'Compórtate como un médico. Clasifica en Síntomas, Medicación, Tratamientos, Alergias, y "Enfermedades o afecciones previas", todo lo que aparezca en el siguiente texto: ' + text + '. Si no hay ninguna, escribe "no" por cada una de las 5 secciones. Si hay, devuelve una lista por cada sección previa, separado por comas. Si no estás seguro, no lo incluyas.';
-      console.log(promEntities)
       let prom = { value: promEntities };
       this.subscription.add(this.openAiService.postOpenAi(prom)
         .subscribe((res: any) => {
-          console.log(res)
           const parsedResponse = this.openAiService.parseResponse(res.choices[0].text);
-          console.log(parsedResponse);
           var tempPosibleEntities = this.openAiService.parseEntities(parsedResponse);
           for(var i = 0; i < tempPosibleEntities.length; i++){
               this.posibleEntities.push(tempPosibleEntities[i])
@@ -719,21 +728,15 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
     });
   }
 
-  openEntities(name, contentEntities) {
+  openEntities(name) {
     var url = name.substr(0, name.lastIndexOf('/') + 1)
     var fileNameNcr = url + 'textanaresult.json';
     var url2 = this.accessToken.blobAccountUrl + this.accessToken.containerName + '/' + fileNameNcr + this.accessToken.sasToken;
     this.subscription.add(this.http.get(this.accessToken.blobAccountUrl + this.accessToken.containerName + '/' + fileNameNcr + this.accessToken.sasToken)
       .subscribe((res: any) => {
-        console.log(res)
         this.posibleEntities = res.data;
         this.currentEntity = this.posibleEntities[this.currentIndex];
         this.showEntities();
-        /*let ngbModalOptions: NgbModalOptions = {
-          keyboard: false,
-          windowClass: 'ModalClass-sm'// xl, lg, sm
-        };
-        this.modalReference2 = this.modalService.open(contentEntities, ngbModalOptions);*/
       }, (err) => {
         console.log(err);
       }));
@@ -766,7 +769,6 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
   }
 
   removeEntity(index) {
-    console.log(index)
     this.posibleEntities.splice(index, 1);
     this.currentEntity = this.posibleEntities[this.currentIndex];
     setTimeout(() => {
@@ -815,7 +817,6 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
   }
 
   onSwipe(event) {
-    console.log(event)
     this.swipeDirection = event.deltaX > 0 ? 'right' : 'left';
     setTimeout(() => {
       if (this.swipeDirection === 'left') {
