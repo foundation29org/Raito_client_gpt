@@ -3,23 +3,23 @@
   }
   
   .allergy {
-    background-color: #ffb3b3;
+    background-color: #ffb3b3bc;
   }
   
   .disease {
-    background-color: #ffcc80;
+    background-color: #ffcc80a6;
   }
   
   .drug {
-    background-color: #b3e0ff;
+    background-color: #b3e0ff9e;
   }
   
   .symptom {
-    background-color: #b3ffb3;
+    background-color: #b3ffb3bf;
   }
   
   .treatment {
-    background-color: #ccccff;
+    background-color: #ccccffa6;
   }
 
   table {
@@ -39,14 +39,15 @@
     max-width: 30rem !important;
   }
   
-  .mat-row .mat-cell {
+  /*.mat-row .mat-cell {
     cursor: pointer;
   }
   
   .mat-row:hover .mat-cell {
-    border-bottom: 2px solid #000;
-    border-top: 2px solid #000;
-  }
+    border-bottom: 2px solid #111;
+    border-top: 2px solid #111;
+    background: #d1d1d1;
+  }*/
   /*::ng-deep .mat-form-field-infix {
     display: contents !important;
   }*/

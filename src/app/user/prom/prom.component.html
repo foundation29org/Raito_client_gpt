@@ -140,12 +140,16 @@
 							<!-- actions Column -->
 							<ng-container matColumnDef="actions">
 								<th mat-header-cell *matHeaderCellDef mat-sort-header> Actions </th>
-								<td mat-cell *matCellDef="let row"> <a class="danger" (click)="deleteSeizure(row);"
-										href="javascript:void(0)"><i class="ft-trash"></i></a> </td>
+								<td mat-cell *matCellDef="let row"> 
+									<a class="" style="color: #343a40" (click)="showForm(row);" title="Editar"
+									href="javascript:void(0)"><i class="fa fa-pencil"></i></a> 
+									<a class="ml-2" style="color: #343a40" (click)="deleteSeizure(row);" title="Eliminar"
+										href="javascript:void(0)"><i class="ft-trash"></i></a> 
+								</td>
 							</ng-container>
-
+							<!--(click)="showForm(row)"-->
 							<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-							<tr mat-row (click)="showForm(row)" *matRowDef="let row; columns: displayedColumns;"
+							<tr mat-row *matRowDef="let row; columns: displayedColumns;"
 								[ngClass]="{'allergy': row.type === 'allergy', 'disease': row.type === 'disease', 'drug': row.type === 'drug', 'symptom': row.type === 'symptom', 'treatment': row.type === 'treatment'}">
 							</tr>
 
