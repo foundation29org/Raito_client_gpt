@@ -91,6 +91,9 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
     end: new FormControl<Date | null>(null),
   });
 
+  editing: boolean = false;
+  actualRow: any = null;
+
   constructor(private http: HttpClient, private router: Router, private authService: AuthService, private authGuard: AuthGuard, private modalService: NgbModal, public translate: TranslateService, public toastr: ToastrService, private searchService: SearchService, private dateService: DateService, private formBuilder: FormBuilder, private sortService: SortService, private patientService: PatientService, public cordovaService: CordovaService) { }
 
   ngOnDestroy() {
@@ -164,6 +167,7 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
       }
+      this.editing=false;
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.loadedEvents=true;
@@ -192,6 +196,37 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
           this.toastr.success('', this.msgDataSavedOk);
           /*this.events.push(this.seizuresForm.value);
           this.eventsCopy.push(this.seizuresForm.value);*/
+          this.submitted = false;
+          this.seizuresForm.reset();
+          this.step = '1';
+          this.loadEvents();
+         }, (err) => {
+           console.log(err);
+           this.saving = false;
+           if(err.error.message=='Token expired' || err.error.message=='Invalid Token'){
+             this.authGuard.testtoken();
+           }else{
+           }
+         }));
+    }
+  }
+
+  updateData(){
+    console.log(this.seizuresForm)
+    this.submitted = true;
+    if (this.seizuresForm.invalid) {
+        return;
+    }
+    
+    if (this.seizuresForm.value.date != null) {
+      this.seizuresForm.value.date = this.dateService.transformDate(this.seizuresForm.value.date);
+    }
+    if(this.authGuard.testtoken()){
+      this.saving = true;
+      this.subscription.add( this.http.put(environment.api+'/api/events/'+this.actualRow._id, this.seizuresForm.value)
+        .subscribe( (res : any) => {
+          this.saving = false;
+          this.toastr.success('', this.msgDataSavedOk);
           this.submitted = false;
           this.seizuresForm.reset();
           this.step = '1';
@@ -308,6 +343,14 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
     this.dataSource = new MatTableDataSource(this.events);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  showForm(row){
+    console.log(row)
+    this.actualRow = row;
+    this.step = '0';
+    this.editing = true;
+    this.seizuresForm.patchValue(row);
   }
 
 }
