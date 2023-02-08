@@ -3,30 +3,28 @@
         <em class="fa fa-spinner fa-spin fa-fw"></em>
     </div>
     <div @fadeSlideInOut class="welcome-screen" *ngIf="step===1">
-        <h1>Bienvenido a la aplicación de Salud AI</h1>
-        <p>Esta aplicación es una inteligencia artificial en el bolsillo para temas de salud.</p>
-        <p>Para brindarte una respuesta personalizada, necesitamos conocer algunos detalles sobre ti. Por favor,
-            proporciona
-            la siguiente información:</p>
+        <h1>{{'home.1.1' | translate }}</h1>
+        <p>{{'home.1.2' | translate }}</p>
+        <p>{{'home.1.3' | translate }}</p>
         <ul style="text-align: initial;">
-            <li>Edad</li>
-            <li>Sexo</li>
-            <li>Alergias</li>
-            <li>Enfermedades o afecciones previas</li>
-            <li>Medicamentos actuales</li>
+            <li>{{'home.1.4' | translate }}</li>
+            <li>{{'home.1.5' | translate }}</li>
+            <li>{{'home.1.6' | translate }}</li>
+            <li>{{'home.1.7' | translate }}</li>
+            <li>{{'home.1.8' | translate }}</li>
         </ul>
-        <button id="start-chat-button" (click)="start()">Empezar</button>
+        <button id="start-chat-button" (click)="start()">{{'home.button' | translate }}</button>
     </div>
 
     <div @fadeSlideInOut class="input-screen" *ngIf="step===2">
-        <h1>Fecha de nacimiento</h1>
-        <p>Por favor, ingrese su fecha de nacimiento:</p>
+        <h1>{{'home.2.1' | translate }}</h1>
+        <p>{{'home.2.2' | translate }}</p>
         <!--<input type="number" [(ngModel)]="basicInfoPatient.birthDate" />-->
         <div class="list-options">
             <div class="list-options w-100">
                 <div class="mt-2 w-100">
                     <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
-                        placeholder="Cuando nació?" [max]="maxDate" readonly [matDatepicker]="pickerOnset"
+                        placeholder="{{'home.2.1' | translate }}" [max]="maxDate" readonly [matDatepicker]="pickerOnset"
                         (click)="pickerOnset.open()" [(ngModel)]="basicInfoPatient.birthDate">
                     <span class="form-control w-75 d-inline" (click)="pickerOnset.open()"
                         style="background-color: #e9ecef;min-width: 200px;">{{basicInfoPatient.birthDate | date: 'dd MMM
@@ -37,40 +35,40 @@
             </div>
         </div>
         <div class="buttons-panel">
-            <button class="mr-1 btn btn-danger" (click)="goBack()">Volver</button>
+            <button class="mr-1 btn btn-danger" (click)="goBack()">{{'generics.Previous' | translate }}</button>
             <button class="ml-1 btn btn-dark" [disabled]="!basicInfoPatient.birthDate"
-                (click)="submitAge()">Siguiente</button>
+                (click)="submitAge()">{{'generics.Next' | translate }}</button>
         </div>
 
     </div>
 
     <div @fadeSlideInOut class="input-screen" *ngIf="step===3">
-        <h1>Sexo</h1>
-        <p>Por favor, seleccione su género:</p>
+        <h1>{{'home.3.1' | translate }}</h1>
+        <p>{{'home.3.2' | translate }}</p>
         <div class="list-options">
             <div>
                 <input type="radio" name="gender" [(ngModel)]="basicInfoPatient.gender" value="male" />
-                <label class="ml-1">Masculino</label>
+                <label class="ml-1">{{'personalinfo.Male' | translate }}</label>
             </div>
             <div>
                 <input type="radio" name="gender" [(ngModel)]="basicInfoPatient.gender" value="female" />
-                <label class="ml-1">Femenino</label>
+                <label class="ml-1">{{'personalinfo.Female' | translate }}</label>
             </div>
             <div>
                 <input type="radio" name="gender" [(ngModel)]="basicInfoPatient.gender" value="other" />
-                <label class="ml-1">Prefiero no decirlo</label>
+                <label class="ml-1">{{'personalinfo.I prefer not to say' | translate }}</label>
             </div>
         </div>
         <div class="buttons-panel">
-            <button class="mr-1 btn btn-danger" (click)="goBack()">Volver</button>
+            <button class="mr-1 btn btn-danger" (click)="goBack()">{{'generics.Previous' | translate }}</button>
             <button class="ml-1 btn btn-dark" [disabled]="!basicInfoPatient.gender"
-                (click)="submitGender()">Siguiente</button>
+                (click)="submitGender()">{{'generics.Next' | translate }}</button>
         </div>
 
     </div>
 
     <div @fadeSlideInOut class="input-screen" *ngIf="step===4">
-        <h1>Alergias</h1>
+        <h1>{{'home.4.1' | translate }}</h1>
         <div class="form-group" *ngIf="patientInfo.patientAllergies.length>0">
             <div class="list-options">
                 <div class="" *ngFor="let allergy of patientInfo.patientAllergies; let i = index">
@@ -79,29 +77,29 @@
                 </div>
             </div>
         </div>
-        <p class="mb-0">Por favor, añada sus alergias (opcional):</p>
+        <p class="mb-0">{{'home.4.2' | translate }}</p>
         <div class="card p-2 border panel-add">
-            <h5 for="nueva-alergia">Nueva Alergia</h5>
+            <h5 for="nueva-alergia">{{'home.4.3' | translate }}</h5>
             <div class="list-options w-100">
                 <div>
                     <input type="text" class="form-control" [(ngModel)]="newAlergy.name"
-                        placeholder="Escribe la alergia" />
+                        placeholder="{{'home.4.4' | translate }}" />
                     <a (click)="addAlergy()" class="mt-2 ml-1 btn btn-dark" title="add alergy"
-                        href="javascript:;"><span>Añadir</span></a>
+                        href="javascript:;"><span>{{'generics.Add' | translate }}</span></a>
                 </div>
             </div>
 
         </div>
         <div class="buttons-panel">
-            <button class="mr-1 btn btn-danger" (click)="goBack()">Volver</button>
+            <button class="mr-1 btn btn-danger" (click)="goBack()">{{'generics.Previous' | translate }}</button>
             <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientAllergies.length==0"
-                (click)="skipAllergies()">Siguiente</button>
+                (click)="skipAllergies()">{{'generics.Next' | translate }}</button>
             <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientAllergies.length>0"
-                (click)="submitAllergies()">Siguiente</button>
+                (click)="submitAllergies()">{{'generics.Next' | translate }}</button>
         </div>
     </div>
     <div @fadeSlideInOut class="input-screen" *ngIf="step===5">
-        <h2>Enfermedades o afecciones previas</h2>
+        <h2>{{'home.5.1' | translate }}</h2>
         <div class="form-group" *ngIf="patientInfo.patientDiseases.length>0">
             <div class="list-options">
                 <div class="" *ngFor="let disease of patientInfo.patientDiseases; let i = index">
@@ -110,20 +108,18 @@
                 </div>
             </div>
         </div>
-        <p class="mb-0">Por favor, proporcione información sobre las enfermedades o afecciones que ha tenido en el
-            pasado (opcional).
-        </p>
+        <p class="mb-0">{{'home.5.2' | translate }}</p>
         <div class="card p-2 border panel-add">
-            <h5 for="nueva-enfermedad">Nueva enfermedad</h5>
+            <h5 for="nueva-enfermedad">{{'home.5.3' | translate }}</h5>
             <div class="">
                 <div class="w-100">
                     <input type="text" class="form-control" [(ngModel)]="newDisease.name"
-                        placeholder="Escribe el nombre de la enfermedad" />
+                        placeholder="{{'home.5.5' | translate }}" />
                     <!--<input type="date" [(ngModel)]="newDisease.date" />-->
                     <div class="mt-2 w-100">
-                        <label class="d-block">Indica la fecha del diagnóstico (Opcional):</label>
+                        <label class="d-block">{{'home.5.4' | translate }}</label>
                         <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
-                            placeholder="Cuando apareció" [max]="maxDate" readonly [matDatepicker]="pickerOnset"
+                            placeholder="{{'generics.Start Date' | translate }}" [max]="maxDate" readonly [matDatepicker]="pickerOnset"
                             (click)="pickerOnset.open()" [(ngModel)]="newDisease.date">
                         <span *ngIf="newDisease.date" class="form-control w-75 d-inline" (click)="pickerOnset.open()"
                             style="background-color: #e9ecef;">{{newDisease.date | date: 'MMM y': '' :
@@ -134,22 +130,22 @@
                             #pickerOnset></mat-datepicker>
                     </div>
                     <button (click)="addDisease()" [disabled]="newDisease.name.length === 0" class="mt-2 btn btn-dark"
-                        title="add disease" href="javascript:;"><span>Añadir</span></button>
+                        title="add disease" href="javascript:;"><span>{{'generics.Add' | translate }}</span></button>
                 </div>
             </div>
         </div>
         <div class="buttons-panel">
-            <button class="mr-1 btn btn-danger" (click)="goBack()">Volver</button>
+            <button class="mr-1 btn btn-danger" (click)="goBack()">{{'generics.Previous' | translate }}</button>
             <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientDiseases.length==0"
-                (click)="skipDiseases()">Siguiente</button>
+                (click)="skipDiseases()">{{'generics.Next' | translate }}</button>
             <button class="ml-1 btn btn-dark" *ngIf="patientInfo.patientDiseases.length>0"
-                (click)="submitDiseases()">Siguiente</button>
+                (click)="submitDiseases()">{{'generics.Next' | translate }}</button>
         </div>
     </div>
 
 
     <div @fadeSlideInOut class="input-screen" *ngIf="step===6">
-        <h1>Medicamentos</h1>
+        <h1>{{'home.6.1' | translate }}</h1>
         <div class="form-group" *ngIf="patientInfo.patientMedications.length>0">
             <div class="list-options">
                 <div class="" *ngFor="let medication of patientInfo.patientMedications; let i = index">
@@ -158,16 +154,16 @@
                 </div>
             </div>
         </div>
-        <p class="mb-0">Por favor, añada los medicamentos que está tomando actualmente (opcional):</p>
+        <p class="mb-0">{{'home.6.2' | translate }}</p>
         <div class="card p-2 border panel-add">
-            <h5 for="nueva-enfermedad">Nuevo fármaco</h5>
+            <h5 for="nueva-enfermedad">{{'home.6.3' | translate }}</h5>
             <div class="">
                 <div class="w-100">
                     <input type="text" class="form-control" [(ngModel)]="newDrug.name"
-                        placeholder="Escribe el nombre del fármaco" />
+                        placeholder="{{'home.6.5' | translate }}" />
                     <!--<input type="date" [(ngModel)]="newDrug.date" />-->
                     <div class="mt-2 w-100">
-                        <label class="d-block">Cuando empezó a tomarlo (Opcional):</label>
+                        <label class="d-block">{{'home.6.4' | translate }}</label>
                         <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
                             placeholder="{{'generics.Start Date' | translate }}" [max]="maxDate" readonly
                             [matDatepicker]="pickerOnset" (click)="pickerOnset.open()" [(ngModel)]="newDrug.date">
@@ -180,19 +176,19 @@
                             #pickerOnset></mat-datepicker>
                     </div>
                     <button (click)="addMedication()" [disabled]="newDrug.name.length === 0" class="ml-1 btn btn-dark"
-                        title="add drug" href="javascript:;"><span>Añadir</span></button>
+                        title="add drug" href="javascript:;"><span>{{'generics.Add' | translate }}</span></button>
                 </div>
             </div>
         </div>
         <div class="buttons-panel">
-            <button class="mr-1 btn btn-danger" (click)="goBack()">Volver</button>
-            <button class="ml-1 btn btn-dark" (click)="finishWizard()">Terminar</button>
+            <button class="mr-1 btn btn-danger" (click)="goBack()">{{'generics.Previous' | translate }}</button>
+            <button class="ml-1 btn btn-dark" (click)="finishWizard()">{{'generics.Finish' | translate }}</button>
         </div>
 
     </div>
     <div class="row" @fadeSlideInOut *ngIf="step===7">
         <div class="col-lg-6 col-md-6 col-sm-12">
-            <h5 class="text-muted mt-3">Chat</h5>
+            <h5 class="text-muted mt-3">{{'home.7.1' | translate }}</h5>
             <div class="chat-container">
                 <div class="chat-messages">
                     <div *ngFor="let message of messages">
@@ -204,17 +200,16 @@
                 <div *ngIf="callingOpenai">
                     <em class="fa fa-spinner fa-spin fa-fw"></em>
                 </div>
-                <input type="text" [(ngModel)]="message" [disabled]="callingOpenai" placeholder="Escribe un mensaje...">
-                <button class="btn btn-dark btn-chat" [disabled]="callingOpenai" (click)="sendMessage()">Enviar</button>
+                <input type="text" [(ngModel)]="message" [disabled]="callingOpenai" placeholder="{{'home.7.6' | translate }}">
+                <button class="btn btn-dark btn-chat" [disabled]="callingOpenai" (click)="sendMessage()">{{'generics.Submit' | translate }}</button>
             </div>
             <p *ngIf="valueProm" class="text-muted mt-3">{{valueProm.value}}</p>
 
-            <p *ngIf="responseEntities!=''" class="text-muted mt-3">Posibles eventos: {{responseEntities}}</p>
+            <p *ngIf="responseEntities!=''" class="text-muted mt-3">{{'home.7.2' | translate }}: {{responseEntities}}</p>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="loadingPosibleEntities || posibleEntities.length>0">
-            <h5 class="text-muted mt-3">Posibles eventos</h5>
-            <span>Ayúdame a ser más listo seleccionando tus eventos, al conocerte más, las respuesta serán más precisas.
-                Tus eventos podrás verlos <a routerLink="/events">aquí</a></span>
+            <h5 class="text-muted mt-3">{{'home.7.2' | translate }}</h5>
+            <span>{{'home.7.3' | translate }} <a routerLink="/events">{{'home.7.4' | translate }}</a></span>
             <div class="row" style="padding: 1rem;padding-top: 0px;" *ngIf="loadingPosibleEntities">
                 <div class="col-lg-12 col-md-12 col-sm-12">
                     <em class="fa fa-spinner fa-spin fa-fw"></em>
@@ -235,7 +230,7 @@
                         <p>{{entity.description}}</p>
                     </mat-card-content>
                     <mat-card-actions>
-                        <button mat-raised-button (tap)="startAnimation(slideOutRight)" (click)="addEntity(entity)">Añadir</button>
+                        <button mat-raised-button (tap)="startAnimation(slideOutRight)" (click)="addEntity(entity)">{{'generics.Add' | translate }}</button>
                     </mat-card-actions>
                 </mat-card>-->
                 <div *ngIf="currentEntity" class="entity-card p-2 offset-sm-3 col-sm-6">
@@ -250,11 +245,11 @@
                         <div #panelcard class="p-2 entity"
                             [ngClass]="{'allergy': currentEntity.type === 'allergy', 'disease': currentEntity.type === 'disease', 'drug': currentEntity.type === 'drug', 'symptom': currentEntity.type === 'symptom', 'treatment': currentEntity.type === 'treatment'}">
                             <div>
-                                <strong *ngIf="currentEntity.type=='allergy'">Allergy:</strong>
-                                <strong *ngIf="currentEntity.type=='disease'">Disease:</strong>
-                                <strong *ngIf="currentEntity.type=='drug'">Drug:</strong>
-                                <strong *ngIf="currentEntity.type=='symptom'">Symptom:</strong>
-                                <strong *ngIf="currentEntity.type=='treatment'">Treatment:</strong>
+                                <strong *ngIf="currentEntity.type=='allergy'">{{'home.Allergy' | translate }}:</strong>
+                                <strong *ngIf="currentEntity.type=='disease'">{{'home.Disease' | translate }}:</strong>
+                                <strong *ngIf="currentEntity.type=='drug'">{{'home.Drug' | translate }}:</strong>
+                                <strong *ngIf="currentEntity.type=='symptom'">{{'home.Symptom' | translate }}:</strong>
+                                <strong *ngIf="currentEntity.type=='treatment'">{{'home.Treatment' | translate }}:</strong>
                                 {{ currentEntity.name }}
                             </div>
                             <div class="">

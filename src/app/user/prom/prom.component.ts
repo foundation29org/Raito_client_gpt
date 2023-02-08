@@ -80,7 +80,7 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
   events: any = [];
   eventsCopy: any = [];
 
-  displayedColumns: string[] = ['type', 'name', 'date', 'notes', 'actions'];
+  displayedColumns: string[] = ['typeTranslated', 'name', 'date', 'notes', 'actions'];
   dataSource: MatTableDataSource<any>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -159,6 +159,24 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
       }else{
         if(res.length>0){
           res.sort(this.sortService.DateSort("dateInput"));
+          for(let i=0; i<res.length; i++){
+            var typeTranslated = res[i].type;
+            if(typeTranslated == 'allergy'){
+              typeTranslated = this.translate.instant('home.Allergy');
+            }else if(typeTranslated == 'disease'){
+              typeTranslated = this.translate.instant('home.Disease');
+            }else if(typeTranslated == 'drug'){
+              typeTranslated = this.translate.instant('home.Drug');
+            }else if(typeTranslated == 'symptom'){
+              typeTranslated = this.translate.instant('home.Symptom');
+            }else if(typeTranslated == 'treatment'){
+              typeTranslated = this.translate.instant('home.Treatment');
+            }else if(typeTranslated == 'other'){
+              typeTranslated = this.translate.instant('generics.Other');
+            }
+            res[i].typeTranslated = typeTranslated;
+          }
+            
           this.events = res;
           this.eventsCopy = JSON.parse(JSON.stringify(res));
            // Assign the data to the data source for the table to render
