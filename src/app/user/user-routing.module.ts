@@ -41,7 +41,7 @@ const routes: Routes = [
     path: 'events',
     component: PromComponent,
     data: {
-      title: 'events',
+      title: 'menu.Events',
       expectedRole: ['User']
     },
     canActivate: [AuthGuard, RoleGuard]

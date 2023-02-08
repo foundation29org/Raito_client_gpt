@@ -62,4 +62,37 @@ export class ApiDx29ServerService {
        });
     }
 
+    getDetectLanguage(text) {
+      var jsonText = [{ "text": text }];
+      return this.http.post(environment.api + '/api/getDetectLanguage', jsonText)
+        .map((res: any) => {
+          return res;
+        }, (err) => {
+          console.log(err);
+          return err;
+        })
+    }
+
+    getTranslationDictionary(lang, info) {
+      var body = { lang: lang, info: info }
+      return this.http.post(environment.api + '/api/translation', body)
+        .map((res: any) => {
+          return res;
+        }, (err) => {
+          console.log(err);
+          return err;
+        })
+    }
+
+    getTranslationInvert(lang, info) {
+      var body = { lang: lang, info: info }
+      return this.http.post(environment.api + '/api/translationinvert', body)
+        .map((res: any) => {
+          return res;
+        }, (err) => {
+          console.log(err);
+          return err;
+        })
+    }
+
 }

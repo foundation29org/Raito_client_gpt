@@ -18,6 +18,7 @@ import { TrackEventsService } from 'app/shared/services/track-events.service';
 import { Subscription } from 'rxjs/Subscription';
 import Swal from 'sweetalert2';
 import { DateAdapter } from '@angular/material/core';
+import { ApiDx29ServerService } from 'app/shared/services/api-dx29-server.service';
 
 import { OpenAiService } from 'app/shared/services/openAi.service';
 import 'hammerjs';
@@ -48,7 +49,7 @@ import 'hammerjs';
       transition('* => fadeIn', animate(1000, keyframes(kf.fadeIn))),
     ]),
   ],
-  providers: [PatientService, OpenAiService]
+  providers: [PatientService, OpenAiService, ApiDx29ServerService]
 })
 
 export class HomeComponent implements OnInit, OnDestroy {
@@ -130,8 +131,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   animationState: string;
   private _threshold = 15;
   @ViewChild("panelcard") _el: ElementRef;
+  detectedLang: string = 'en';
 
-  constructor(private http: HttpClient, public translate: TranslateService, private authService: AuthService, private patientService: PatientService, public searchFilterPipe: SearchFilterPipe, public toastr: ToastrService, private dateService: DateService, private sortService: SortService, private adapter: DateAdapter<any>, private searchService: SearchService, private router: Router, public trackEventsService: TrackEventsService, private openAiService: OpenAiService) {
+  constructor(private http: HttpClient, public translate: TranslateService, private authService: AuthService, private patientService: PatientService, public searchFilterPipe: SearchFilterPipe, public toastr: ToastrService, private dateService: DateService, private sortService: SortService, private adapter: DateAdapter<any>, private searchService: SearchService, private router: Router, public trackEventsService: TrackEventsService, private openAiService: OpenAiService, private apiDx29ServerService: ApiDx29ServerService) {
     this.adapter.setLocale(this.authService.getLang());
     this.lang = this.authService.getLang();
     switch (this.authService.getLang()) {
@@ -174,7 +176,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   initChat() {
     this.messages.push({
-      text: 'Hello, I am your virtual assistant. How can I help you?',
+      text: this.translate.instant("home.7.5"),
       isUser: false
     });
   }
@@ -476,49 +478,67 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.callingOpenai = true;
     var years = this.ageFromDateOfBirthday(this.basicInfoPatient.birthDate);
-    var gener = 'Hombre';
-    if(this.basicInfoPatient.gender=='female'){
-      gener = 'Mujer';
-    }
-    var promDrug = 'Compórtate como un médico. Tienes que dar información específica y no general. Utiliza solo fuentes de información médica. El paciente tiene ' + years + ' años y es ' + gener + '. ';
 
+    var promDrug = this.translate.instant("home.prom1", {
+      value: years,
+  });
+  
+    var gener = this.translate.instant("personalinfo.Male");
+    if(this.basicInfoPatient.gender=='female'){
+      gener = this.translate.instant("personalinfo.Female");
+    }
+    
+    
+    if(this.basicInfoPatient.gender=='female'|| this.basicInfoPatient.gender=='male'){
+      var promis = this.translate.instant("home.promis");
+      promDrug += promis + gener + '. ';
+    }else{
+      promDrug += '. ';
+    }
+
+    var and = this.translate.instant("generics.and");
     if (this.patientInfo.patientAllergies.length > 0) {
+      var promAllergies = this.translate.instant("home.promAllergies")
       for (var i = 0; i < this.patientInfo.patientAllergies.length; i++) {
         if (i == 0) {
-          promDrug += 'El paciente tiene alergia a ' + this.patientInfo.patientAllergies[i].name;
+          promDrug += promAllergies + this.patientInfo.patientAllergies[i].name;
           if (i == 0 && this.patientInfo.patientAllergies.length == 1) {
             promDrug += '. ';
           }
         } else if (i == this.patientInfo.patientAllergies.length - 1) {
-          promDrug += ' y ' + this.patientInfo.patientAllergies[i].name + '.';
+          promDrug += and + this.patientInfo.patientAllergies[i].name + '.';
         } else {
           promDrug += ', ' + this.patientInfo.patientAllergies[i].name;
         }
       }
     }
     if (this.patientInfo.patientDiseases.length > 0) {
+      var prompatienthave = this.translate.instant("home.patienthave")
       for (var i = 0; i < this.patientInfo.patientDiseases.length; i++) {
         const today = new Date().toISOString();
         var days = this.differenceInDays(today, this.patientInfo.patientDiseases[i].date);
         if(this.patientInfo.patientDiseases[i].date!=null && days>0){
+          var promdays = this.translate.instant("home.Since", {
+              value: days,
+          });
           if (i == 0) {
-            promDrug += 'El paciente tiene ' + this.patientInfo.patientDiseases[i].name + ' desde hace ' + days + ' dias';
+            promDrug += prompatienthave + this.patientInfo.patientDiseases[i].name + promdays;
             if (i == 0 && this.patientInfo.patientDiseases.length == 1) {
               promDrug += '. ';
             }
           } else if (i == this.patientInfo.patientDiseases.length - 1) {
-            promDrug += ' y ' + this.patientInfo.patientDiseases[i].name + ' desde hace ' + days + ' dias.';
+            promDrug += and + this.patientInfo.patientDiseases[i].name + promdays + '.';
           } else {
-            promDrug += ', ' + this.patientInfo.patientDiseases[i].name + ' desde hace ' + days + ' dias';
+            promDrug += ', ' + this.patientInfo.patientDiseases[i].name + promdays;
           }
         }else{
           if (i == 0) {
-            promDrug += 'El paciente tiene ' + this.patientInfo.patientDiseases[i].name;
+            promDrug += prompatienthave + this.patientInfo.patientDiseases[i].name;
             if (i == 0 && this.patientInfo.patientDiseases.length == 1) {
               promDrug += '. ';
             }
           } else if (i == this.patientInfo.patientDiseases.length - 1) {
-            promDrug += ' y ' + this.patientInfo.patientDiseases[i].name + '.';
+            promDrug += and + this.patientInfo.patientDiseases[i].name + '.';
           } else {
             promDrug += ', ' + this.patientInfo.patientDiseases[i].name;
           }
@@ -529,28 +549,32 @@ export class HomeComponent implements OnInit, OnDestroy {
       //promDrug += 'El paciente tiene ' + this.patientInfo.patientDiseases + '. ';
     }
     if (this.patientInfo.patientMedications.length > 0) {
+      var prompatienttakes = this.translate.instant("home.patienttakes")
       for (var i = 0; i < this.patientInfo.patientMedications.length; i++) {
         const today = new Date().toISOString();
         var days = this.differenceInDays(today, this.patientInfo.patientMedications[i].date);
         if(this.patientInfo.patientMedications[i].date!=null && days>0){
           if (i == 0) {
-            promDrug += 'El paciente toma ' + this.patientInfo.patientMedications[i].name + ' desde hace ' + days + ' dias';
+            var promdays = this.translate.instant("home.Since", {
+              value: days,
+          });
+            promDrug += prompatienttakes + this.patientInfo.patientMedications[i].name + promdays;
             if (i == 0 && this.patientInfo.patientMedications.length == 1) {
               promDrug += '. ';
             }
           } else if (i == this.patientInfo.patientMedications.length - 1) {
-            promDrug += ' y ' + this.patientInfo.patientMedications[i].name + ' desde hace ' + days + ' dias.';
+            promDrug += and + this.patientInfo.patientMedications[i].name + promdays + '.';
           } else {
-            promDrug += ', ' + this.patientInfo.patientMedications[i].name + ' desde hace ' + days + ' dias';
+            promDrug += ', ' + this.patientInfo.patientMedications[i].name + promdays;
           }
         }else{
           if (i == 0) {
-            promDrug += 'El paciente toma ' + this.patientInfo.patientMedications[i].name;
+            promDrug += prompatienttakes + this.patientInfo.patientMedications[i].name;
             if (i == 0 && this.patientInfo.patientMedications.length == 1) {
               promDrug += '. ';
             }
           } else if (i == this.patientInfo.patientMedications.length - 1) {
-            promDrug += ' y ' + this.patientInfo.patientMedications[i].name + '.';
+            promDrug += and + this.patientInfo.patientMedications[i].name + '.';
           } else {
             promDrug += ', ' + this.patientInfo.patientMedications[i].name;
           }
@@ -559,7 +583,51 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
       //promDrug += 'El paciente toma ' + this.patientInfo.patientMedications + '. ';
     }
+    
+
+    this.translateTextMsg(promDrug)
+  }
+
+  translateTextMsg(promDrug){
     this.valueProm = { value: promDrug + this.message };
+
+    var testLangText = this.message.substr(0, 4000)
+    if (testLangText.length > 0) {
+        this.subscription.add(this.apiDx29ServerService.getDetectLanguage(testLangText)
+            .subscribe((res: any) => {
+                if (res[0].language != 'en') {
+                  this.detectedLang = res[0].language;
+                    var info = [{ "Text": promDrug + this.message }]
+                    this.subscription.add(this.apiDx29ServerService.getTranslationDictionary(res[0].language, info)
+                        .subscribe((res2: any) => {
+                            var textToTA = this.message.replace(/\n/g, " ");
+                            if (res2[0] != undefined) {
+                                if (res2[0].translations[0] != undefined) {
+                                    textToTA = res2[0].translations[0].text;
+                                }
+                            }
+                            this.valueProm = { value: textToTA };
+                            this.continueSendMessage(textToTA );
+                        }, (err) => {
+                            console.log(err);
+                            this.continueSendMessage(this.message);
+                        }));
+                } else {
+                  this.detectedLang = 'en';
+                  this.continueSendMessage(this.message);
+                }
+
+            }, (err) => {
+                console.log(err);
+                this.toastr.error('', this.translate.instant("generics.error try again"));
+            }));
+    } else {
+      this.continueSendMessage(this.message);
+    }
+
+  }
+
+  continueSendMessage(msg) {
     let question = this.message;
     Swal.fire({
       title: this.translate.instant("generics.Please wait"),
@@ -583,13 +651,11 @@ export class HomeComponent implements OnInit, OnDestroy {
           tempAnswer.shift();
           answer = tempAnswer[0];
         }
-        this.messages.push({
-          text: answer,
-          isUser: false
-        });
-        console.log(question)
-        console.log(answer)
-        this.extractEntities(question, answer);
+        this.getBackTranslations2(answer);
+        
+        this.extractEntities(msg);
+        /*var body = question + '. ' + answer;
+        this.translateText(body);*/
         this.callingOpenai = false;
         Swal.close();
       }, (err) => {
@@ -603,9 +669,82 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.message = '';
   }
 
-  extractEntities(question, answer) {
+  getBackTranslations2(text){
+    return new Promise((resolve, reject) => {
+      let parseChoices0 = text;
+      //delete last comma with space if exists
+      if(parseChoices0.slice(-2) == ', '){
+        parseChoices0 = parseChoices0.slice(0, -2);
+      }
+      
+      var jsontestLangText = [{ "Text": parseChoices0 }]
+        this.subscription.add(this.apiDx29ServerService.getTranslationInvert(this.detectedLang,jsontestLangText)
+        .subscribe( (res2 : any) => {
+            if (res2[0] != undefined) {
+                if (res2[0].translations[0] != undefined) {
+                    parseChoices0 = res2[0].translations[0].text;
+                }
+            }
+            this.messages.push({
+              text: parseChoices0,
+              isUser: false
+            });
+            resolve({ text: parseChoices0});
+        }, (err) => {
+          console.log(err);
+          this.messages.push({
+            text: text,
+            isUser: false
+          });
+          reject(err);
+        }));
+    });
+  }
+
+  translateText(text){
+    var testLangText = text.substr(0, 4000)
+    if (testLangText.length > 0) {
+        this.subscription.add(this.apiDx29ServerService.getDetectLanguage(testLangText)
+            .subscribe((res: any) => {
+                if (res[0].language != 'en') {
+                  this.detectedLang = res[0].language;
+                    var info = [{ "Text": text }]
+                    this.subscription.add(this.apiDx29ServerService.getTranslationDictionary(res[0].language, info)
+                        .subscribe((res2: any) => {
+                            var textToTA = text.replace(/\n/g, " ");
+                            if (res2[0] != undefined) {
+                                if (res2[0].translations[0] != undefined) {
+                                    textToTA = res2[0].translations[0].text;
+                                }
+                            }
+                            text = textToTA;
+                            this.extractEntities(text);
+                        }, (err) => {
+                            console.log(err);
+                            this.extractEntities(text);
+                        }));
+                } else {
+                  this.detectedLang = 'en';
+                  this.extractEntities(text);
+                }
+
+            }, (err) => {
+                console.log(err);
+                this.toastr.error('', this.translate.instant("generics.error try again"));
+                this.callingOpenai = false;
+            }));
+    } else {
+      this.extractEntities(text);
+    }
+  }
+
+  extractEntities(text) {
     this.loadingPosibleEntities = true;
-    let promEntities = 'Compórtate como un médico. Clasifica en Síntomas, Medicación, Tratamientos, Alergias, y "Enfermedades o afecciones previas", todo lo que aparezca en el siguiente texto: ' + question + '. ' + answer + '. Si no hay ninguna, escribe "no" por cada una de las 5 secciónes. Si hay, devuelve una lista por cada seccion previa, separado por comas. Si no estás seguro, no lo incluyas.';
+
+    var promEntities = this.translate.instant("home.promentities", {
+      value: text,
+    });
+
     console.log(promEntities)
     let prom = { value: promEntities + this.message };
     this.subscription.add(this.openAiService.postOpenAi(prom)
@@ -615,15 +754,122 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.responseEntities = res.choices[0].text;
         const parsedResponse = this.openAiService.parseResponse(res.choices[0].text);
         console.log(parsedResponse);
-        var tempPosibleEntities = this.openAiService.parseEntities(parsedResponse);
-        for (var i = 0; i < tempPosibleEntities.length; i++) {
-          this.posibleEntities.push(tempPosibleEntities[i])
+        //translate back
+        if(this.detectedLang!='en'){
+          this.translateBack(parsedResponse);
+        }else{
+          this.continueExtractEntities(parsedResponse);
         }
-        this.currentEntity = this.posibleEntities[this.currentIndex];
+        
       }, (err) => {
         console.log(err);
         this.loadingPosibleEntities = false;
       }));
+  }
+
+  translateBack(parsedResponse){
+    let chunkPromises = [];
+    if(parsedResponse['symtoms'].length>0){
+      var tempText = '';
+      for(let i=0; i<parsedResponse['symtoms'].length; i++){
+        if(parsedResponse['symtoms'][i]!='no' && parsedResponse['symtoms'][i]!='No'){
+          tempText += parsedResponse['symtoms'][i] + ', ';
+        }
+      }
+      chunkPromises.push(this.getBackTranslations(tempText, 'symtoms'));
+    }
+    if(parsedResponse['drugs'].length>0){
+      var tempText = '';
+      for(let i=0; i<parsedResponse['drugs'].length; i++){
+        if(parsedResponse['drugs'][i]!='no' && parsedResponse['drugs'][i]!='No'){
+          tempText += parsedResponse['drugs'][i] + ', ';
+        }
+      }
+      chunkPromises.push(this.getBackTranslations(tempText, 'drugs'));
+    }
+    if(parsedResponse['treatments'].length>0){
+      var tempText = '';
+      for(let i=0; i<parsedResponse['treatments'].length; i++){
+        if(parsedResponse['treatments'][i]!='no' && parsedResponse['treatments'][i]!='No'){
+          tempText += parsedResponse['treatments'][i] + ', ';
+        }
+      }
+      chunkPromises.push(this.getBackTranslations(tempText, 'treatments'));
+    }
+    if(parsedResponse['diseases'].length>0){
+      var tempText = '';
+      for(let i=0; i<parsedResponse['diseases'].length; i++){
+        if(parsedResponse['diseases'][i]!='no' && parsedResponse['diseases'][i]!='No'){
+          tempText += parsedResponse['diseases'][i] + ', ';
+        }
+      }
+      chunkPromises.push(this.getBackTranslations(tempText, 'diseases'));
+    }
+    if(parsedResponse['allergy'].length>0){
+      var tempText = '';
+      for(let i=0; i<parsedResponse['allergy'].length; i++){
+        if(parsedResponse['allergy'][i]!='no' && parsedResponse['allergy'][i]!='No'){
+          tempText += parsedResponse['allergy'][i] + ', ';
+        }
+      }
+      chunkPromises.push(this.getBackTranslations(tempText, 'allergy'));
+    }
+  
+    Promise.all(chunkPromises).then((data) => {
+      console.log("Todas las llamadas a getEntities han terminado");
+      console.log(data)
+      for(let i=0; i<data.length; i++){
+        if(data[i].type=='symtoms'){
+          parsedResponse['symtoms'] = data[i].text.split(', ');
+        }
+        if(data[i].type=='drugs'){
+          parsedResponse['drugs'] = data[i].text.split(', ');
+        }
+        if(data[i].type=='treatments'){
+          parsedResponse['treatments'] = data[i].text.split(', ');
+        }
+        if(data[i].type=='diseases'){
+          parsedResponse['diseases'] = data[i].text.split(', ');
+        }
+        if(data[i].type=='allergy'){
+          parsedResponse['allergy'] = data[i].text.split(', ');
+        }
+      }
+      this.continueExtractEntities(parsedResponse);
+    });
+  }
+
+  getBackTranslations(text, type){
+      return new Promise((resolve, reject) => {
+        let parseChoices0 = text;
+        //delete last comma with space if exists
+        if(parseChoices0.slice(-2) == ', '){
+          parseChoices0 = parseChoices0.slice(0, -2);
+        }
+        
+        var jsontestLangText = [{ "Text": parseChoices0 }]
+          this.subscription.add(this.apiDx29ServerService.getTranslationInvert(this.detectedLang,jsontestLangText)
+          .subscribe( (res2 : any) => {
+              if (res2[0] != undefined) {
+                  if (res2[0].translations[0] != undefined) {
+                      parseChoices0 = res2[0].translations[0].text;
+                  }
+              }
+              resolve({type: type, text: parseChoices0});
+          }, (err) => {
+            console.log(err);
+            reject(err);
+          }));
+      });
+    }
+  
+
+  continueExtractEntities(parsedResponse) {
+    var tempPosibleEntities = this.openAiService.parseEntities(parsedResponse);
+    for (var i = 0; i < tempPosibleEntities.length; i++) {
+      this.posibleEntities.push(tempPosibleEntities[i])
+    }
+    this.currentEntity = this.posibleEntities[this.currentIndex];
   }
 
 

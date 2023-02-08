@@ -78,7 +78,7 @@
                                                             <a class="dropdown-item py-1" *ngIf="onefile.hasResults" href="javascript:;"
                                                             (click)="openEntities(onefile.name);">
                                                                 <i class="far fa-calendar"></i><span
-                                                                    class="ml-2">Events</span>
+                                                                    class="ml-2">{{'menu.Events' | translate}}</span>
                                                             </a>
                                                             <a class="dropdown-item py-1" href="javascript:;"
                                                                 (click)="editDocument(onefile,updateDocument);">
@@ -193,7 +193,7 @@
                                                             <a class="dropdown-item py-1" *ngIf="onefile.hasResults" href="javascript:;"
                                                             (click)="openEntities(onefile.name);">
                                                                 <i class="far fa-calendar"></i><span
-                                                                    class="ml-2">Events</span>
+                                                                    class="ml-2">{{'menu.Events' | translate}}</span>
                                                             </a>
                                                             <a class="dropdown-item py-1" href="javascript:;"
                                                                 (click)="editDocument(onefile,updateDocument);">
@@ -324,11 +324,9 @@
 <div *ngIf="showingEntities" @fadeSlideInOut>
    
     <div class="input-screen">
-        <p><button class="ml-2 btn btn-primary" (click)="hideEntities();">{{'generics.Back' | translate
-        }}</button></p>
-        <h5 class="text-muted mt-3">Posibles eventos</h5>
-                <span>Ayúdame a ser más listo seleccionando tus eventos, al conocerte más, las respuesta serán más precisas.
-                    Tus eventos podrás verlos <a routerLink="/events">aquí</a></span>
+        <p><button class="ml-2 btn btn-primary" (click)="hideEntities();">{{'generics.Back' | translate}}</button></p>
+        <h5 class="text-muted mt-3">{{'home.7.2' | translate}}</h5>
+        <span>{{'home.7.3' | translate }} <a routerLink="/events">{{'home.7.4' | translate }}</a></span>
         <div *ngIf="currentEntity" class="entity-card p-2 col-sm-6">
             <!--(swipe)="onSwipe($event)" -->
             <div [ngClass]="{ 'left-swipe': swipeDirection === 'left', 'right-swipe': swipeDirection === 'right' }"
@@ -341,11 +339,11 @@
                 <div #panelcard class="p-2 entity"
                     [ngClass]="{'allergy': currentEntity.type === 'allergy', 'disease': currentEntity.type === 'disease', 'drug': currentEntity.type === 'drug', 'symptom': currentEntity.type === 'symptom', 'treatment': currentEntity.type === 'treatment'}">
                     <div>
-                        <strong *ngIf="currentEntity.type=='allergy'">Allergy:</strong>
-                        <strong *ngIf="currentEntity.type=='disease'">Disease:</strong>
-                        <strong *ngIf="currentEntity.type=='drug'">Drug:</strong>
-                        <strong *ngIf="currentEntity.type=='symptom'">Symptom:</strong>
-                        <strong *ngIf="currentEntity.type=='treatment'">Treatment:</strong>
+                        <strong *ngIf="currentEntity.type=='allergy'">{{'home.Allergy' | translate }}:</strong>
+                        <strong *ngIf="currentEntity.type=='disease'">{{'home.Disease' | translate }}:</strong>
+                        <strong *ngIf="currentEntity.type=='drug'">{{'home.Drug' | translate }}:</strong>
+                        <strong *ngIf="currentEntity.type=='symptom'">{{'home.Symptom' | translate }}:</strong>
+                        <strong *ngIf="currentEntity.type=='treatment'">{{'home.Treatment' | translate }}:</strong>
                         {{ currentEntity.name }}
                     </div>
                     <div class="">
