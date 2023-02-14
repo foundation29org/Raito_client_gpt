@@ -799,7 +799,7 @@ callTextAnalitycs(text) {
       console.log(res)
       this.resTextAnalyticsSegments = res;
         for (let j = 0; j < this.resTextAnalyticsSegments.entities.length; j++) {
-          var actualDrug = { name: '', dose: '', link: ''};
+          var actualDrug = { name: '', value: '', link: ''};
           if(this.resTextAnalyticsSegments.entities[j].confidenceScore>=0.95){
             if (this.resTextAnalyticsSegments.entities[j].category == 'MedicationName') {
               actualDrug.name = this.resTextAnalyticsSegments.entities[j].text;
@@ -817,10 +817,10 @@ callTextAnalitycs(text) {
                 var found = false;
                 for (let k = 0; k < this.resTextAnalyticsSegments.entityRelations.length && !found; k++) {
                   if(this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.text==actualDrug.name && this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.category=='MedicationName' && this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.category=='Dosage'){
-                    actualDrug.dose = this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.text;
+                    actualDrug.value = this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.text;
                   }
                   if(this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.text==actualDrug.name && this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.category=='Dosage' && this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.category=='MedicationName'){
-                    actualDrug.dose = this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.text;
+                    actualDrug.value = this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.text;
                   }
                 }
 
@@ -887,17 +887,31 @@ callTextAnalitycs(text) {
                     }
                     segments[i].text = res2[i].translations[0].text;
                     this.posibleEntities[i].name = segments[i].text;
+                     if(this.isSavedEvent(this.posibleEntities[i].name, this.posibleEntities[i].type)){
+                      this.posibleEntities[i].delete=true;
+                    }
                   }
                 }
               }
+              for(var i = 0; i < this.posibleEntities.length; i++){
+                if(this.posibleEntities[i].delete){
+                  this.posibleEntities.splice(i, 1);
+                }
+              }
+              console.log(this.posibleEntities)
+              this.currentEntity = this.posibleEntities[this.currentIndex];
+              this.callingTextAnalytics = false;
+              resolve('ok');
             }, (err) => {
               console.log(err);
+              this.currentEntity = this.posibleEntities[this.currentIndex];
+              this.callingTextAnalytics = false;
+              resolve('ok');
             }));
         }
 
-      this.currentEntity = this.posibleEntities[this.currentIndex];
-      this.callingTextAnalytics = false;
-      resolve('ok');
+      
+      
     }, (err) => {
       console.log(err);
       this.callingTextAnalytics = false;
@@ -908,6 +922,9 @@ callTextAnalitycs(text) {
 
 isOnEvents(eventName, type){
   var found = false;
+  if (eventName.charAt(eventName.length - 1) == '.') {
+    eventName = eventName.substring(0, eventName.length - 1);
+  }
   for(let i=0; i<this.events.length; i++){
     if(this.events[i].name==eventName && this.events[i].type==type){
       found = true;
@@ -921,6 +938,23 @@ isOnEvents(eventName, type){
   if(found){
     return true;
   }else{
+    return false;
+  }
+}
+
+isSavedEvent(eventName, type) {
+  var found = false;
+  if (eventName.charAt(eventName.length - 1) == '.') {
+    eventName = eventName.substring(0, eventName.length - 1);
+  }
+  for (let i = 0; i < this.events.length; i++) {
+    if (this.events[i].name == eventName && this.events[i].type == type) {
+      found = true;
+    }
+  }
+  if (found) {
+    return true;
+  } else {
     return false;
   }
 }

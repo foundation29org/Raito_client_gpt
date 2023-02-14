@@ -1,5 +1,5 @@
 import { Component, ViewChild, TemplateRef, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
-import { animate, keyframes, style, transition, trigger } from '@angular/animations';
+import { animate, keyframes, style, transition, trigger, state } from '@angular/animations';
 import * as kf from '../home/keyframes';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { startOfDay, endOfDay, subDays, addDays, endOfMonth, isSameDay, isSameMonth, addHours } from 'date-fns';
@@ -24,6 +24,8 @@ import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 
+import { DataEvent } from './dataevent';
+
 @Component({
   selector: 'app-prom',
   templateUrl: './prom.component.html',
@@ -47,9 +49,16 @@ import {MatTableDataSource} from '@angular/material/table';
       //transition('* => rotateOutUpRight', animate(1000, keyframes (kf.rotateOutUpRight))),
       transition('* => fadeIn', animate(1000, keyframes(kf.fadeIn))),
     ]),
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
   ],
   providers: [PatientService]
 })
+
+
 export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('modalContent') modalContent: TemplateRef<any>;
   @ViewChild('modalGraphContent') modalGraphContent: TemplateRef<any>;
@@ -81,6 +90,8 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
   eventsCopy: any = [];
 
   displayedColumns: string[] = ['typeTranslated', 'name', 'date', 'notes', 'actions'];
+  columnsToDisplayWithExpand  = [...this.displayedColumns, 'expand'];
+  expandedElement: DataEvent | null;
   dataSource: MatTableDataSource<any>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -110,6 +121,7 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
       type: [null, Validators.required],
       name: ['', Validators.required],
       date: [new Date()],
+      data: this.formBuilder.group(new DataEvent()),
       notes: []
   });
     this.loadData();
@@ -295,6 +307,7 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   openStats(){
+    this.seizuresForm.reset();
     this.step = '1';
     this.loadEvents();
   }

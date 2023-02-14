@@ -84,44 +84,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   maxDate = new Date();
   responseEntities = "";
   posibleEntities = [];
-  /*posibleEntities = [
-    {
-      "name": "convulsiones",
-      "type": "symptom",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "retraso en el desarrollo",
-      "type": "symptom",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "problemas de comportamiento",
-      "type": "symptom",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "problemas de aprendizaje.",
-      "type": "symptom",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "hablar con el médico",
-      "type": "treatment",
-      "date": null,
-      "notes": ""
-    },
-    {
-      "name": "Dravet",
-      "type": "disease",
-      "date": null,
-      "notes": ""
-    }
-  ];*/
+  
   loadedEvents: boolean = false;
   loadingPosibleEntities: boolean = false;
 
@@ -155,6 +118,85 @@ export class HomeComponent implements OnInit, OnDestroy {
         break;
 
     }
+    /*this.posibleEntities = [
+      {
+        "name": "Síndrome de Dravet",
+        "type": "disease",
+        "date": null,
+        "notes": "",
+        "data": {},
+        "deleted": false
+      },
+      {
+        "name": "Ácido valproico",
+        "type": "drug",
+        "date": null,
+        "notes": "",
+        "data": {
+          "name": "Valproic Acid",
+          "value": "",
+          "link": "N03AG01"
+        },
+        "deleted": false
+      },
+      {
+        "name": "Clobazam",
+        "type": "drug",
+        "date": null,
+        "notes": "",
+        "data": {
+          "name": "Clobazam",
+          "value": "",
+          "link": "N05BA09"
+        },
+        "deleted": false
+      },
+      {
+        "name": "Estiripentol",
+        "type": "drug",
+        "date": null,
+        "notes": "",
+        "data": {
+          "name": "Stiripentol",
+          "value": "",
+          "link": "N03AX17"
+        },
+        "deleted": false
+      },
+      {
+        "name": "Topiramato",
+        "type": "drug",
+        "date": null,
+        "notes": "",
+        "data": {
+          "name": "Topiramate",
+          "value": "",
+          "link": "N03AX11"
+        },
+        "deleted": false
+      },
+      {
+        "name": "Levetiracetam",
+        "type": "drug",
+        "date": null,
+        "notes": "",
+        "data": {
+          "name": "Levetiracetam",
+          "value": "",
+          "link": "N03AX14"
+        },
+        "deleted": false
+      },
+      {
+        "name": "convulsiones",
+        "type": "symptom",
+        "date": null,
+        "notes": "",
+        "data": {},
+        "deleted": false
+      }
+    ];
+    this.currentEntity = this.posibleEntities[this.currentIndex];*/
   }
 
   startAnimation(state) {
@@ -484,9 +526,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.callingOpenai = true;
     var years = this.ageFromDateOfBirthday(this.basicInfoPatient.birthDate);
 
-    var promDrug = this.translate.instant("home.prom1", {
+    var promDrug0 = this.translate.instant("home.prom1", {
       value: years,
     });
+
+    var promDrug = '';
 
     /*var gener = this.translate.instant("personalinfo.Male");
     if(this.basicInfoPatient.gender=='female'){
@@ -591,11 +635,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
 
-    this.translateTextMsg(promDrug)
+    this.translateTextMsg(promDrug0, promDrug)
   }
 
-  translateTextMsg(promDrug) {
-    this.valueProm = { value: promDrug + this.message };
+  translateTextMsg(promDrug0, promDrug) {
+    this.valueProm = { value: promDrug0+promDrug + this.message };
 
     var testLangText = this.message.substr(0, 4000)
     if (testLangText.length > 0) {
@@ -604,7 +648,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           if (res[0].language != 'en') {
             this.detectedLang = res[0].language;
             //var info = [{ "Text": promDrug + this.message }]
-            var info = [{ "Text": this.message }]
+            var info = [{ "Text": this.message }, { "Text": promDrug }]
             this.subscription.add(this.apiDx29ServerService.getTranslationDictionary(res[0].language, info)
               .subscribe((res2: any) => {
                 var textToTA = this.message.replace(/\n/g, " ");
@@ -613,7 +657,12 @@ export class HomeComponent implements OnInit, OnDestroy {
                     textToTA = res2[0].translations[0].text;
                   }
                 }
-                this.valueProm = { value: promDrug + ' ' + textToTA };
+                if (res2[1] != undefined) {
+                  if (res2[1].translations[0] != undefined) {
+                    promDrug = res2[1].translations[0].text;
+                  }
+                }
+                this.valueProm = { value: promDrug0+promDrug + ' ' + textToTA };
                 this.continueSendMessage(textToTA);
               }, (err) => {
                 console.log(err);
@@ -766,7 +815,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         console.log(res)
         this.resTextAnalyticsSegments = res;
         for (let j = 0; j < this.resTextAnalyticsSegments.entities.length; j++) {
-          var actualDrug = { name: '', dose: '', link: '' };
+          var actualDrug = { name: '', value: '', link: '' };
           if (this.resTextAnalyticsSegments.entities[j].confidenceScore >= 0.95) {
             if (this.resTextAnalyticsSegments.entities[j].category == 'MedicationName') {
               actualDrug.name = this.resTextAnalyticsSegments.entities[j].text;
@@ -784,10 +833,10 @@ export class HomeComponent implements OnInit, OnDestroy {
                 var found = false;
                 for (let k = 0; k < this.resTextAnalyticsSegments.entityRelations.length && !found; k++) {
                   if (this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.text == actualDrug.name && this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.category == 'MedicationName' && this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.category == 'Dosage') {
-                    actualDrug.dose = this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.text;
+                    actualDrug.value = this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.text;
                   }
                   if (this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.text == actualDrug.name && this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.category == 'Dosage' && this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.category == 'MedicationName') {
-                    actualDrug.dose = this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.text;
+                    actualDrug.value = this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.text;
                   }
                 }
 
@@ -831,9 +880,9 @@ export class HomeComponent implements OnInit, OnDestroy {
             }
           }
         }
-        console.log(this.posibleEntities)
-
-
+        
+        var posibleEntitiescopy = JSON.parse(JSON.stringify(this.posibleEntities));
+        console.log(posibleEntitiescopy)
         //trnaslate invert
 
         if (this.detectedLang != 'en') {
@@ -855,15 +904,27 @@ export class HomeComponent implements OnInit, OnDestroy {
                     }
                     segments[i].text = res2[i].translations[0].text;
                     this.posibleEntities[i].name = segments[i].text;
+                    if(this.isSavedEvent(this.posibleEntities[i].name, this.posibleEntities[i].type)){
+                      this.posibleEntities[i].delete=true;
+                    }
                   }
                 }
               }
+              for(var i = 0; i < this.posibleEntities.length; i++){
+                if(this.posibleEntities[i].delete){
+                  this.posibleEntities.splice(i, 1);
+                }
+              }
+              console.log(this.posibleEntities)
+              this.currentEntity = this.posibleEntities[this.currentIndex];
+              this.callingTextAnalytics = false;
             }, (err) => {
               console.log(err);
+              this.currentEntity = this.posibleEntities[this.currentIndex];
+              this.callingTextAnalytics = false;
             }));
         }
-        this.currentEntity = this.posibleEntities[this.currentIndex];
-        this.callingTextAnalytics = false;
+       
 
       }, (err) => {
         console.log(err);
@@ -874,6 +935,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   isOnEvents(eventName, type) {
     var found = false;
+    if (eventName.charAt(eventName.length - 1) == '.') {
+      eventName = eventName.substring(0, eventName.length - 1);
+    }
     for (let i = 0; i < this.events.length; i++) {
       if (this.events[i].name == eventName && this.events[i].type == type) {
         found = true;
@@ -881,6 +945,23 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
     for (let j = 0; j < this.posibleEntities.length; j++) {
       if (this.posibleEntities[j].name == eventName && this.posibleEntities[j].type == type) {
+        found = true;
+      }
+    }
+    if (found) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  isSavedEvent(eventName, type) {
+    var found = false;
+    if (eventName.charAt(eventName.length - 1) == '.') {
+      eventName = eventName.substring(0, eventName.length - 1);
+    }
+    for (let i = 0; i < this.events.length; i++) {
+      if (this.events[i].name == eventName && this.events[i].type == type) {
         found = true;
       }
     }
