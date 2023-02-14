@@ -267,6 +267,11 @@
                                     (monthSelected)="closeDateEntity($event, i, pickerOnset)" touchUi="true"
                                     #pickerOnset></mat-datepicker>
                             </div>
+                            <div class="" *ngIf="currentEntity.type=='drug'">
+                                <label><strong>{{'medication.Dose mg' | translate }}:</strong></label>
+                                <input class="form-control w-75" id="dose_{{i}}" name="dose" matInput
+                                    placeholder="Ex. 200" [(ngModel)]="currentEntity.data.dose">
+                            </div>
                             <div class="">
                                 <div class="form-group">
                                     <label><strong>{{'generics.notes' | translate }}:</strong></label>
