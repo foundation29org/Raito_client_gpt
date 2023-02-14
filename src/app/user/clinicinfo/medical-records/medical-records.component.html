@@ -337,13 +337,14 @@
                 (swipeleft)="startAnimation('slideOutRight')"
                 >
                 <div #panelcard class="p-2 entity"
-                    [ngClass]="{'allergy': currentEntity.type === 'allergy', 'disease': currentEntity.type === 'disease', 'drug': currentEntity.type === 'drug', 'symptom': currentEntity.type === 'symptom', 'treatment': currentEntity.type === 'treatment'}">
+                    [ngClass]="{'allergy': currentEntity.type === 'allergy', 'disease': currentEntity.type === 'disease', 'drug': currentEntity.type === 'drug', 'symptom': currentEntity.type === 'symptom', 'treatment': currentEntity.type === 'treatment', 'gene': currentEntity.type === 'gene'}">
                     <div>
                         <strong *ngIf="currentEntity.type=='allergy'">{{'home.Allergy' | translate }}:</strong>
                         <strong *ngIf="currentEntity.type=='disease'">{{'home.Disease' | translate }}:</strong>
                         <strong *ngIf="currentEntity.type=='drug'">{{'home.Drug' | translate }}:</strong>
                         <strong *ngIf="currentEntity.type=='symptom'">{{'home.Symptom' | translate }}:</strong>
                         <strong *ngIf="currentEntity.type=='treatment'">{{'home.Treatment' | translate }}:</strong>
+                        <strong *ngIf="currentEntity.type=='gene'">{{'home.Gene' | translate }}:</strong>
                         {{ currentEntity.name }}
                     </div>
                     <div class="">

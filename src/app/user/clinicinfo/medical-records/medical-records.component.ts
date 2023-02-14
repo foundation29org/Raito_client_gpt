@@ -88,7 +88,7 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
   uploadProgress2: Observable<number>;
   langDetected: string = '';
   lang: string = 'en';
-  resTextAnalyticsSegments = [];
+  resTextAnalyticsSegments: any;
   temporalSymptoms: any = [];
   resultTextNcr: string = '';
   resultTextNcrCopy: string = '';
@@ -130,6 +130,8 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
   @ViewChild("panelcard") _el: ElementRef;
   showingEntities: boolean = false;
   detectedLang: string = 'en';
+
+  events = [];
 
   constructor(private http: HttpClient, private blob: BlobStorageService, private authService: AuthService, private patientService: PatientService, private apiDx29ServerService: ApiDx29ServerService, public translate: TranslateService, public toastr: ToastrService, private apif29BioService: Apif29BioService, private searchService: SearchService, private sortService: SortService, private modalService: NgbModal, private authGuard: AuthGuard, private highlightSearch: HighlightSearch, private formBuilder: FormBuilder, private dateService: DateService, public cordovaService: CordovaService, private openAiService: OpenAiService) {
     $.getScript("./assets/js/docs/jszip-utils.js").done(function (script, textStatus) {
@@ -295,6 +297,7 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
   }
 
   getAzureBlobSasToken() {
+    this.loadEvents();
     this.getDocs();
     this.loadSymptoms();
     this.accessToken.containerName = this.authService.getCurrentPatient().sub.substr(1);
@@ -310,6 +313,23 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
       }));
 
     this.loadedGeno = false;
+  }
+
+  loadEvents() {
+
+    this.subscription.add(this.http.get(environment.api + '/api/events/' + this.authService.getCurrentPatient().sub)
+      .subscribe((res: any) => {
+        if (res.message) {
+          //no tiene información
+        } else {
+          if (res.length > 0) {
+            res.sort(this.sortService.DateSort("dateInput"));
+            this.events = res;
+          }
+        }
+      }, (err) => {
+        console.log(err);
+      }));
   }
 
   loadSymptoms() {
@@ -726,191 +746,184 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
   }
 
 
-  async getEntitiesForBook(bookText, blobName) {
-    this.loadingPosibleEntities = true;
-    let chunks = bookText.match(/.{1,1200}/g);
-    let chunkPromises = [];
-  
-    for (let chunk of chunks) {
-      chunkPromises.push(this.getEntities(chunk));
+ async getEntitiesForBook(bookText, blobName) {
+  this.loadingPosibleEntities = true;
+  let chunkPromises = [];
+
+  chunkPromises.push(this.callTextAnalitycs(bookText));
+
+  Promise.all(chunkPromises).then((data) => {
+    console.log("Todas las llamadas a getEntities han terminado");
+    this.loadingPosibleEntities = false;
+    if (bookText.length < 5) {
+      var actualDate = Date.now();
+      this.saveResultsToBlob(bookText, this.posibleEntities, actualDate, blobName);
+    } else {
+      var actualDate = Date.now();
+      this.saveResultsToBlob(bookText, this.posibleEntities, actualDate, blobName);
     }
-  
-    Promise.all(chunkPromises).then((data) => {
-      console.log("Todas las llamadas a getEntities han terminado");
-      this.loadingPosibleEntities = false;
-      if (bookText.length < 5) {
-        //Swal.fire('', this.translate.instant("land.placeholderError"), "warning");
-        var actualDate = Date.now();
-        this.saveResultsToBlob(bookText, this.posibleEntities, actualDate, blobName);
-      } else {
-        var actualDate = Date.now();
-        this.saveResultsToBlob(bookText, this.posibleEntities, actualDate, blobName);
-      }
-      if(this.posibleEntities.length>0){
-        this.currentEntity = this.posibleEntities[this.currentIndex];
-        var txtNumEvents = this.translate.instant("docs.swal2.1", {
-            value: this.posibleEntities.length,
-        });
-        Swal.fire({
-          title: txtNumEvents,
-          text: this.translate.instant("docs.swal2.2"),
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#2F8BE6',
-          cancelButtonColor: '#B0B6BB',
-          confirmButtonText: this.translate.instant("generics.Accept"),
-          cancelButtonText: this.translate.instant("generics.Cancel"),
-          showLoaderOnConfirm: true,
-          allowOutsideClick: false,
-          reverseButtons: true
-        }).then((result) => {
-          if (result.value) {
-            this.showEntities();
-          }
-        });
-      }
-    });
-  }
-
-  getEntities(text) {
-    return new Promise((resolve, reject) => {
-      var promEntities = this.translate.instant("home.promentities", {
-        value: text,
+    console.log(this.posibleEntities)
+    if(this.posibleEntities.length>0){
+      this.currentEntity = this.posibleEntities[this.currentIndex];
+      var txtNumEvents = this.translate.instant("docs.swal2.1", {
+          value: this.posibleEntities.length,
       });
-      let prom = { value: promEntities };
-      this.subscription.add(this.openAiService.postOpenAi(prom)
-        .subscribe((res: any) => {
-          const parsedResponse = this.openAiService.parseResponse(res.choices[0].text);
-          console.log(parsedResponse);
-          //translate back
-          if(this.detectedLang!='en'){
-            let chunkPromises2 = [];
-            chunkPromises2.push(this.translateBack(parsedResponse));
+      Swal.fire({
+        title: txtNumEvents,
+        text: this.translate.instant("docs.swal2.2"),
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#2F8BE6',
+        cancelButtonColor: '#B0B6BB',
+        confirmButtonText: this.translate.instant("generics.Accept"),
+        cancelButtonText: this.translate.instant("generics.Cancel"),
+        showLoaderOnConfirm: true,
+        allowOutsideClick: false,
+        reverseButtons: true
+      }).then((result) => {
+        if (result.value) {
+          this.showEntities();
+        }
+      });
+    }
+  });
+}
 
-            Promise.all(chunkPromises2).then((data) => {
-              resolve('ok');
-            });
+callTextAnalitycs(text) {
+  return new Promise((resolve, reject) => {
+  this.callingTextAnalytics = true;
+  var info = text.replace(/\n/g, " ");
+  var jsontestLangText = { "text": info };
+  this.subscription.add(this.apiDx29ServerService.callTextAnalytics(jsontestLangText)
+    .subscribe((res: any) => {
+      console.log(res)
+      this.resTextAnalyticsSegments = res;
+        for (let j = 0; j < this.resTextAnalyticsSegments.entities.length; j++) {
+          var actualDrug = { name: '', dose: '', link: ''};
+          if(this.resTextAnalyticsSegments.entities[j].confidenceScore>=0.95){
+            if (this.resTextAnalyticsSegments.entities[j].category == 'MedicationName') {
+              actualDrug.name = this.resTextAnalyticsSegments.entities[j].text;
+              
+              if (this.resTextAnalyticsSegments.entities[j].dataSources != null) {
+                var found = false;
+                for (let k = 0; k < this.resTextAnalyticsSegments.entities[j].dataSources.length && !found; k++) {
+                  if (this.resTextAnalyticsSegments.entities[j].dataSources[k].name == 'ATC') {
+                    actualDrug.link = this.resTextAnalyticsSegments.entities[j].dataSources[k].entityId;
+                    found = true;
+                  }
+                }
+              }
+              if (this.resTextAnalyticsSegments.entityRelations != null) {
+                var found = false;
+                for (let k = 0; k < this.resTextAnalyticsSegments.entityRelations.length && !found; k++) {
+                  if(this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.text==actualDrug.name && this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.category=='MedicationName' && this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.category=='Dosage'){
+                    actualDrug.dose = this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.text;
+                  }
+                  if(this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.text==actualDrug.name && this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.category=='Dosage' && this.resTextAnalyticsSegments.entityRelations[k].roles[1].entity.category=='MedicationName'){
+                    actualDrug.dose = this.resTextAnalyticsSegments.entityRelations[k].roles[0].entity.text;
+                  }
+                }
 
-            
-          }else{
-            this.continueExtractEntities(parsedResponse);
-            resolve('ok');
+              }
+              if(!this.isOnEvents(actualDrug.name, 'drug')){
+                this.posibleEntities.push({ name: actualDrug.name, type: 'drug', date: null, notes:'', data:  actualDrug})
+              }
+              
+            }
+
+            if (this.resTextAnalyticsSegments.entities[j].category == 'SymptomOrSign') {
+              if(!this.isOnEvents(this.resTextAnalyticsSegments.entities[j].text, 'symptom')){
+                this.posibleEntities.push({ name: this.resTextAnalyticsSegments.entities[j].text, type: 'symptom', date: null, notes:'', data:  {}})
+              }
+            }
+
+            if (this.resTextAnalyticsSegments.entities[j].category == 'Diagnosis' && this.resTextAnalyticsSegments.entities[j].dataSources.length>0) {
+              if(!this.isOnEvents(this.resTextAnalyticsSegments.entities[j].text, 'disease')){
+                this.posibleEntities.push({ name: this.resTextAnalyticsSegments.entities[j].text, type: 'disease', date: null, notes:'', data:  {}})
+              }
+              
+            }
+
+            if (this.resTextAnalyticsSegments.entities[j].category == 'TreatmentName') {
+              if(!this.isOnEvents(this.resTextAnalyticsSegments.entities[j].text, 'treatment')){
+                this.posibleEntities.push({ name: this.resTextAnalyticsSegments.entities[j].text, type: 'treatment', date: null, notes:'', data:  {}})
+              }
+             
+            }
+
+            if (this.resTextAnalyticsSegments.entities[j].category == 'Allergen') {
+              if(!this.isOnEvents(this.resTextAnalyticsSegments.entities[j].text, 'allergy')){
+                this.posibleEntities.push({ name: this.resTextAnalyticsSegments.entities[j].text, type: 'allergy', date: null, notes:'', data:  {}})
+              }
+            }
+
+            if (this.resTextAnalyticsSegments.entities[j].category == 'GeneOrProtein') {
+              if (!this.isOnEvents(this.resTextAnalyticsSegments.entities[j].text, 'gene')) {
+                this.posibleEntities.push({ name: this.resTextAnalyticsSegments.entities[j].text, type: 'gene', date: null, notes: '', data: {} })
+              }
+            }
+          }            
+        }
+        console.log(this.posibleEntities)
+
+        //trnaslate invert
+
+        if (this.detectedLang != 'en') {
+          var segments = [];
+          for (let j = 0; j < this.posibleEntities.length; j++) {
+            segments.push({ "text": this.posibleEntities[j].name });
           }
           
-        }, (err) => {
-          console.log(err);
-          reject(err);
-        }));
-    });
-  }
-
-  translateBack(parsedResponse){
-    return new Promise((resolve, reject) => {
-      let chunkPromises = [];
-      if(parsedResponse['symtoms'].length>0){
-        var tempText = '';
-        for(let i=0; i<parsedResponse['symtoms'].length; i++){
-          if(parsedResponse['symtoms'][i]!='no' && parsedResponse['symtoms'][i]!='No'){
-            tempText += parsedResponse['symtoms'][i] + ', ';
-          }
-        }
-        chunkPromises.push(this.getBackTranslations(tempText, 'symtoms'));
-      }
-      if(parsedResponse['drugs'].length>0){
-        var tempText = '';
-        for(let i=0; i<parsedResponse['drugs'].length; i++){
-          if(parsedResponse['drugs'][i]!='no' && parsedResponse['drugs'][i]!='No'){
-            tempText += parsedResponse['drugs'][i] + ', ';
-          }
-        }
-        chunkPromises.push(this.getBackTranslations(tempText, 'drugs'));
-      }
-      if(parsedResponse['treatments'].length>0){
-        var tempText = '';
-        for(let i=0; i<parsedResponse['treatments'].length; i++){
-          if(parsedResponse['treatments'][i]!='no' && parsedResponse['treatments'][i]!='No'){
-            tempText += parsedResponse['treatments'][i] + ', ';
-          }
-        }
-        chunkPromises.push(this.getBackTranslations(tempText, 'treatments'));
-      }
-      if(parsedResponse['diseases'].length>0){
-        var tempText = '';
-        for(let i=0; i<parsedResponse['diseases'].length; i++){
-          if(parsedResponse['diseases'][i]!='no' && parsedResponse['diseases'][i]!='No'){
-            tempText += parsedResponse['diseases'][i] + ', ';
-          }
-        }
-        chunkPromises.push(this.getBackTranslations(tempText, 'diseases'));
-      }
-      if(parsedResponse['allergy'].length>0){
-        var tempText = '';
-        for(let i=0; i<parsedResponse['allergy'].length; i++){
-          if(parsedResponse['allergy'][i]!='no' && parsedResponse['allergy'][i]!='No'){
-            tempText += parsedResponse['allergy'][i] + ', ';
-          }
-        }
-        chunkPromises.push(this.getBackTranslations(tempText, 'allergy'));
-      }
-    
-      Promise.all(chunkPromises).then((data) => {
-        console.log("Todas las llamadas a translateBack han terminado");
-        console.log(data)
-        for(let i=0; i<data.length; i++){
-          if(data[i].type=='symtoms'){
-            parsedResponse['symtoms'] = data[i].text.split(', ');
-          }
-          if(data[i].type=='drugs'){
-            parsedResponse['drugs'] = data[i].text.split(', ');
-          }
-          if(data[i].type=='treatments'){
-            parsedResponse['treatments'] = data[i].text.split(', ');
-          }
-          if(data[i].type=='diseases'){
-            parsedResponse['diseases'] = data[i].text.split(', ');
-          }
-          if(data[i].type=='allergy'){
-            parsedResponse['allergy'] = data[i].text.split(', ');
-          }
-        }
-        this.continueExtractEntities(parsedResponse);
-        resolve ("ok")
-      });
-    });
-    
-  }
-
-  getBackTranslations(text, type){
-      return new Promise((resolve, reject) => {
-        let parseChoices0 = text;
-        //delete last comma with space if exists
-        if(parseChoices0.slice(-2) == ', '){
-          parseChoices0 = parseChoices0.slice(0, -2);
-        }
-        
-        var jsontestLangText = [{ "Text": parseChoices0 }]
-          this.subscription.add(this.apiDx29ServerService.getTranslationInvert(this.detectedLang,jsontestLangText)
-          .subscribe( (res2 : any) => {
-              if (res2[0] != undefined) {
-                  if (res2[0].translations[0] != undefined) {
-                      parseChoices0 = res2[0].translations[0].text;
+          this.subscription.add(this.apiDx29ServerService.getTranslationSegmentsInvert(this.detectedLang, segments)
+            .subscribe((res2: any) => {
+              console.log(res2)
+              console.log(segments)
+              for(var i = 0; i < segments.length; i++){
+                if (res2[i] != undefined) {
+                  if (res2[i].translations[0] != undefined) {
+                    //if las character is a dot, remove it
+                    if (res2[i].translations[0].text.charAt(res2[i].translations[0].text.length - 1) == '.') {
+                      res2[i].translations[0].text = res2[i].translations[0].text.substring(0, res2[i].translations[0].text.length - 1);
+                    }
+                    segments[i].text = res2[i].translations[0].text;
+                    this.posibleEntities[i].name = segments[i].text;
                   }
+                }
               }
-              resolve({type: type, text: parseChoices0});
-          }, (err) => {
-            console.log(err);
-            reject(err);
-          }));
-      });
-    }
+            }, (err) => {
+              console.log(err);
+            }));
+        }
 
-  continueExtractEntities(parsedResponse) {
-    var tempPosibleEntities = this.openAiService.parseEntities(parsedResponse);
-    for (var i = 0; i < tempPosibleEntities.length; i++) {
-      this.posibleEntities.push(tempPosibleEntities[i])
+      this.currentEntity = this.posibleEntities[this.currentIndex];
+      this.callingTextAnalytics = false;
+      resolve('ok');
+    }, (err) => {
+      console.log(err);
+      this.callingTextAnalytics = false;
+      resolve('ok');
+    }));
+  });
+}
+
+isOnEvents(eventName, type){
+  var found = false;
+  for(let i=0; i<this.events.length; i++){
+    if(this.events[i].name==eventName && this.events[i].type==type){
+      found = true;
     }
-    this.currentEntity = this.posibleEntities[this.currentIndex];
   }
+  for(let j=0; j<this.posibleEntities.length; j++){
+    if(this.posibleEntities[j].name==eventName && this.posibleEntities[j].type==type){
+      found = true;
+    }
+  }
+  if(found){
+    return true;
+  }else{
+    return false;
+  }
+}
 
   openEntities(name) {
     var url = name.substr(0, name.lastIndexOf('/') + 1)
@@ -950,6 +963,7 @@ export class MedicalRecordsComponent implements OnInit, OnDestroy {
     var info = { name: this.posibleEntities[index].name, type: this.posibleEntities[index].type, date: this.posibleEntities[index].date, notes: this.posibleEntities[index].notes };
     this.subscription.add( this.http.post(environment.api+'/api/events/'+this.authService.getCurrentPatient().sub, info)
         .subscribe( (res : any) => {
+          this.events.push(info);
           this.posibleEntities.splice(index, 1);
           this.currentEntity = this.posibleEntities[this.currentIndex];
          }, (err) => {
