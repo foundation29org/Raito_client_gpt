@@ -44,7 +44,8 @@
     "Disease": "Disease",
     "Drug": "Drug",
     "Symptom": "Symptom",
-    "Treatment": "Treatment"
+    "Treatment": "Treatment",
+    "Gene": "Gene"
   },
   "events":{
     "NewEvent": "New event",

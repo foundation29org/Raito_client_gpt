@@ -171,6 +171,8 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
               typeTranslated = this.translate.instant('home.Symptom');
             }else if(typeTranslated == 'treatment'){
               typeTranslated = this.translate.instant('home.Treatment');
+            }else if(typeTranslated == 'gene'){
+              typeTranslated = this.translate.instant('home.Gene');
             }else if(typeTranslated == 'other'){
               typeTranslated = this.translate.instant('generics.Other');
             }

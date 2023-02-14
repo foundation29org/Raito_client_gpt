@@ -95,4 +95,25 @@ export class ApiDx29ServerService {
         })
     }
 
+    getTranslationSegmentsInvert(lang,segments){
+      var body = {lang:lang, segments: segments}
+        return this.http.post(environment.api+'/api/translation/segments', body)
+        .map( (res : any) => {
+            return res;
+        }, (err) => {
+            console.log(err);
+            return err;
+        })
+    }
+
+    callTextAnalytics(textf){
+      return this.http.post(environment.api+'/api/callTextAnalytics', textf)
+      .map( (res : any) => {
+          return res;
+      }, (err) => {
+          console.log(err);
+          return err;
+      })
+  }
+
 }

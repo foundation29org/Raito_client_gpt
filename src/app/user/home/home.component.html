@@ -243,13 +243,14 @@
                         (swipeleft)="startAnimation('slideOutRight')"
                         >
                         <div #panelcard class="p-2 entity"
-                            [ngClass]="{'allergy': currentEntity.type === 'allergy', 'disease': currentEntity.type === 'disease', 'drug': currentEntity.type === 'drug', 'symptom': currentEntity.type === 'symptom', 'treatment': currentEntity.type === 'treatment'}">
+                            [ngClass]="{'allergy': currentEntity.type === 'allergy', 'disease': currentEntity.type === 'disease', 'drug': currentEntity.type === 'drug', 'symptom': currentEntity.type === 'symptom', 'treatment': currentEntity.type === 'treatment', 'gene': currentEntity.type === 'gene'}">
                             <div>
                                 <strong *ngIf="currentEntity.type=='allergy'">{{'home.Allergy' | translate }}:</strong>
                                 <strong *ngIf="currentEntity.type=='disease'">{{'home.Disease' | translate }}:</strong>
                                 <strong *ngIf="currentEntity.type=='drug'">{{'home.Drug' | translate }}:</strong>
                                 <strong *ngIf="currentEntity.type=='symptom'">{{'home.Symptom' | translate }}:</strong>
                                 <strong *ngIf="currentEntity.type=='treatment'">{{'home.Treatment' | translate }}:</strong>
+                                <strong *ngIf="currentEntity.type=='gene'">{{'home.Gene' | translate }}:</strong>
                                 {{ currentEntity.name }}
                             </div>
                             <div class="">
@@ -274,13 +275,6 @@
                                         class="autoajustable form-control"></textarea>
                                 </div>
                             </div>
-                            <!--<div class="d-flex justify-content-between mt-2">
-                                <button class="btn btn-danger"><em class="fa fa-times"
-                                        (click)="removeEntity(i); startAnimation('slideOutLeft')"></em></button>
-                                <button class="btn btn-dark"><em class="fa fa-check"
-                                        (click)="addEntity(i); startAnimation('slideOutRight');"></em></button>
-
-                            </div>-->
                         </div>
                     </div>
                     <div class="tinder--buttons">
@@ -290,43 +284,6 @@
                       </div>
                     
                 </div>
-                <!--<div *ngFor="let entity of posibleEntities; let i = index" class="p-2 col-lg-6 col-md-6 col-sm-12">
-                    <div class="p-2 entity" [ngClass]="{'allergy': entity.type === 'allergy', 'disease': entity.type === 'disease', 'drug': entity.type === 'drug', 'symptom': entity.type === 'symptom', 'treatment': entity.type === 'treatment'}">
-                        <div>
-                            <strong *ngIf="entity.type=='allergy'">Allergy:</strong>
-                            <strong *ngIf="entity.type=='disease'">Disease:</strong>
-                            <strong *ngIf="entity.type=='drug'">Drug:</strong>
-                            <strong *ngIf="entity.type=='symptom'">Symptom:</strong>
-                            <strong *ngIf="entity.type=='treatment'">Treatment:</strong>
-                            {{ entity.name }}
-                        </div>
-                        <div class="">
-                            <label><strong>{{'generics.Date' | translate }}:</strong></label>
-                            <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
-                                placeholder="{{'generics.Start Date' | translate }}" [max]="maxDate" readonly
-                                [matDatepicker]="pickerOnset" (click)="pickerOnset.open()" [(ngModel)]="entity.date">
-                            <span *ngIf="entity.date!=null" class="ml-1" (click)="pickerOnset.open()">{{entity.date | date: 'MMM y': '' :
-                                translate.currentLang}} </span>
-                            <mat-datepicker-toggle matSuffix [for]="pickerOnset"></mat-datepicker-toggle>
-                            <mat-datepicker startView="multi-year"
-                                (monthSelected)="closeDateEntity($event, i, pickerOnset)" touchUi="true"
-                                #pickerOnset></mat-datepicker>
-                        </div>
-                        <div class="">
-                            <div class="form-group">
-                                <label><strong>{{'generics.notes' | translate }}:</strong></label>
-                                <textarea maxlength="150" [(ngModel)]="entity.notes"
-                                    placeholder="{{'seizures.Write down any details' | translate }}"
-                                    class="autoajustable form-control"></textarea>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between mt-2">
-                            <button class="btn btn-dark"><em class="fa fa-check" (click)="addEntity(i)"></em></button>
-                            <button class="btn btn-danger"><em class="fa fa-trash" (click)="removeEntity(i)"></em></button>
-                        </div>
-                    </div>
-                    
-                </div>-->
             </div>
         </div>
     </div>

@@ -33,6 +33,7 @@
 												<option value="drug">{{'home.Drug' | translate }}</option>
 												<option value="symptom">{{'home.Symptom' | translate }}</option>
 												<option value="treatment">{{'home.Treatment' | translate }}</option>
+												<option value="gene">{{'home.Gene' | translate }}</option>
 												<option value="other">{{'generics.Other' | translate }}</option>
 											</select>
 											<small class="form-text text-muted danger"
@@ -152,7 +153,7 @@
 							<!--(click)="showForm(row)"-->
 							<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 							<tr mat-row *matRowDef="let row; columns: displayedColumns;"
-								[ngClass]="{'allergy': row.type === 'allergy', 'disease': row.type === 'disease', 'drug': row.type === 'drug', 'symptom': row.type === 'symptom', 'treatment': row.type === 'treatment'}">
+								[ngClass]="{'allergy': row.type === 'allergy', 'disease': row.type === 'disease', 'drug': row.type === 'drug', 'symptom': row.type === 'symptom', 'treatment': row.type === 'treatment', 'gene': row.type === 'gene'}">
 							</tr>
 
 							<!-- Row shown when there is no matching data. -->
