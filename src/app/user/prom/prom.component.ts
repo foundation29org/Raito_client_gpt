@@ -89,7 +89,7 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
   events: any = [];
   eventsCopy: any = [];
 
-  displayedColumns: string[] = ['typeTranslated', 'name', 'date', 'notes', 'actions'];
+  displayedColumns: string[] = ['typeTranslated', 'name', 'date', 'actions'];
   columnsToDisplayWithExpand  = [...this.displayedColumns, 'expand'];
   expandedElement: DataEvent | null;
   dataSource: MatTableDataSource<any>;

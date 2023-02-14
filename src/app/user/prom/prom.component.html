@@ -144,11 +144,11 @@
 								</td>
 							</ng-container>
 
-							<!-- notes Column -->
+							<!-- notes Column 
 							<ng-container matColumnDef="notes">
 								<th mat-header-cell *matHeaderCellDef mat-sort-header> {{'generics.notes' | translate }} </th>
 								<td mat-cell *matCellDef="let row"> {{row.notes}} </td>
-							</ng-container>
+							</ng-container>-->
 
 							<!-- actions Column -->
 							<ng-container matColumnDef="actions">
@@ -164,7 +164,7 @@
 							<ng-container matColumnDef="expand">
 								<th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
 								<td mat-cell *matCellDef="let element">
-								  <button *ngIf="element.type=='drug'" mat-icon-button aria-label="expand row" (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
+								  <button *ngIf="element.type=='drug' || element.notes!=''" mat-icon-button aria-label="expand row" (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
 									<!--em font awesome icon down-->
 									<em *ngIf="expandedElement !== element" class="fa fa-chevron-down"></em>
 									<!--em font awesome icon up-->
@@ -179,20 +179,24 @@
 								  <div class="example-element-detail"
 									   [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
 									<div class="example-element-description" *ngIf="expandedElement">
-										<label><strong>{{'medication.Dose' | translate }}:</strong></label>
-										<span *ngIf="expandedElement.data == undefined">
-											--
-										</span>
-										<span *ngIf="expandedElement.data != undefined">
-											<span *ngIf="expandedElement.data.value">
-												{{expandedElement.data.value}} {{'medication.mg/day' | translate }}
-											</span>
-											<span *ngIf="!expandedElement.data.value">
+										<div *ngIf="expandedElement.type=='drug'" class="d-block">							
+											<label><strong>{{'medication.Dose' | translate }}:</strong></label>
+											<span *ngIf="expandedElement.data == undefined">
 												--
 											</span>
-										</span>
-										
-									 
+											<span *ngIf="expandedElement.data != undefined">
+												<span *ngIf="expandedElement.data.value">
+													{{expandedElement.data.value}} {{'medication.mg/day' | translate }}
+												</span>
+												<span *ngIf="!expandedElement.data.value">
+													--
+												</span>
+											</span>
+										</div>
+										<div *ngIf="expandedElement.notes!=''" class="d-block">
+											<label><strong>{{'generics.notes' | translate }}:</strong></label>
+											<span> {{expandedElement.notes}} </span>
+										</div>
 									</div>
 								  </div>
 								</td>
