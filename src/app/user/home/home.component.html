@@ -216,23 +216,6 @@
                 </div>
             </div>
             <div class="row" style="padding: 1rem;padding-top: 0px;" *ngIf="posibleEntities.length>0">
-                <!--<mat-card class="col-lg-12 col-md-12 col-sm-12 example-card" 
-                [@cardAnimation]="animationState"
-                (@cardAnimation.done)="resetAnimationState()"
-                (swiperight)="startAnimation('slideOutLeft')"
-                (swipeleft)="startAnimation('slideOutRight')"
-                *ngFor="let entity of posibleEntities">
-                    <mat-card-header>
-                        <mat-card-title>{{entity.name}}</mat-card-title>
-                        <mat-card-subtitle>{{entity.type}}</mat-card-subtitle>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <p>{{entity.description}}</p>
-                    </mat-card-content>
-                    <mat-card-actions>
-                        <button mat-raised-button (tap)="startAnimation(slideOutRight)" (click)="addEntity(entity)">{{'generics.Add' | translate }}</button>
-                    </mat-card-actions>
-                </mat-card>-->
                 <div *ngIf="currentEntity" class="entity-card p-2 offset-sm-3 col-sm-6">
                     <!--(swipe)="onSwipe($event)" -->
                     <div [ngClass]="{ 'left-swipe': swipeDirection === 'left', 'right-swipe': swipeDirection === 'right' }"
@@ -269,8 +252,8 @@
                             </div>
                             <div class="" *ngIf="currentEntity.type=='drug'">
                                 <label><strong>{{'medication.Dose mg' | translate }}:</strong></label>
-                                <input class="form-control w-75" id="dose_{{i}}" name="dose" matInput
-                                    placeholder="Ex. 200" [(ngModel)]="currentEntity.data.dose">
+                                <input class="form-control w-75" id="dose_{{i}}" name="value" matInput
+                                    placeholder="Ex. 200" [(ngModel)]="currentEntity.data.value">
                             </div>
                             <div class="">
                                 <div class="form-group">
