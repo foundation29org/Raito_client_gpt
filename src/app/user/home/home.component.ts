@@ -84,7 +84,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   maxDate = new Date();
   responseEntities = "";
   posibleEntities = [];
-  
+
   loadedEvents: boolean = false;
   loadingPosibleEntities: boolean = false;
 
@@ -639,7 +639,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   translateTextMsg(promDrug0, promDrug) {
-    this.valueProm = { value: promDrug0+promDrug + this.message };
+    this.valueProm = { value: promDrug0 + promDrug + this.message };
 
     var testLangText = this.message.substr(0, 4000)
     if (testLangText.length > 0) {
@@ -662,7 +662,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     promDrug = res2[1].translations[0].text;
                   }
                 }
-                this.valueProm = { value: promDrug0+promDrug + ' ' + textToTA };
+                this.valueProm = { value: promDrug0 + promDrug + ' ' + textToTA };
                 this.continueSendMessage(textToTA);
               }, (err) => {
                 console.log(err);
@@ -880,7 +880,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             }
           }
         }
-        
+
         var posibleEntitiescopy = JSON.parse(JSON.stringify(this.posibleEntities));
         console.log(posibleEntitiescopy)
         //trnaslate invert
@@ -890,12 +890,12 @@ export class HomeComponent implements OnInit, OnDestroy {
           for (let j = 0; j < this.posibleEntities.length; j++) {
             segments.push({ "text": this.posibleEntities[j].name });
           }
-          
+
           this.subscription.add(this.apiDx29ServerService.getTranslationSegmentsInvert(this.detectedLang, segments)
             .subscribe((res2: any) => {
               console.log(res2)
               console.log(segments)
-              for(var i = 0; i < segments.length; i++){
+              for (var i = 0; i < segments.length; i++) {
                 if (res2[i] != undefined) {
                   if (res2[i].translations[0] != undefined) {
                     //if las character is a dot, remove it
@@ -904,14 +904,14 @@ export class HomeComponent implements OnInit, OnDestroy {
                     }
                     segments[i].text = res2[i].translations[0].text;
                     this.posibleEntities[i].name = segments[i].text;
-                    if(this.isSavedEvent(this.posibleEntities[i].name, this.posibleEntities[i].type)){
-                      this.posibleEntities[i].delete=true;
+                    if (this.isSavedEvent(this.posibleEntities[i].name, this.posibleEntities[i].type)) {
+                      this.posibleEntities[i].delete = true;
                     }
                   }
                 }
               }
-              for(var i = 0; i < this.posibleEntities.length; i++){
-                if(this.posibleEntities[i].delete){
+              for (var i = 0; i < this.posibleEntities.length; i++) {
+                if (this.posibleEntities[i].delete) {
                   this.posibleEntities.splice(i, 1);
                 }
               }
@@ -924,7 +924,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               this.callingTextAnalytics = false;
             }));
         }
-       
+
 
       }, (err) => {
         console.log(err);
