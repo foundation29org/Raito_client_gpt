@@ -119,6 +119,7 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.seizuresForm = this.formBuilder.group({
       type: [null, Validators.required],
+      subtype: [],
       name: ['', Validators.required],
       date: [new Date()],
       data: this.formBuilder.group(new DataEvent()),
@@ -171,6 +172,7 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
       }else{
         if(res.length>0){
           res.sort(this.sortService.DateSort("dateInput"));
+          console.log(res)
           for(let i=0; i<res.length; i++){
             var typeTranslated = res[i].type;
             if(typeTranslated == 'allergy'){
@@ -186,7 +188,8 @@ export class PromComponent implements OnInit, OnDestroy, AfterViewInit {
             }else if(typeTranslated == 'gene'){
               typeTranslated = this.translate.instant('home.Gene');
             }else if(typeTranslated == 'other'){
-              typeTranslated = this.translate.instant('generics.Other');
+              typeTranslated = res[i].subtype;
+              //typeTranslated = this.translate.instant('generics.Other');
             }
             res[i].typeTranslated = typeTranslated;
           }

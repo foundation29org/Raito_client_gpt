@@ -86,6 +86,24 @@ export class AuthInterceptor implements HttpInterceptor {
       authReq = req.clone({ headers });*/
     }
 
+    if(req.url.indexOf('healthbot2')!==-1){
+      isExternalReq = true;
+      const headers = new HttpHeaders({
+        'Content-Type':  'text/html; charset=utf-8',
+        'Access-Control-Allow-Methods': 'GET'
+      });
+      authReq = req.clone({ headers, responseType: 'text'});//'Content-Type',  'application/json'
+    }
+
+    if(req.url.indexOf('directline.botframework.com')!==-1){
+      isExternalReq = true;
+      const headers = new HttpHeaders({
+        'Content-Type':  'text/html; charset=utf-8',
+        'Access-Control-Allow-Methods': 'GET'
+      });
+      authReq = req.clone({ headers, responseType: 'text'});//'Content-Type',  'application/json'
+    }
+
     /*if(req.url.indexOf('https://blobraitogpt.blob.core.windows.net')!==-1){
       isExternalReq = true;
       const headers = new HttpHeaders({

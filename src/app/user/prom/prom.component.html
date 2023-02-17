@@ -39,6 +39,12 @@
 											<small class="form-text text-muted danger"
 												*ngIf="submitted && f.type.errors">{{'generics.required' |
 												translate }}</small>
+												<div *ngIf="seizuresForm.value.type=='other'" class="mt-2">
+													<div>
+														<label>Subtype:</label>
+														<input formControlName="subtype" type="text" class="form-control w-75" placeholder="Ex. Sport">
+													  </div>
+												</div>
 										</div>
 									</div>
 									<div class="">
