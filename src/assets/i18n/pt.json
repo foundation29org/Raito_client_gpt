@@ -33,7 +33,7 @@
       "7.4": "aqui",
       "7.5": "Olá, sou seu assistente virtual. Como posso ajudá-lo?",
       "7.6": "Escreva uma mensagem...",
-      "prom0": "Analyze the following sentence looking for whether the patient wants: give or add a piece of information, ask me a question, share his data with a doctor or organization, make a questionnaire of quality life. Returns one of these responses in the following format: \n1.$Data - \n2.$Question \n3.$Share \n4.$Take Quiz \nThe sentence is: ",
+      "prom0": "Analyze the following sentence looking for whether the patient wants: \n1. tha patient give me or the patient wants to do something with his data, but he is not asking me anything. \n2. He is asking me something. \n3. share his data with a doctor or organization. \n4. make a questionnaire of quality life. \nReturns one of these responses in the following format: \n1.$Data - \n2.$Question \n3.$Share \n4.$Take Quiz \n The sentence is: ",
       "prom1": "Behave like a doctor. You have to give specific information and not general. Use only sources of medical information. The patient is {{value}} years old",
       "promis": " and is ",
       "promAllergies": "Patient has an allergy to ",

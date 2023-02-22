@@ -1098,8 +1098,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
 
       //text analitycs english
-      var textToExtract = msg + ' ' + parseChoices0;
-      this.extractEntities(textToExtract);
+      /*var textToExtract = msg + ' ' + parseChoices0;
+      this.extractEntities(textToExtract);*/
 
       var jsontestLangText = [{ "Text": parseChoices0 }]
       this.subscription.add(this.apiDx29ServerService.getTranslationInvert(this.detectedLang, jsontestLangText)
