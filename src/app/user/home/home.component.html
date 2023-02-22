@@ -219,7 +219,7 @@
 
             <p *ngIf="responseEntities!=''" class="text-muted mt-3">{{'home.7.2' | translate }}: {{responseEntities}}</p>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="intent==''">
+        <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="intent=='' || intent=='Question'">
             <h5 class="text-muted mt-3">Ayuda</h5>
             <p>Esta es una guía para usar el bot con inteligencia artificial. Es capaz de detectar muchas acciones, por ejemplo:</p>
             <ul>
