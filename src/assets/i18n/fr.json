@@ -33,6 +33,7 @@
       "7.4": "ici",
       "7.5": "Bonjour, je suis votre assistant virtuel. Comment puis-je vous aider ?",
       "7.6": "Ecrire un message...",
+      "prom0": "Analyze the following sentence looking for whether the patient wants to give me or add a piece of information, wants to ask me a question, or wants to do a questionnaire. Returns one of these responses in the following format: \n1.$Data - \n2.$Question \n3.$Take Quiz \nThe sentence is: ",
       "prom1": "Behave like a doctor. You have to give specific information and not general. Use only sources of medical information. The patient is {{value}} years old",
       "promis": " and is ",
       "promAllergies": "Patient has an allergy to ",
