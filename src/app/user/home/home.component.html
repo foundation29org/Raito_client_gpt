@@ -188,7 +188,18 @@
     </div>
     <div class="row" @fadeSlideInOut *ngIf="step===7">
         <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="intent=='' || intent=='Question'">
-            <h5 class="text-muted mt-3">{{'home.7.1' | translate }}</h5>
+            <h5 class="text-muted mt-3">{{'home.7.1' | translate }}
+            <em class="ft-info font-medium-1" style="cursor: pointer;" placement="auto" #p1="ngbPopover" [ngbPopover]="popContentHelp" popoverTitle="Help"></em>
+        </h5>
+            <ng-template #popContentHelp>
+            <p>Esta es una guía para usar el bot con inteligencia artificial. Es capaz de detectar muchas acciones, por ejemplo:</p>
+            <ul>
+                <li>Añadir datos a su registro: por ejemplo puede añadir datos médicos como sus alergias, enfermedades, fármacos, síntomas, tratamientos, o lo que desee guardar.</li>
+                <li>Preguntar cosas: la inteligencia artificial le responderá de forma personalizada, teniendo en cuenta sus datos médicos</li>
+                <li>Compartir tus datos</li>
+                <li>Hacer un cuestionario de calidad de vida</li>
+            </ul>
+            </ng-template>
             <div class="chat-container">
                 <div class="chat-messages">
                     <div *ngFor="let message of messages">
@@ -210,7 +221,7 @@
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="intent==''">
             <h5 class="text-muted mt-3">Ayuda</h5>
-            <p>Esta es una guía para usar el bot con inteligencia artificial. Es capaz de detectar muchas cosas acciones, por ejemplo:</p>
+            <p>Esta es una guía para usar el bot con inteligencia artificial. Es capaz de detectar muchas acciones, por ejemplo:</p>
             <ul>
                 <li>Añadir datos a su registro: por ejemplo puede añadir datos médicos como sus alergias, enfermedades, fármacos, síntomas, tratamientos, o lo que desee guardar.</li>
                 <li>Preguntar cosas: la inteligencia artificial le responderá de forma personalizada, teniendo en cuenta sus datos médicos</li>
