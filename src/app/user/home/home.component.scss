@@ -47,7 +47,40 @@
   display: flex;
 }
 
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 80%;
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
 
+.chat-messages {
+
+}
+
+.user-message {
+  background-color: lightblue;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: right;
+}
+
+.response-message {
+  background-color: lightgray;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.entities-container {
+  width: 25%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
 
 .entity {
   border-radius: 10px;
@@ -76,6 +109,39 @@
 .gene {
   background-color: #ff9fe28f;
 }
+
+.btn-chat {
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+  margin-top: 1rem;
+  font-size: 1rem;
+  border-radius: 1rem;
+}
+
+.tinder--buttons {
+  display: block ruby;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.tinder--buttons button {
+  border-radius: 50%;
+  line-height: 60px;
+  width: 60px;
+  border: 0;
+  background: #FFFFFF;
+  display: inline-block;
+  margin: 0 8px;
+}
+
+.fa-remove {
+  color: #CDD6DD;
+}
+.fa-check {
+  color: #4eea2e;
+}
+
 
 
 @media (max-width: 430px) {

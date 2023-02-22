@@ -187,7 +187,212 @@
 
     </div>
     <div class="row" @fadeSlideInOut *ngIf="step===7">
-        <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="intent=='' || intent=='Question'">
+            <h5 class="text-muted mt-3">{{'home.7.1' | translate }}</h5>
+            <div class="chat-container">
+                <div class="chat-messages">
+                    <div *ngFor="let message of messages">
+                        <div [ngClass]="{'user-message': message.isUser, 'response-message': !message.isUser}">
+                            {{ message.text }}
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="callingOpenai">
+                    <em class="fa fa-spinner fa-spin fa-fw"></em>
+                </div>
+                <input type="text" class="btn-chat" [(ngModel)]="message" [disabled]="callingOpenai" placeholder="{{'home.7.6' | translate }}" (keydown.enter)="sendMessage()">
+                <button class="btn btn-dark btn-chat" [disabled]="callingOpenai" (click)="sendMessage()">{{'generics.Submit' | translate }}</button>
+            </div>
+            <p *ngIf="intent!=''" class="text-muted mt-3">Intent: {{intent}}</p>
+            <p *ngIf="valueProm" class="text-muted mt-3">{{valueProm.value}}</p>
+
+            <p *ngIf="responseEntities!=''" class="text-muted mt-3">{{'home.7.2' | translate }}: {{responseEntities}}</p>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="intent==''">
+            <h5 class="text-muted mt-3">Ayuda</h5>
+            <p>Esta es una guía para usar el bot con inteligencia artificial. Es capaz de detectar muchas cosas acciones, por ejemplo:</p>
+            <ul>
+                <li>Añadir datos a su registro: por ejemplo puede añadir datos médicos como sus alergias, enfermedades, fármacos, síntomas, tratamientos, o lo que desee guardar.</li>
+                <li>Preguntar cosas: la inteligencia artificial le responderá de forma personalizada, teniendo en cuenta sus datos médicos</li>
+                <li>Detectar si necesita ayuda con algo</li>
+                <li>Hacer un cuestionario de calidad de vida</li>
+            </ul>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="loadingPosibleEntities || posibleEntities.length>0">
+            <h5 class="text-muted mt-3">{{'home.7.2' | translate }}</h5>
+            <span>{{'home.7.3' | translate }} <a routerLink="/events">{{'home.7.4' | translate }}</a></span>
+            <div class="row" style="padding: 1rem;padding-top: 0px;" *ngIf="loadingPosibleEntities">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <em class="fa fa-spinner fa-spin fa-fw"></em>
+                </div>
+            </div>
+            <div class="row" style="padding: 1rem;padding-top: 0px;" *ngIf="posibleEntities.length>0">
+                <div *ngIf="currentEntity" class="entity-card p-2 offset-sm-3 col-sm-6">
+                    <!--(swipe)="onSwipe($event)" -->
+                    <div [ngClass]="{ 'left-swipe': swipeDirection === 'left', 'right-swipe': swipeDirection === 'right' }"
+                        class="swipe-card" 
+                        [@cardAnimation]="animationState"
+                        (@cardAnimation.done)="resetAnimationState()" 
+                        (swiperight)="startAnimation('slideOutLeft')"
+                        (swipeleft)="startAnimation('slideOutRight')"
+                        >
+                        <div #panelcard class="p-2 entity"
+                            [ngClass]="{'allergy': currentEntity.type === 'allergy', 'disease': currentEntity.type === 'disease', 'drug': currentEntity.type === 'drug', 'symptom': currentEntity.type === 'symptom', 'treatment': currentEntity.type === 'treatment', 'gene': currentEntity.type === 'gene'}">
+                            <div>
+                                <strong *ngIf="currentEntity.type=='allergy'">{{'home.Allergy' | translate }}:</strong>
+                                <strong *ngIf="currentEntity.type=='disease'">{{'home.Disease' | translate }}:</strong>
+                                <strong *ngIf="currentEntity.type=='drug'">{{'home.Drug' | translate }}:</strong>
+                                <strong *ngIf="currentEntity.type=='symptom'">{{'home.Symptom' | translate }}:</strong>
+                                <strong *ngIf="currentEntity.type=='treatment'">{{'home.Treatment' | translate }}:</strong>
+                                <strong *ngIf="currentEntity.type=='gene'">{{'home.Gene' | translate }}:</strong>
+                                {{ currentEntity.name }}
+                            </div>
+                            <div class="">
+                                <label><strong>{{'generics.Date' | translate }}:</strong></label>
+                                <input class="form-control w-75 d-none" id="dateOnset_{{i}}" name="dateOnset" matInput
+                                    placeholder="{{'generics.Start Date' | translate }}" [max]="maxDate" readonly
+                                    [matDatepicker]="pickerOnset" (click)="pickerOnset.open()"
+                                    [(ngModel)]="currentEntity.date">
+                                <span *ngIf="currentEntity.date!=null" class="ml-1"
+                                    (click)="pickerOnset.open()">{{currentEntity.date | date: 'MMM y': '' :
+                                    translate.currentLang}} </span>
+                                <mat-datepicker-toggle matSuffix [for]="pickerOnset"></mat-datepicker-toggle>
+                                <mat-datepicker startView="multi-year"
+                                    (monthSelected)="closeDateEntity($event, i, pickerOnset)" touchUi="true"
+                                    #pickerOnset></mat-datepicker>
+                            </div>
+                            <div class="" *ngIf="currentEntity.type=='drug'">
+                                <label><strong>{{'medication.Dose mg' | translate }}:</strong></label>
+                                <input class="form-control w-75" id="dose_{{i}}" name="value" matInput
+                                    placeholder="Ex. 200" [(ngModel)]="currentEntity.data.value">
+                            </div>
+                            <div class="">
+                                <div class="form-group">
+                                    <label><strong>{{'generics.notes' | translate }}:</strong></label>
+                                    <textarea maxlength="150" [(ngModel)]="currentEntity.notes"
+                                        placeholder="{{'seizures.Write down any details' | translate }}"
+                                        class="autoajustable form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tinder--buttons">
+                        <button (click)="removeEntity(currentIndex); startAnimation('slideOutRight')" class="tno"><i class="fa fa-remove"></i></button>
+                        <div class="ti">{{currentIndex+1}} / {{posibleEntities.length}}</div>
+                        <button (click)="addEntity(currentIndex); startAnimation('slideOutLeft');" class="tyes"><i class="fa fa-check"></i></button>
+                      </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="offset-lg-3 col-lg-6 offset-md-3 col-md-6 col-sm-12 mt-3" *ngIf="intent=='Data'">
+            <div class="card card-block" *ngIf="callingTextAnalytics">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <em class="fa fa-spinner fa-spin fa-3x fa-fw"></em>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-block" *ngIf="!callingTextAnalytics">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!--back buttom-->
+                            <button class="btn btn-primary mb-3" (click)="back()"><i class="fa fa-arrow-left"></i>
+                                {{'generics.Back' | translate }}</button>
+                            <form action="#" class="form form-horizontal" [formGroup]="seizuresForm">
+                                <div class="form-body">
+                                    <div class="">
+                                        <div class="">
+                                            <div class="form-group">
+                                                <label>{{'events.Type' | translate}}</label>
+                                                {{type}}
+                                                <select name="event-estructure-type" class="form-control"
+                                                    formControlName="type"
+                                                    [ngClass]="{ 'is-invalid': submitted && f.type.errors }"
+                                                    (keyup)="refresh.next()">
+                                                    <option [ngValue]="null" disabled selected>--{{'generics.Select' | translate}}--</option>
+                                                    <option value="allergy">{{'home.Allergy' | translate }}</option>
+                                                    <option value="disease">{{'home.Disease' | translate }}</option>
+                                                    <option value="drug">{{'home.Drug' | translate }}</option>
+                                                    <option value="symptom">{{'home.Symptom' | translate }}</option>
+                                                    <option value="treatment">{{'home.Treatment' | translate }}</option>
+                                                    <option value="gene">{{'home.Gene' | translate }}</option>
+                                                    <option value="other">{{'generics.Other' | translate }}</option>
+                                                </select>
+                                                <small class="form-text text-muted danger"
+                                                    *ngIf="submitted && f.type.errors">{{'generics.required' |
+                                                    translate }}</small>
+                                                    <div *ngIf="seizuresForm.value.type=='other'" class="mt-2">
+                                                        <div>
+                                                            <label>Subtype:</label>
+                                                            <input formControlName="subtype" type="text" class="form-control w-75" placeholder="Ex. Sport">
+                                                          </div>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                            <div class="form-group">
+                                                <label>{{'generics.Name' | translate }}</label>
+                                                <input type="text" class="col-5 form-control" id="numericos2"
+                                                    formControlName="name"
+                                                    [ngClass]="{ 'is-invalid': submitted && f.name.errors }"
+                                                    name="numericos2">
+                                                <small class="form-text text-muted danger"
+                                                    *ngIf="submitted && f.name.errors">{{'generics.required' |
+                                                    translate }}</small>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2" *ngIf="seizuresForm.value.type=='drug'">
+                                            <div formGroupName="data" class="department">
+                                                <label>{{'medication.Dose mg' | translate }}:</label>
+                                                <input formControlName="value" type="text" class="form-control w-75" placeholder="Ex. 200">
+                                              </div>
+                                        </div>
+                                        <div class="">
+                                            <div class="form-group">
+                                                <label class="mb-0">{{'generics.Date' | translate }}</label>
+                                                <div class="">
+                                                    <mat-form-field class="mr-sm-24" fxFlex>
+                                                        <input matInput class="grey" readonly [matDatepicker]="picker"
+                                                            autocomplete="off" name="date" formControlName="date">
+                                                        <mat-datepicker-toggle matSuffix
+                                                            [for]="picker"></mat-datepicker-toggle>
+                                                        <mat-datepicker [startAt]="date" #picker></mat-datepicker>
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                            <div class="form-group">
+                                                <label>{{'generics.notes' | translate }}</label>
+                                                <textarea maxlength="150" name="notes" formControlName="notes"
+                                                    placeholder="{{'seizures.Write down any details' | translate }}"
+                                                    class="autoajustable form-control"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+        
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-12 center-elements">
+                            <button type="button" class="btn btn-dark" (click)="saveData();">{{'generics.SaveAndClose' |
+                                translate }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 mt-2" *ngIf="intent=='Take quiz'">
+            <button class="btn btn-primary" (click)="back()"><i class="fa fa-arrow-left"></i>
+                {{'generics.Back' | translate }}</button>
             <div id="webchat" role="main" watermark="false"></div>
             <div id="footchat" class="mt-2"></div>
         </div>

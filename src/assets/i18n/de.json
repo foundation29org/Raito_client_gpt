@@ -33,6 +33,7 @@
       "7.4": "hier",
       "7.5": "Hallo, ich bin Ihr virtueller Assistent. Wie kann ich Ihnen helfen?",
       "7.6": "Schreibe eine Nachricht...",
+      "prom0": "Analyze the following sentence looking for if the patient wants to give me a piece of information, wants to ask me a question, or wants to do a questionnaire. Give me one of this answers with this format: \n1.Data - Give me the data \n2.Question - Answer the question \n3.Take quiz- call HealthBot \nThe sentence is: ",
       "prom1": "Behave like a doctor. You have to give specific information and not general. Use only sources of medical information. The patient is {{value}} years old",
       "promis": " and is ",
       "promAllergies": "Patient has an allergy to ",
