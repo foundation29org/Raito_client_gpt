@@ -123,6 +123,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private msgDataSavedOk: string;
   submitted = false;
   tempInput: string = '';
+  subtypes = [];
 
   constructor(private http: HttpClient, public translate: TranslateService, private authService: AuthService, private patientService: PatientService, public searchFilterPipe: SearchFilterPipe, public toastr: ToastrService, private dateService: DateService, private sortService: SortService, private adapter: DateAdapter<any>, private searchService: SearchService, private router: Router, public trackEventsService: TrackEventsService, private openAiService: OpenAiService, private apiDx29ServerService: ApiDx29ServerService, private formBuilder: FormBuilder, private authGuard: AuthGuard) {
     this.adapter.setLocale(this.authService.getLang());
@@ -334,6 +335,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   loadEvents() {
+    this.subtypes = [];
     this.loadedEvents = false;
     this.patientInfo = {
       patientAllergies: [],
@@ -356,7 +358,10 @@ export class HomeComponent implements OnInit, OnDestroy {
                 this.patientInfo.patientDiseases.push(res[i]);
               } else if (res[i].type == "drug") {
                 this.patientInfo.patientMedications.push(res[i]);
+              }else if (res[i].type == "other") {
+                this.subtypes.push(res[i].subtype);
               }
+
             }
             if (!this.basicInfoPatient.wizardCompleted) {
               if (this.patientInfo.patientAllergies.length > 0) {
@@ -622,34 +627,24 @@ export class HomeComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
         console.log(res)
         let tempAnswer = res.choices[0].text;
-        let answer = tempAnswer
-        if (res.choices[0].text.indexOf("\n\n") == 0) {
-          tempAnswer = res.choices[0].text.split("\n\n");
-          tempAnswer.shift();
-          answer = tempAnswer[0];
-        } else if (res.choices[0].text.indexOf("\n") == 0) {
-          tempAnswer = res.choices[0].text.split("\n");
-          tempAnswer.shift();
-          answer = tempAnswer[0];
-        }
         this.intent = res.choices[0].text;
-        if (answer.indexOf("$Data") != -1) {
+        if (tempAnswer.indexOf("$Data") != -1) {
           this.detectTypeEvent2();
           
-        } else if (answer.indexOf("$Question") != -1) {
+        } else if (tempAnswer.indexOf("$Question") != -1) {
           this.intent = "Question";
           this.sendQuestion();
-        } else if (answer.indexOf("$Share") != -1) {
+        } else if (tempAnswer.indexOf("$Share") != -1) {
           this.intent = "Share";
           this.message = '';
           //go to /mydata page
           this.router.navigate(['/mydata']);
-        }else if (answer.indexOf("$Take quiz") != -1) {
+        }else if (tempAnswer.indexOf("$Take quiz") != -1 || tempAnswer.indexOf("$Take Quiz") != -1) {
           this.intent = "Take quiz";
           this.message = '';
           this.initBot();
         }
-
+        console.log(this.intent)
         this.callingOpenai = false;
         Swal.close();
       }, (err) => {
@@ -671,6 +666,17 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     });
     var promDetectEvent = "Which of the following events do you think is related to the text? Choose one: \n 'allergy', 'disease', 'drug', 'symptom', 'treatment', 'gene', 'other'"
+     //convert array this.subtype to string
+     if(this.subtypes.length > 0){
+      var tempTypes = '';
+      for(var i = 0; i < this.subtypes.length; i++){
+        tempTypes = tempTypes + ", '" + this.subtypes[i]+ "'";
+      }
+      promDetectEvent = promDetectEvent + " " + tempTypes;
+     }
+    
+
+    
     //var promDetectEvent = "Which of the following events do you think is related to the text? Choose one: \n 'allergy', 'disease', 'drug', 'symptom', 'treatment', 'gene', 'other'. And give me only the text that I have given you, from where you have obtained that it is related, with the following format: $event $text"
     var detectEvent = { value: 'Given this text: '+this.tempInput + ' ' +promDetectEvent };
     this.subscription.add(this.openAiService.postOpenAi(detectEvent)
@@ -687,12 +693,31 @@ export class HomeComponent implements OnInit, OnDestroy {
           tempAnswer.shift();
           answer = tempAnswer[0];
         }
-        //pon en minusculas
+        //if answer is on this.subtypes
+        var found = false;
+        if(this.subtypes.length > 0){
+          for(var i = 0; i < this.subtypes.length; i++){
+            if(answer.toLowerCase() == this.subtypes[i].toLowerCase()){
+              found = true;
+            }
+          }
+          if(found){
+            tempAnswer = 'other';
+          }
+        }
         //this.seizuresForm.value.type = answer.toLowerCase();
         this.seizuresForm.patchValue({
           type: answer.toLowerCase(), 
           // formControlName2: myValue2 (can be omitted)
         });
+
+        if(found){
+          this.seizuresForm.patchValue({
+            type: tempAnswer.toLowerCase(),
+            subtype: answer, 
+            // formControlName2: myValue2 (can be omitted)
+          });
+        }
         console.log(answer)
         Swal.close();
         this.callingTextAnalytics = false;
@@ -796,8 +821,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   updateForm(info){
-
-    var textToExtract = info.name;
+    if (this.detectedLang != 'en') {
+      var textToExtract = info.name;
 
       var jsontestLangText = [{ "Text": textToExtract }]
       this.subscription.add(this.apiDx29ServerService.getTranslationInvert(this.detectedLang, jsontestLangText)
@@ -832,6 +857,19 @@ export class HomeComponent implements OnInit, OnDestroy {
           });
           this.callingTextAnalytics = false;
         }));
+    }else{
+      this.seizuresForm.patchValue({
+        type: info.type,
+        subtype: info.subtype,
+        name: info.name,
+        dose: info.dose,
+        date: info.date,
+        notes: info.notes,
+        data: info.data
+      });
+      this.callingTextAnalytics = false;
+    }
+    
 
     
   }

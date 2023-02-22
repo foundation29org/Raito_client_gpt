@@ -229,7 +229,7 @@
                 <li>Hacer un cuestionario de calidad de vida</li>
             </ul>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="loadingPosibleEntities || posibleEntities.length>0">
+        <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="(loadingPosibleEntities || posibleEntities.length>0) && intent=='Question'">
             <h5 class="text-muted mt-3">{{'home.7.2' | translate }}</h5>
             <span>{{'home.7.3' | translate }} <a routerLink="/events">{{'home.7.4' | translate }}</a></span>
             <div class="row" style="padding: 1rem;padding-top: 0px;" *ngIf="loadingPosibleEntities">
