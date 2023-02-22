@@ -639,7 +639,12 @@ export class HomeComponent implements OnInit, OnDestroy {
         } else if (answer.indexOf("$Question") != -1) {
           this.intent = "Question";
           this.sendQuestion();
-        } else if (answer.indexOf("$Take quiz") != -1) {
+        } else if (answer.indexOf("$Share") != -1) {
+          this.intent = "Share";
+          this.message = '';
+          //go to /mydata page
+          this.router.navigate(['/mydata']);
+        }else if (answer.indexOf("$Take quiz") != -1) {
           this.intent = "Take quiz";
           this.message = '';
           this.initBot();
